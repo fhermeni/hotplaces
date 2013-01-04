@@ -6,8 +6,9 @@ import uuid
 
 class Node:
 
-	def __init__(self, name):
+	def __init__(self, name, uuid):
 		self.name = name
+		self.uuid= uuid
 		self.children = []
 		#on doit respecter le ration tel que v:p >= 1 jamais plus de ressources virtuelle que de physique
 
@@ -35,10 +36,10 @@ class Node:
 
 
 def makeCluster(id, nb):
-	cluster = Node(id)
+	cluster = Node(id,str(uuid.uuid4()) )
 	#print(cluster.pCPU)
 	for i in range(nb):
-		node = Node(id + "-" + str(i+1))
+		node = Node(id + "-" + str(i+1), str(uuid.uuid4()))
 		node.ratioDiskSpace = random.randint(1,5)
 		node.ratioRAM= random.randint(1,5)
 		node.ratioCPU= random.randint(1,16)
@@ -47,28 +48,22 @@ def makeCluster(id, nb):
 		node.pDiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
 		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
-			vm = Node(str(uuid.uuid4()))
+			vm = Node(str(uuid.uuid4()), str(uuid.uuid4()))
 			#add random virtual ressources
-			print('cpu ' + str(tmpCPU* node.ratioCPU))
-			print('RAM ' + str(tmpRAM*node.ratioRAM))
 			vm.vRAM = random.randint(1,int(tmpRAM*node.ratioRAM))
 			vm.vDiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
 			vm.vCPU= random.randint(1, int(tmpCPU* node.ratioCPU))
 			#remove ressource of new vm at node
 			tmpRAM = tmpRAM - vm.vRAM*1.0/node.ratioRAM
-			#print('tmp ' + str(tmpCPU))
-			#print('vcpu ' + str(vm.vCPU))
-			#print('ratio ' + str(node.ratioCPU)) 
-			#print('vcpu/ratio ' + str(vm.vCPU*1.0/ node.ratioCPU))
 			tmpDisk = tmpDisk - vm.vDiskSpace*1.0 /node.ratioDiskSpace
 			tmpCPU = tmpCPU - vm.vCPU*1.0/ node.ratioCPU
-			#print(tmpCPU)
+
 			#add vm at node
 			node.children.append(vm)
 		#add space of free ressources
 		if(tmpDisk >0 or tmpRAM>0 or tmpCPU>0):
 			#add "vm" free
-			free = Node("free")
+			free = Node("free", str(uuid.uuid4()))
 			#add free ressources
 			free.vDiskSpace = tmpDisk * node.ratioDiskSpace
 			free.vRAM = tmpRAM * node.ratioRAM
@@ -122,17 +117,17 @@ def jsonGen(root) :
 
 
 
-g5k = Node("g5k")
+g5k = Node("g5k", str(uuid.uuid4()))
 
 
-g5k.children.append(Node("bordeaux"))
-g5k.children.append(Node("grenoble"))
-g5k.children.append(Node("lille"))
-g5k.children.append(Node("lyon"))
-g5k.children.append(Node("nancy"))
-g5k.children.append(Node("rennes"))
-g5k.children.append(Node("sophia"))
-g5k.children.append(Node("toulouse"))
+g5k.children.append(Node("bordeaux", str(uuid.uuid4())))
+g5k.children.append(Node("grenoble",str(uuid.uuid4())))
+g5k.children.append(Node("lille", str(uuid.uuid4())))
+g5k.children.append(Node("lyon", str(uuid.uuid4())))
+g5k.children.append(Node("nancy", str(uuid.uuid4())))
+g5k.children.append(Node("rennes", str(uuid.uuid4())))
+g5k.children.append(Node("sophia", str(uuid.uuid4())))
+g5k.children.append(Node("toulouse", str(uuid.uuid4())))
 
 bordeaux = g5k.children[0]
 grenoble = g5k.children[1]
