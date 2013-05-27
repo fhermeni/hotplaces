@@ -55,10 +55,12 @@
   */
   // 
   function layout(d) {
-    if(d.color !== foundColor)
-        d.color = "#109D00";
-    if(d.parent)
+
+    d.color = "#109D00";
+    if(d.parent) {
         d.id = "" + d.parent.id + "." + d.name;
+        d.depth = d.id.split(".").length -1;
+    }
     if (d.children) {
       treemap.nodes({children: d.children});
       
@@ -82,15 +84,9 @@
   * parameters : node
   * description : returns the depth of node given in parameters
   */
- function treeDepth(d) {
-    var cpt=0;
-    var tmp=d;
-    while(tmp.parent) {
-        cpt++;
-        tmp = tmp.parent;
-    }
-    return cpt;
-  }
+function treeDepth(d) {
+    return d.name === "g5k"? 0: d.id.split(".").length -1;
+}
   
   //Returns true if a string is an occurence of one of the array strings
   function isIn(array, str) {
@@ -103,22 +99,21 @@
   
   
   //Returns the nodes that matches the node_names search
-  function getNodes(node_names, d) {
-      var nodes = Array();
-      if(isIn(node_names,d.name)) {
-          nodes = nodes.concat(d);
-          d.color = foundColor;
-          for(i in d.children)
-              d.children[i].color = "yellow";
-      }
-      if(! d.children) return null;
-      for(var i =0; i< d.children.length; i++) {
-          var res = getNodes(node_names, d.children[i]);
-          if(res !== null)
-              nodes = nodes.concat(res);
-      }
-      return nodes;
-  }
+function getNodes(node_names, d) {
+    var nodes = Array();
+    if (isIn(node_names, d.name) || isIn(node_names, d.id)) {
+        nodes = nodes.concat(d);
+        //console.log(d.id);
+    }
+    if (!d.children)
+        return null;
+    for (var i = 0; i < d.children.length; i++) {
+        var res = getNodes(node_names, d.children[i]);
+        if (res !== null)
+            nodes = nodes.concat(res);
+    }
+    return nodes;
+}
   
   //Return Lowest Common Ancestor (LCA)
   function common_ancestor(keywords) {
@@ -128,7 +123,7 @@
       if(nodes.length === 0) return null;
       
       //if only one result
-      if(nodes.length === 1) return nodes[0].parent; 
+      if(nodes.length === 1) return nodes[0];
       
       var path = nodes[0].id.split(".");
       var path_divergence = 0;
@@ -147,7 +142,8 @@
       
       //if first result is the LCA
       if(path_divergence === 0) {
-          return nodes[0].parent? nodes[0].parent : nodes[0];
+          //return nodes[0].parent? nodes[0].parent : nodes[0];
+          return nodes[0];
       }
 
       //Get to the LCA from the root
@@ -217,8 +213,7 @@ document.search_form.search_field.onkeypress = function() {
   * description : displays a node with its components
   */
   function display(d) {
-    
-    console.log(d.id);
+    //console.log(d.depth);
     // create attribute depth
     var g1 = svg.insert("g", ".grandparent")
         .datum(d.children)
@@ -229,7 +224,7 @@ document.search_form.search_field.onkeypress = function() {
         .data(d.children)
         .enter().append("g")
         .classed("children", true)
-        .attr("name", function(d) { return d.depth ===3? d.parent.parent.name: (d.depth ===2? d.parent.name: (d.depth ===1? d.name: null)) ;})
+        .attr("name", function(d) { console.log(d.name); return d.name ;})
         .attr("id", function(d){return getId(d);})
         .on("click", function(d){d.children? transition(d): null;})
         .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; })
@@ -252,7 +247,7 @@ document.search_form.search_field.onkeypress = function() {
         .data(function(d) { return d.children || [d]; })
         .enter().append("g")
         .classed("grandChild", true)
-        .attr("name", function(d) { return d.depth ===3? d.parent.parent.name: (d.depth ===2? d.parent.name: (d.depth ===1? d.name: null)) ;})
+        .attr("name", function(d) { return d.name ;})
         .attr("id", function(d){return getId(d);})
         .call(rect)
         .on("mouseover", function(d) {onHover(this.parentNode);})
