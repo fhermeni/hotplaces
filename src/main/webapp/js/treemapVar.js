@@ -1,5 +1,6 @@
 var root;
 var currentRoot;
+var inaltered_Root;
 
 var nodes= [] ;
 
@@ -70,3 +71,5 @@ var grandparent = svg.append("g")
 
 //current element hignlighted
 var memEletSelect ;
+
+var foundColor = "#FFF700";

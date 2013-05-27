@@ -1,7 +1,4 @@
 window.onresize = function (e) {
-
-
-	console.log(window.innerWidth);
 	if(window.innerWidth>800){
 	width = window.innerWidth - margin.left - margin.right;
     height =  window.innerHeight*0.8 - margin.top - margin.bottom;
@@ -237,10 +234,6 @@ function textResize(elt, d) {
 
     var irect = i - len / 2;
     var rectWidth = parseInt(elt.parentNode.childNodes[irect].getAttribute('width'));
-
-    console.log(d.name);
-    console.log(textWidth);
-    console.log(rectWidth);
 
     return textWidth < rectWidth ? null : rectWidth * 2;
 }
