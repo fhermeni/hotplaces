@@ -35,21 +35,35 @@ window.onresize = function(e) {
 
 /*function:
  ** parameter: current hovered node
- ** description: display informations of on the hovered element (d)*/
-function contextualMenu(d) {
-    var tmp = d;
-    var str = "";
-    var names = Array();
-    var depth = 0;
+ ** description: display informations of on the hovered element (d)
+ */
+function displayAllInfos(d) {
 
-    while (tmp.parent != null) {
-        names.push('<span class="nodeLvl' + depth + '">' + tmp.name + '</span>');
-        tmp = tmp.parent;
-        depth++;
+    str = "&thinsp; Current Root : ";
+    tabNodes = d.id.split(".");
+    var stop = currentRoot.depth + 1;
+    for(var i=0; i<tabNodes.length; i++) {
+        if(i === stop) str += "<br>&emsp; &emsp; &ensp; &#8594; &thinsp; ";
+        str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
+        if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
     }
-    names.reverse();
-    str = names.join(".");
-    pop(str);
+    document.getElementById("information").innerHTML = str;
+
+}
+
+/*function
+ **description: displays infos on the currentRoot
+ */
+function displayInfo(d) {
+    
+    str = "&thinsp; Current Root : ";
+    tabNodes = d.id.split(".");
+    var stop = currentRoot.depth + 1;
+    for(var i=0; i<stop; i++) {
+        str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
+        if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
+    }
+    document.getElementById("information").innerHTML = str;
 }
 
 
@@ -68,27 +82,6 @@ function position() {
     });
 }
 
-/*function: 
- **parameter: current node
- **description: return complet name of node (like "g5K.Bordeaux.borderline.bordeline-2") */
-function getId(d) {
-
-    var name = "";
-    var node = d;
-    while (node.parent) {
-        if (name == "") {
-            name = node.name;
-            node = node.parent;
-
-        }
-        else {
-            name = node.name + "." + name;
-            node = node.parent;
-        }
-    }
-    return name = node.name + "." + name;
-
-}
 
 /*function:
  **parameter: current DOM hovered element
@@ -188,24 +181,6 @@ function highLight(div) {
         div.style.backgroundColor = "rgb(230,230,230)";
         memEletSelect = div;
     }
-}
-
-
-
-/*function
- **parameter: message to display
- **description: add the message in the div tag named "information"
- */
-function pop(message) {
-    document.getElementById("information").innerHTML = message;
-
-}
-
-/*function
- **description: remove the message in the div tag named "information"
- */
-function remove() {
-    document.getElementById("information").innerHTML = '';
 }
 
 /*function

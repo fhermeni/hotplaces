@@ -1,4 +1,5 @@
 var pad = 3, pas =1;
+
 /*
  * function
  * parameters : URI, callback function
@@ -11,7 +12,7 @@ var pad = 3, pas =1;
   layout(root);
   display(root);
   currentRoot= root;
-  
+  displayInfo(root);
  
   /*
    * function
@@ -206,7 +207,7 @@ document.search_form.search_field.onkeypress = function() {
         .enter().append("g")
         .classed("children", true)
         .attr("name", function(d) { return d.name ;})
-        .attr("id", function(d){return getId(d);})
+        .attr("id", function(d){return d.id;})
         .on("click", function(d){d.children? transition(d): null;})
         .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; })
 
@@ -229,7 +230,7 @@ document.search_form.search_field.onkeypress = function() {
         .enter().append("g")
         .classed("grandChild", true)
         .attr("name", function(d) { return d.name ;})
-        .attr("id", function(d){return getId(d);})
+        .attr("id", function(d){return d.id;})
         .call(rect)
         .on("mouseover", function(d) {onHover(this.parentNode);})
         
@@ -248,8 +249,8 @@ document.search_form.search_field.onkeypress = function() {
         .attr("class",  "grandChild")
         //.attr("stroke-width", "1")
         .call(rect)
-        .on("mouseout", function(d) {remove();})
-        .on("mouseover", function(d) {contextualMenu(d);})
+        .on("mouseout", function(d) {displayInfo(d);})
+        .on("mouseover", function(d) {displayAllInfos(d);})
 ;
 
  
@@ -278,64 +279,61 @@ document.search_form.search_field.onkeypress = function() {
      * parameters : node
      * description : change root by given parameter, used for zoomin/zoomout
      */
-
-  
-
-	function transition(d) {
-		d.depth>0 ? (pad = 2, pas = 0.5):(pad = 3, pas = 1);
-	    layout(d);
-        remove();
+    function transition(d) {
+        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
+        layout(d);
+        displayInfo(d);
         unHighLight(undefined);
-            if (transitioning || !d)
-                return;
-            transitioning = true;
-            //layout(d);
-            var g2 = display(d),
-                    t1 = g1.transition().duration(300),
-                    t2 = g2.transition().duration(300);
+        if (transitioning || !d)
+            return;
+        transitioning = true;
+        //layout(d);
+        var g2 = display(d),
+                t1 = g1.transition().duration(300),
+                t2 = g2.transition().duration(300);
 
 
-            // Update the domain only after entering new elements.
-            x.domain([d.x, d.x + d.dx]);
-            y.domain([d.y, d.y + d.dy]);
+        // Update the domain only after entering new elements.
+        x.domain([d.x, d.x + d.dx]);
+        y.domain([d.y, d.y + d.dy]);
 
-            // Enable anti-aliasing during the transition.
-            // Desabled for  more fluent transitions
+        // Enable anti-aliasing during the transition.
+        // Desabled for  more fluent transitions
+        svg.style("shape-rendering", null);
+
+        // Draw child nodes on top of parent nodes.
+        svg.selectAll(".depth").sort(function(a, b) {
+            return a.depth - b.depth;
+        });
+
+        // Fade-in entering text.
+        g2.selectAll("text").style("fill-opacity", 0);
+
+        // Transition to the new view.
+        t1.selectAll("text").call(text).style("fill-opacity", 0);
+        t2.selectAll(".textChildren").call(text).style("fill-opacity", 1);
+        t2.selectAll(".textChild").call(textChild).style("fill-opacity", function(d) {
+            if (d.parent.parent.children.length > 15)
+                return 0;
+            return d.parent.children.length < 20 ? 1 : 0;
+
+        });
+        t1.selectAll("rect").call(rect);
+        t2.selectAll("rect").call(rect);
+
+        // Remove the old node when the transition is finished.
+        t1.remove().each("end", function() {
             svg.style("shape-rendering", null);
+            transitioning = false;
+        });
 
-            // Draw child nodes on top of parent nodes.
-            svg.selectAll(".depth").sort(function(a, b) {
-                return a.depth - b.depth;
-            });
+        currentRoot = d;
 
-            // Fade-in entering text.
-            g2.selectAll("text").style("fill-opacity", 0);
 
-            // Transition to the new view.
-            t1.selectAll("text").call(text).style("fill-opacity", 0);
-            t2.selectAll(".textChildren").call(text).style("fill-opacity", 1);
-            t2.selectAll(".textChild").call(textChild).style("fill-opacity", function(d) {
-                if(d.parent.parent.children.length>15) return 0;
-                return d.parent.children.length<20? 1: 0;
-            
-            });
-            t1.selectAll("rect").call(rect);
-            t2.selectAll("rect").call(rect);
 
-            // Remove the old node when the transition is finished.
-            t1.remove().each("end", function() {
-                svg.style("shape-rendering", null);
-                transitioning = false;
-            });
-            
-            currentRoot= d;
-
-            
-
-        }
+    }
         
         //search function
-
         var search_field = document.search_form.search_field;
         if(launch_search && search_field.value.length !== 0) {
             var new_node = common_ancestor(search_field.value);

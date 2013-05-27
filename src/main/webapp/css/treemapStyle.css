@@ -28,7 +28,7 @@ text {
     position: relative;
     width: 100%;
     min-width: 400px;
-    height: 2em;
+    height: 4em;
     padding-top: 1em;
     background-color: #EFEBA9;
 }
@@ -43,19 +43,24 @@ text {
 	font-size: smaller
 }
 
-.nodeLvl0 {
+.nodeLvl4 {
     font-size: larger;
     font-weight: bold;
+}
+
+.nodeLvl3 {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.nodeLvl2 {
+    font-size: large;
 }
 
 .nodeLvl1 {
     font-size: large;
 }
 
-.nodeLvl2 {
-    font-size: medium;
-}
-
-.nodeLvl3 {
-    font-size: medium;
+.nodeLvl0 {
+    font-size: large;
 }
