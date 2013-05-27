@@ -357,14 +357,14 @@ document.search_form.search_field.onkeypress = function() {
          */
         function mouseDown(e) {
             if (navigator.appName === 'Opera' && window.event.which === 3) {
-                transition(d.parent.parent);
+                if(d.parent) transition(d.parent);
             }
             else if (navigator.appName === 'Microsoft Internet Explorer'
                     && event.button === 2) {
-                transition(d.parent);
+                if(d.parent) transition(d.parent);
             }
             else if (navigator.appName === 'Netscape' && e.which === 3) {
-                transition(d.parent);
+                if(d.parent) transition(d.parent);
             }
         }
         
