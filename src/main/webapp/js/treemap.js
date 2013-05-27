@@ -63,13 +63,11 @@ var pad = 3, pas =1;
         d.depth = d.id.split(".").length -1;
     }
     if (d.children) {
-    	console.log(pad);
     	var padding= pad-pas*(treeDepth(d)+1);
     	padding <0? padding= 0: padding=padding;
       treemap.nodes({children: d.children});
       
       d.children.forEach(function(c) {
-      //treeDepth(c)< 3? console.log(c.name + " " + treeDepth(c) + " "+  treeDepth(c)%3): null;
         c.x = d.x + c.x * d.dx;
         c.y = d.y + c.y * d.dy;
         c.dx *= d.dx;
@@ -116,7 +114,6 @@ function getNodes(node_names, d) {
     var nodes = Array();
     if (isIn(node_names, d.name) || isIn(node_names, d.id)) {
         nodes = nodes.concat(d);
-        //console.log(d.id);
     }
     if (!d.children)
         return null;
@@ -184,22 +181,21 @@ for (i in radios) {
         
         accumulate(currentRoot);
         layout(currentRoot);
-        gOld.transition().duration(300).remove().each("end", function() {
-            svg.style("shape-rendering", null);
-            transitioning = false;
-        });
+        removeDisplay();
         display(currentRoot);
     };
 }
 
 document.search_form.search_button.onclick = function() {
     launch_search = true;
+     removeDisplay();
     display(currentRoot);
 };
 
 document.search_form.search_field.onkeypress = function() {
     if(window.event.keyCode === 13) {
         launch_search = true;
+         removeDisplay();
         display(currentRoot);
     }
 };
@@ -211,7 +207,6 @@ document.search_form.search_field.onkeypress = function() {
   * description : displays a node with its components
   */
   function display(d) {
-    //console.log(d.depth);
     // create attribute depth
     var g1 = svg.insert("g", ".grandparent")
         .datum(d.children)
@@ -222,7 +217,7 @@ document.search_form.search_field.onkeypress = function() {
         .data(d.children)
         .enter().append("g")
         .classed("children", true)
-        .attr("name", function(d) { console.log(d.name); return d.name ;})
+        .attr("name", function(d) { return d.name ;})
         .attr("id", function(d){return getId(d);})
         .on("click", function(d){d.children? transition(d): null;})
         .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; })
@@ -299,7 +294,6 @@ document.search_form.search_field.onkeypress = function() {
   
 
 	function transition(d) {
-		console.log(d + " " + treeDepth(d));
 		treeDepth(d)>0 ? (pad = 2, pas = 0.5):(pad = 3, pas = 1);
 	    layout(d);
         remove();

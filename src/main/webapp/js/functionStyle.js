@@ -1,3 +1,10 @@
+function removeDisplay(){
+	gOld.transition().duration(300).remove().each("end", function() {
+            svg.style("shape-rendering", null);
+            transitioning = false;
+        });
+}
+
 window.onresize = function (e) {
 
 	if(window.innerWidth>800){
@@ -13,10 +20,7 @@ window.onresize = function (e) {
 	svgTag.setAttribute("width", window.innerWidth);
 	svgTag.setAttribute("height", window.innerHeight*0.8);
 	treemap.ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
-	gOld.transition().duration(300).remove().each("end", function() {
-                svg.style("shape-rendering", null);
-                transitioning = false;
-            });
+	removeDisplay();
 	initialize(currentRoot);
 	//accumulate(currentRoot);
     layout(currentRoot);
