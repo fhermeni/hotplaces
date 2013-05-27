@@ -1,10 +1,17 @@
 window.onresize = function (e) {
+
 	if(window.innerWidth>800){
 	width = window.innerWidth - margin.left - margin.right;
     height =  window.innerHeight*0.8 - margin.top - margin.bottom;
+    x = d3.scale.linear()
+    .domain([0, width])
+    .range([0, width]);
+    y = d3.scale.linear()
+    .domain([0, height])
+    .range([0, height]);
     var svgTag= document.getElementById('svg');
 	svgTag.setAttribute("width", window.innerWidth);
-	svgTag.setAttribute("height", window.innerWidth/2);
+	svgTag.setAttribute("height", window.innerHeight*0.8);
 	treemap.ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
 	gOld.transition().duration(300).remove().each("end", function() {
                 svg.style("shape-rendering", null);
@@ -37,7 +44,7 @@ function contextualMenu(d) {
         depth++;
     }
     names.reverse();
-    str = names.join(".");
+    str = names.join(".") + " " + treeDepth(d);
     pop(str);
 }
 
