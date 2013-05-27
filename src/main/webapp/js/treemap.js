@@ -54,7 +54,6 @@ var pad = 3, pas =1;
   * of sibling was laid out in 1×1, we must rescale to fit using absolute
   * coordinates. This lets us use a viewport to zoom.
   */
-  // 
   function layout(d) {
 
     d.color = "#109D00";
@@ -63,7 +62,7 @@ var pad = 3, pas =1;
         d.depth = d.id.split(".").length -1;
     }
     if (d.children) {
-    	var padding= pad-pas*(treeDepth(d)+1);
+    	var padding= pad-pas*(d.depth+1);
     	padding <0? padding= 0: padding=padding;
       treemap.nodes({children: d.children});
       
@@ -87,17 +86,6 @@ var pad = 3, pas =1;
     }
   }
   
-
-
- 
- /*
-  * function
-  * parameters : node
-  * description : returns the depth of node given in parameters
-  */
-function treeDepth(d) {
-    return d.name === "g5k"? 0: d.id.split(".").length -1;
-}
   
   //Returns true if a string is an occurence of one of the array strings
   function isIn(array, str) {
@@ -294,7 +282,7 @@ document.search_form.search_field.onkeypress = function() {
   
 
 	function transition(d) {
-		treeDepth(d)>0 ? (pad = 2, pas = 0.5):(pad = 3, pas = 1);
+		d.depth>0 ? (pad = 2, pas = 0.5):(pad = 3, pas = 1);
 	    layout(d);
         remove();
         unHighLight(undefined);

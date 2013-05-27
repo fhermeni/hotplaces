@@ -1,5 +1,5 @@
 var req = new XMLHttpRequest();
-req.open('GET', "http://localhost:8080/webapp/coucou", false); 
+req.open('GET', "http://localhost:8080/webapp/server", false); 
 
 req.onreadystatechange=function()
   {
