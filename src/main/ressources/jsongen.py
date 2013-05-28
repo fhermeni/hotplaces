@@ -67,34 +67,19 @@ def jsonGen(root) :
 	json = '{ "name" : "' + root.name + '" '
 	if(root.name != "g5k"):
 		if root.children == []:
-			#root.vCPU = random.randint(1,tmp)
-
-			#root.vRAM = float(tmp2 * ratio)
-			#root.vRAM = random.randint(1,100)
-			#tmp4 += root.vRAM
-			#if(tmp4 >= root.pRAM):
-				#ressources libre
-			#	root.vRAM = 0
-			#	root.vDiskSpace = 0
-
-			#else:
-			#root.vDiskSpace = int(tmp3 * ratio)
-			#rcs free
 
 			json +=', "vCPU" : ' + str(root.vCPU) 
 			json +=', "vRAM" : ' + str(root.vRAM) 
 			json += ', "vDiskSpace" :' + str(root.vDiskSpace)
-			#json += ', "uuid" :' + str(root.uuid)
 		elif root.children[0].children == []:
 			json +=', "pCPU" : ' + str(root.pCPU)
-			#print(root.pCPU)
 			json +=', "pRAM" : ' + str(root.pRAM) 
 			json += ', "pDiskSpace" :' + str(root.pDiskSpace)
+
 	if root.children != []:
 		json += ', \n "children" : ['
 		for i in range(len(root.children)):
 			json += jsonGen(root.children[i]) + ', '
-			#print(root.children[i].vCPU)
 		json = json[:len(json)-2]
 		json += '] \n'
 	json += '}'

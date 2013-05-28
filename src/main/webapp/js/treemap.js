@@ -1,4 +1,5 @@
-
+var pad = 3, pas =1;
+var firstDisplay = true;
 /*
  * function
  * parameters : URI, callback function
@@ -6,14 +7,12 @@
  * a json structure and executes a callback function.
  */
 
-d3.json("http://localhost:8080/webapp/coucou", function(root) {
-  var nodes = [];
- 
-
   initialize(root);
   accumulate(root);
   layout(root);
   display(root);
+  currentRoot= root;
+  displayInfo(root);
  
   /*
    * function
@@ -25,6 +24,7 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
     root.dx = width;
     root.dy = height;
     root.depth = 0;
+    root.id = "g5k";
   }
  
  /*
@@ -36,9 +36,11 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
 
   function accumulate(d) {
     nodes.push(d);
-    return d.children
-        ?  d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
-        : 1;
+    if(d.children) {
+        return d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0);
+    } else {
+        return 1;
+    }
   }
  
  
@@ -53,36 +55,140 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
   * of sibling was laid out in 1×1, we must rescale to fit using absolute
   * coordinates. This lets us use a viewport to zoom.
   */
-  // 
   function layout(d) {
+
+    d.color = "#109D00";
+    if(d.parent) {
+        d.id = "" + d.parent.id + "." + d.name;
+        d.depth = d.id.split(".").length -1;
+    }
     if (d.children) {
+    	var padding= pad-pas*(d.depth+1);
+    	padding <0? padding= 0: padding=padding;
       treemap.nodes({children: d.children});
+      
       d.children.forEach(function(c) {
         c.x = d.x + c.x * d.dx;
         c.y = d.y + c.y * d.dy;
         c.dx *= d.dx;
         c.dy *= d.dy;
         c.parent = d;
+        });
+        
+      d.children.forEach(function(c) {
+
+        c.x +=padding;
+        c.y +=padding;
+        c.dx -=(padding*2);
+        c.dy -=(padding*2);
         
         layout(c);
       });
     }
   }
- 
- /*
-  * function
-  * parameters : node
-  * description : returns the depth of node given in parameters
-  */
- function treeDepth(d) {
-    var cpt=0;
-    var tmp=d;
-    while(tmp.parent) {
-        cpt++;
-        tmp = tmp.parent;
-    }
-    return cpt;
+  
+  
+  //Returns true if a string is an occurence of one of the array strings
+  function isIn(array, str) {
+      for(var i = 0; i< array.length; i++) {
+          if(str.indexOf(array[i]) !== -1 && array[i].length !== 0)
+              return true;
+      }
+      return false;
   }
+  
+  
+  //Returns the nodes that matches the node_names search
+function getNodes(node_names, d) {
+    var nodes = Array();
+    if (isIn(node_names, d.name) || isIn(node_names, d.id)) {
+        nodes = nodes.concat(d);
+    }
+    if (!d.children)
+        return null;
+    for (var i = 0; i < d.children.length; i++) {
+        var res = getNodes(node_names, d.children[i]);
+        if (res !== null)
+            nodes = nodes.concat(res);
+    }
+    return nodes;
+}
+  
+  //Return Lowest Common Ancestor (LCA)
+  function common_ancestor(keywords) {
+      var nodes = getNodes(keywords.replace(/\s/g, "").split(","), inaltered_Root);
+      
+      //if no result
+      if(nodes.length === 0) return null;
+      
+      //if only one result
+      if(nodes.length === 1) return nodes[0];
+      
+      var path = nodes[0].id.split(".");
+      var path_divergence = 0;
+      
+      //Compare nodes id to the path and spot where they differ
+      for(var i=0; i< path.length; i++) {
+          for(var j=1; j< nodes.length; j++) {
+              var id = nodes[j].id.split(".");
+              if(path[i] !== id[i]) {
+                  path_divergence = i;
+                  break;
+              }
+          }
+          if(path_divergence !== 0) break;
+      }
+      
+      //if first result is the LCA
+      if(path_divergence === 0) {
+          //return nodes[0].parent? nodes[0].parent : nodes[0];
+          return nodes[0];
+      }
+
+      //Get to the LCA from the root
+      var tmpNode = inaltered_Root;
+      for(var i =1; i< path_divergence ; i++) {
+          for(var j=0;j<tmpNode.children.length; j++) {
+              if(tmpNode.children[j].name === path[i]) {
+                  tmpNode = tmpNode.children[j];
+                  break;
+              }
+          }
+      }
+      
+      return tmpNode;
+  }
+  
+
+document.getElementById("count").checked = true;
+var radios = document.search_form.mode;
+for (i in radios) {
+    radios[i].onclick = function() {
+
+        this.value === "count"? treemap.value(function(d) { return 2000; })
+        : treemap.value(function(d) { return d.ressource; });
+        
+        accumulate(currentRoot);
+        layout(currentRoot);
+        removeDisplay();
+        display(currentRoot);
+    };
+}
+
+document.search_form.search_button.onclick = function() {
+    launch_search = true;
+     removeDisplay();
+    display(currentRoot);
+};
+
+document.search_form.search_field.onkeypress = function() {
+    if(window.event.keyCode === 13) {
+        launch_search = true;
+         removeDisplay();
+        display(currentRoot);
+    }
+};
+
  
  /*
   * function
@@ -90,40 +196,65 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
   * description : displays a node with its components
   */
   function display(d) {
-
     // create attribute depth
     var g1 = svg.insert("g", ".grandparent")
-        .datum(d)
+        .datum(d.children)
         .attr("class", "depth");
+        
+        gOld= g1;
  
     // sets parameters for "g" tag
     var g = g1.selectAll("g")
         .data(d.children)
         .enter().append("g")
         .classed("children", true)
-        .attr("name", function(d) { return d.depth ===3? d.parent.parent.name: (d.depth ===2? d.parent.name: (d.depth ===1? d.name: null)) ;})
-        .attr("id", function(d){return getId(d);})
+        .attr("name", function(d) { return d.name ;})
+        .attr("id", function(d){return d.id;})
         .on("click", function(d){d.children? transition(d): null;})
         .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; })
-        .on("mouseover", function(d) { onHover(this);});
 
-    // sets parameters for "rect" tag
+        ;
+
+
+    // sets parameters for parent "rect" tag
     g.append("rect")
         .attr("class", "parent")
-        .attr("stroke-width", "10")
+        //.attr("stroke-width", "1")
         .call(rect)
         .append("title")
-        .text(function(d) { return d.name; });
+        .text(function(d) { return d.name; })
+
+;
+
+
+    var g2 =  g.selectAll("g")
+        .data(function(d) { return d.children || [d]; })
+        .enter().append("g")
+        .classed("grandChild", true)
+        .attr("name", function(d) { return d.name ;})
+        .attr("id", function(d){return d.id;})
+        .call(rect)
+        .on("mouseover", function(d) {onHover(this.parentNode);})
+        
+;
+
+    g2.append("rect").attr("class", "grandChildren")
+       // .attr("stroke-width", "5")
+        .call(rect)
+;
         
 
-    // sets parameters for "child" classes
-    g.selectAll(".child")
+    g2.selectAll("g")
         .data(function(d) { return d.children || [d]; })
-        .enter().append("rect")
-        .attr("class", "child")
+        .enter()
+        .append("rect")
+        .attr("class",  "grandChild")
+        //.attr("stroke-width", "1")
         .call(rect)
-        .on("mouseout", function(d) {remove();})
-        .on("mouseover", function(d) {contextualMenu(d);});
+        .on("mouseout", function(d) {displayInfo(d);})
+        .on("mouseover", function(d) {displayAllInfos(d);})
+;
+
  
     // prints a text on a node
     g.append("text")
@@ -137,11 +268,13 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
         .data(function(d) { return d.children || [d]; })
         .enter().append("text")
         .attr("class", "textChild")
-        .text(function(d) { return x(d.dx)>30? d.name: null; })
+        //.text(function(d) { return x(d.dx)>30? d.name: ""; })
+        .text(function(d) { return d.name;})
         .attr("dy", ".75em")
         .attr("lengthAdjust", "spacingAndGlyphs")
         .call(textChild);
 
+        
  
     /*
      * function
@@ -149,45 +282,86 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
      * description : change root by given parameter, used for zoomin/zoomout
      */
     function transition(d) {
-        remove();
+        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
+        layout(d);
         unHighLight(undefined);
-            if (transitioning || !d)
-                return;
-            transitioning = true;
-            
-            var g2 = display(d),
-                    t1 = g1.transition().duration(300),
-                    t2 = g2.transition().duration(300);
+        if (transitioning || !d)
+            return;
+        transitioning = true;
+        removeDisplay();
+        //layout(d);
+        var g2 = display(d),
+                t1 = g1.transition().duration(300),
+                t2 = g2.transition().duration(300);
+                
+                console.log(g1);
+                console.log(gOld);
 
-            // Update the domain only after entering new elements.
-            x.domain([d.x, d.x + d.dx]);
-            y.domain([d.y, d.y + d.dy]);
 
-            // Enable anti-aliasing during the transition.
-            // Desabled for  more fluent transitions
+        // Update the domain only after entering new elements.
+        x.domain([d.x, d.x + d.dx]);
+        y.domain([d.y, d.y + d.dy]);
+
+        // Enable anti-aliasing during the transition.
+        // Desabled for  more fluent transitions
+        svg.style("shape-rendering", null);
+
+        // Draw child nodes on top of parent nodes.
+        svg.selectAll(".depth").sort(function(a, b) {
+            return a.depth - b.depth;
+        });
+
+        // Fade-in entering text.
+        g2.selectAll("text").style("fill-opacity", 0);
+
+        // Transition to the new view.
+        //t1.selectAll("text").call(text).style("fill-opacity", 0);
+        t2.selectAll(".textChildren").call(text).style("fill-opacity", 1);
+        t2.selectAll(".textChild").call(textChild).style("fill-opacity", function(d) {
+            if (d.parent.parent.children.length > 15)
+                return 0;
+            return d.parent.children.length < 20 ? 1 : 0;
+
+        });
+        //t1.selectAll("rect").call(rect);
+        t2.selectAll("rect").call(rect);
+
+        // Remove the old node when the transition is finished.
+        t1.remove().each("end", function() {
             svg.style("shape-rendering", null);
+            transitioning = false;
+        });
+        
+        
+        currentRoot = d;
+        displayInfo(d);
 
-            // Draw child nodes on top of parent nodes.
-            svg.selectAll(".depth").sort(function(a, b) {
-                return a.depth - b.depth;
-            });
 
-            // Fade-in entering text.
-            g2.selectAll("text").style("fill-opacity", 0);
-
-            // Transition to the new view.
-            t1.selectAll("text").call(text).style("fill-opacity", 0);
-            t2.selectAll(".textChildren").call(text).style("fill-opacity", 1);
-            t2.selectAll(".textChild").call(textChild).style("fill-opacity", 1);
-            t1.selectAll("rect").call(rect);
-            t2.selectAll("rect").call(rect);
-
-            // Remove the old node when the transition is finished.
-            t1.remove().each("end", function() {
-                svg.style("shape-rendering", null);
-                transitioning = false;
-            });
+    }
+        
+        // function for goback to root button
+        if(firstDisplay) {
+            document.search_form.rootButton.onclick = function() {
+                if(currentRoot.depth !== 0) {
+                    removeDisplay();
+                    transition(inaltered_Root);
+                }
+            }
         }
+        
+        //search function
+        var search_field = document.search_form.search_field;
+        if(launch_search && search_field.value.length !== 0) {
+            var new_node = common_ancestor(search_field.value);
+            search_field.value = "";
+            if(new_node !== null && new_node !== d) {
+                d = new_node;
+                transition(d);
+            }
+        }
+        launch_search = false;
+        
+
         
         /*
          * function
@@ -196,18 +370,18 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
          */
         function mouseDown(e) {
             if (navigator.appName === 'Opera' && window.event.which === 3) {
-                transition(d.parent.parent);
+                if(d.parent) transition(d.parent);
             }
             else if (navigator.appName === 'Microsoft Internet Explorer'
                     && event.button === 2) {
-                transition(d.parent);
+                if(d.parent) transition(d.parent);
             }
             else if (navigator.appName === 'Netscape' && e.which === 3) {
-                transition(d.parent);
+                if(d.parent) transition(d.parent);
             }
         }
         
-        
+        firstDisplay = false;
         document.onmousedown=mouseDown;
         return g;
   }
@@ -219,7 +393,9 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
   function text(text) {
     text.attr("x", function(d) { return x(d.x+d.dx/2) ; })
         .attr("y", function(d) { return y(d.y) + 6; })
-        .style("font-size",function(d) { return d.parent.children.length<20? "x-large": "medium";});
+        .style("font-size",function(d) { return d.parent.children.length<20? "x-large": "medium";})
+        
+;
   }
   
    /*
@@ -228,7 +404,9 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
     */
    function textChild(text) {
     text.attr("x", function(d) { return x(d.x) +6  ;})
-        .attr("y", function(d) { return y(d.y) + 6; });
+        .attr("y", function(d) { return y(d.y) + 6; })
+        .style("fill-opacity", function(d) {return d.parent.children.length<20? 1: 0;})
+;
   }
  
   /*
@@ -240,10 +418,11 @@ d3.json("http://localhost:8080/webapp/coucou", function(root) {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d) { return color(d.name); });
+        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'?  d.color : "#FFF" });
+
   }
   
   document.oncontextmenu=RightMouseDown;
   function RightMouseDown() { return false; } 
   
-});
+
