@@ -33,25 +33,23 @@ def makeCluster(id, nb):
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1))
-		node.ratio = 0.1
+		node.ratio = 2
 		node.pCPU =  random.randint(1,4)
 		node.pRAM = random.randint(1,100)
 		node.pDiskSpace = random.randint(100,10000)
 		tmp = node.pDiskSpace
 		#for x in range(10):
-		while(tmp>10 or len(node.children) < 20):
+		while(tmp>10 and len(node.children) < 20):
 			#node.children.append(Node("VM" + str(x+1)))
-			vm = Node("uuid" + str(uuid.uuid4()))
-			print(str(tmp))
-			rand = random.randint(10,tmp)
-			#print("boucle1 " + str(tmp) + ' ' + str(rand))
+			vm = Node(str(uuid.uuid4()))
+			if(tmp>10):
+				rand = random.randint(10,tmp)
 			while(tmp < rand and tmp > 10):
 				rand = random.randint(10,tmp)
-			#	print("boucle2 " + str(tmp) + ' ' + str(rand))
 
-			#print("sortieB2")	
 			vm.vDiskSpace = rand
-			tmp = tmp - rand
+			tmp = tmp - rand/node.ratio
+			node.children.append(vm)
 
 
 
