@@ -12,8 +12,12 @@
 
     <form id="search_form" name="search_form" onsubmit='return false;'>
     	<span id = "ressources">
-        <label><input id="size" type="radio" name="mode" value="size" > Size</label>
-        <label><input id = "count" type="radio" name="mode" value="count"> Count</label>
+        <select id = "ressources_select">
+	        <option value="CPU">CPU</option>
+	        <option value="RAM">RAM</option>
+	        <option value="Disk">Disk Space</option>
+	        <option value="Count" selected>Count</option>
+	    </select>
     	</span>
        
         

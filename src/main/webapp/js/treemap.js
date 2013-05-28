@@ -162,9 +162,11 @@ function getNodes(node_names, d) {
   }
   
 
-document.getElementById("count").checked = true;
-var radios = document.search_form.mode;
-for (i in radios) {
+var select = document.getElementById("ressources_select");
+select.onchange= function(){
+	console.log(select.options[select.selectedIndex].value);
+}
+/*for (i in radios) {
     radios[i].onclick = function() {
 
         this.value === "count"? treemap.value(function(d) { return 2000; })
@@ -174,8 +176,8 @@ for (i in radios) {
         layout(currentRoot);
         removeDisplay();
         display(currentRoot);
-    };
-}
+    };*/
+//}
 
 document.search_form.search_button.onclick = function() {
     launch_search = true;
