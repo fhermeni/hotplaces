@@ -3,6 +3,7 @@ import os
 import random
 import uuid
 
+
 class Node:
 
 	def __init__(self, name):
@@ -86,6 +87,7 @@ def printNode(root):
 			printNode(root.children[i])
 
 def jsonGen(root) :
+
 	
 	json = '{ "name" : "' + root.name + '" '
 	if(root.name != "g5k"):
@@ -102,6 +104,7 @@ def jsonGen(root) :
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
 			
+
 
 	if root.children != []:
 		json += ', \n "children" : ['

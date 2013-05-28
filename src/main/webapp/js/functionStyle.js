@@ -48,6 +48,7 @@ function displayAllInfos(d) {
         if(i === stop) str += "<br>&emsp; &emsp; &ensp; &#8594; &thinsp; ";
         str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
         if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
+
     }
     if(d.depth ===4){
 	    console.log(d.vRAM + " " + d.vCPU + " " + d.vDiskSpace + " " + d.parent.pCPU + " " + d.parent.rCPU);

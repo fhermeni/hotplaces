@@ -57,6 +57,7 @@ var firstDisplay = true;
   */
   function layout(d) {
 
+
     d.color = "#33cc33";
     if(d.parent) {
         d.id = "" + d.parent.id + "." + d.name;
@@ -234,15 +235,16 @@ document.search_form.search_field.onkeypress = function() {
         .attr("name", function(d) { return d.name ;})
         .attr("id", function(d){return d.id;})
         .call(rect)
-        .on("mouseover", function(d) {onHover(this.parentNode);})
-        
+        .on("mouseover", function(d) {onHover(this.parentNode);})        
 ;
 
     g2.append("rect").attr("class", "grandChildren")
        // .attr("stroke-width", "5")
         .call(rect)
 ;
+
         
+     
 
     g2.selectAll("g")
         .data(function(d) { return d.children || [d]; })
@@ -288,11 +290,12 @@ document.search_form.search_field.onkeypress = function() {
             return;
         transitioning = true;
         removeDisplay();
+
         var g2 = display(d),
                 t1 = g1.transition().duration(300),
                 t2 = g2.transition().duration(300);
                 
-                
+
 
 
         // Update the domain only after entering new elements.
