@@ -99,15 +99,15 @@ var firstDisplay = true;
   
   
   //Returns the nodes that matches the node_names search
-function getNodes(node_names, d) {
+function getNodes(regexp, d) {
     var nodes = Array();
-    if (isIn(node_names, d.name) || isIn(node_names, d.id)) {
+    if (regexp.test(d.name) || regexp.test(d.id) ) {
         nodes = nodes.concat(d);
     }
     if (!d.children)
         return null;
     for (var i = 0; i < d.children.length; i++) {
-        var res = getNodes(node_names, d.children[i]);
+        var res = getNodes(regexp, d.children[i]);
         if (res !== null)
             nodes = nodes.concat(res);
     }
@@ -116,7 +116,13 @@ function getNodes(node_names, d) {
   
   //Return Lowest Common Ancestor (LCA)
   function common_ancestor(keywords) {
-      var nodes = getNodes(keywords.replace(/\s/g, "").split(","), inaltered_Root);
+      keywords = keywords.replace(/(\,|\s|;)+/g, "|");
+      console.log(keywords);
+      var regexp = new RegExp(keywords, "i");
+      //var val = regex.test('Chaîne de caractères dans laquelle effectuer la recherche');
+      //
+      //var nodes = getNodes(keywords.replace(/\s/g, "").split(","), inaltered_Root);
+      var nodes = getNodes(regexp, inaltered_Root);
       
       //if no result
       if(nodes.length === 0) return null;
