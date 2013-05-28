@@ -11,26 +11,50 @@ class Node:
 		#on doit respecter le ration tel que v:p >= 1 jamais plus de ressources virtuelle que de physique
 
 		#self.ratio = self.pDiskSpace / self.vDiskSpace
-		self.pCPU = random.randint(20,100)#Ghz
-		#self.vCPU = self.pCPU - random.randint(1,10)#Ghz
-		equi = self.pCPU - random.randint(1,self.pCPU)
-		if(equi >= self.pCPU):
-			equi = self.pCPU - random.randint(1,self.pCPU)
-		self.vCPU = equi
-		self.pRAM = random.randint(1,20)#Go
-		self.vRAM = random.randint(1,20)#Go
-		self.pDiskSpace = random.randint(100,10000)#Go
-		self.vDiskSpace = random.randint(100,10000)#Go
-		#self.uuid =  uuid.uuid4()
-		#calculer et allouer l'espace en fonction des ressources physique disponible(en fonction du ratio)
+		#self.pCPU = random.randint(20,100)#nb CPU
+		#self.vCPU = self.pCPU - random.randint(1,10)#nb CPU
+		#equi = self.pCPU - random.randint(1,self.pCPU)
+		#if(equi >= self.pCPU):
+		#	equi = self.pCPU - random.randint(1,self.pCPU)
+		#self.vCPU = equi
+		#self.pRAM = random.randint(1,20)#Go
+		#self.vRAM = random.randint(1,20)#Go
+		#self.pDiskSpace = random.randint(100,10000)#Go
+		#self.vDiskSpace = random.randint(100,10000)#Go
+		self.pCPU = 0
+		self.pRAM = 0
+		self.pDiskSpace = 0
+		self.vCPU = 0
+		self.vRAM = 0
+		self.vDiskSpace = 0
 
 def makeCluster(id, nb):
 	cluster = Node(id)
+	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1))
-		for x in range(10):
+		node.ratio = 0.1
+		node.pCPU =  random.randint(1,4)
+		node.pRAM = random.randint(1,100)
+		node.pDiskSpace = random.randint(100,10000)
+		tmp = node.pDiskSpace
+		#for x in range(10):
+		while(tmp>10 or len(node.children) < 20):
 			#node.children.append(Node("VM" + str(x+1)))
-			node.children.append(Node("uuid" + str(uuid.uuid4())))
+			vm = Node("uuid" + str(uuid.uuid4()))
+			print(str(tmp))
+			rand = random.randint(10,tmp)
+			#print("boucle1 " + str(tmp) + ' ' + str(rand))
+			while(tmp < rand and tmp > 10):
+				rand = random.randint(10,tmp)
+			#	print("boucle2 " + str(tmp) + ' ' + str(rand))
+
+			#print("sortieB2")	
+			vm.vDiskSpace = rand
+			tmp = tmp - rand
+
+
+
 		cluster.children.append(node)
 	return cluster
 
@@ -41,15 +65,31 @@ def printNode(root):
 			printNode(root.children[i])
 
 def jsonGen(root) :
+	
 	json = '{ "name" : "' + root.name + '" '
 	if(root.name != "g5k"):
 		if root.children == []:
+			#root.vCPU = random.randint(1,tmp)
+
+			#root.vRAM = float(tmp2 * ratio)
+			#root.vRAM = random.randint(1,100)
+			#tmp4 += root.vRAM
+			#if(tmp4 >= root.pRAM):
+				#ressources libre
+			#	root.vRAM = 0
+			#	root.vDiskSpace = 0
+
+			#else:
+			#root.vDiskSpace = int(tmp3 * ratio)
+			#rcs free
+
 			json +=', "vCPU" : ' + str(root.vCPU) 
 			json +=', "vRAM" : ' + str(root.vRAM) 
 			json += ', "vDiskSpace" :' + str(root.vDiskSpace)
 			#json += ', "uuid" :' + str(root.uuid)
 		elif root.children[0].children == []:
-			json +=', "pCPU" : ' + str(root.pCPU) 
+			json +=', "pCPU" : ' + str(root.pCPU)
+			#print(root.pCPU)
 			json +=', "pRAM" : ' + str(root.pRAM) 
 			json += ', "pDiskSpace" :' + str(root.pDiskSpace)
 	if root.children != []:
