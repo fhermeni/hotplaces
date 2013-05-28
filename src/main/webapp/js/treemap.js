@@ -200,6 +200,8 @@ document.search_form.search_field.onkeypress = function() {
     var g1 = svg.insert("g", ".grandparent")
         .datum(d.children)
         .attr("class", "depth");
+        
+        gOld= g1;
  
     // sets parameters for "g" tag
     var g = g1.selectAll("g")
@@ -272,7 +274,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("lengthAdjust", "spacingAndGlyphs")
         .call(textChild);
 
-        gOld= g1;
+        
  
     /*
      * function
@@ -282,15 +284,18 @@ document.search_form.search_field.onkeypress = function() {
     function transition(d) {
         d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
         layout(d);
-        displayInfo(d);
         unHighLight(undefined);
         if (transitioning || !d)
             return;
         transitioning = true;
+        removeDisplay();
         //layout(d);
         var g2 = display(d),
                 t1 = g1.transition().duration(300),
                 t2 = g2.transition().duration(300);
+                
+                console.log(g1);
+                console.log(gOld);
 
 
         // Update the domain only after entering new elements.
@@ -310,7 +315,7 @@ document.search_form.search_field.onkeypress = function() {
         g2.selectAll("text").style("fill-opacity", 0);
 
         // Transition to the new view.
-        t1.selectAll("text").call(text).style("fill-opacity", 0);
+        //t1.selectAll("text").call(text).style("fill-opacity", 0);
         t2.selectAll(".textChildren").call(text).style("fill-opacity", 1);
         t2.selectAll(".textChild").call(textChild).style("fill-opacity", function(d) {
             if (d.parent.parent.children.length > 15)
@@ -318,7 +323,7 @@ document.search_form.search_field.onkeypress = function() {
             return d.parent.children.length < 20 ? 1 : 0;
 
         });
-        t1.selectAll("rect").call(rect);
+        //t1.selectAll("rect").call(rect);
         t2.selectAll("rect").call(rect);
 
         // Remove the old node when the transition is finished.
@@ -326,8 +331,11 @@ document.search_form.search_field.onkeypress = function() {
             svg.style("shape-rendering", null);
             transitioning = false;
         });
-
+        
+        
         currentRoot = d;
+        displayInfo(d);
+
 
     }
         
@@ -348,7 +356,6 @@ document.search_form.search_field.onkeypress = function() {
             search_field.value = "";
             if(new_node !== null && new_node !== d) {
                 d = new_node;
-                currentRoot = d;
                 transition(d);
             }
         }
