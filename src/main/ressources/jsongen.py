@@ -27,32 +27,51 @@ class Node:
 		self.vCPU = 0
 		self.vRAM = 0
 		self.vDiskSpace = 0
+		self.ratioCPU= 0
+		self.ratioRAM=0
+		self.ratioDiskSpace=0
+		
 
 def makeCluster(id, nb):
 	cluster = Node(id)
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1))
-		node.ratio = 2
-		node.pCPU =  random.randint(1,4)
-		node.pRAM = random.randint(1,100)
-		node.pDiskSpace = random.randint(100,10000)
-		tmp = node.pDiskSpace
-		#for x in range(10):
-		while(tmp>10 and len(node.children) < 20):
-			#node.children.append(Node("VM" + str(x+1)))
+		node.ratioDiskSpace = random.randint(1,16)
+		node.ratioRAM= random.randint(1,16)
+		node.ratioCPU= random.randint(1,16)
+		node.pCPU =tmpCPU =  random.randint(1,32)
+		node.pRAM =tmpRAM= random.randint(1024,65536)
+		node.pDiskSpace= tmpDisk = random.randint(100000,100000000)
+		
+		while(tmpCPU>1.0/node.ratioCPU and tmpRAM>1.0/node.ratioRAM and tmpDisk >1.0/node.ratioDiskSpace and len(node.children) < 20):
 			vm = Node(str(uuid.uuid4()))
-			if(tmp>10):
-				rand = random.randint(10,tmp)
-			while(tmp < rand and tmp > 10):
-				rand = random.randint(10,tmp)
-
-			vm.vDiskSpace = rand
-			tmp = tmp - rand/node.ratio
+			#add random virtual ressources
+			print('cpu ' + str(tmpCPU* node.ratioCPU))
+			print('RAM ' + str(tmpRAM*node.ratioRAM))
+			vm.vRAM = random.randint(1,int(tmpRAM*node.ratioRAM))
+			vm.vDiskSpace = random.randint(1, int(tmpDisk*node.ratioDiskSpace))
+			vm.vCPU= random.randint(1, int(tmpCPU* node.ratioCPU))
+			#remove ressource of new vm at node
+			tmpRAM = tmpRAM - vm.vRAM*1.0/node.ratioRAM
+			#print('tmp ' + str(tmpCPU))
+			#print('vcpu ' + str(vm.vCPU))
+			#print('ratio ' + str(node.ratioCPU)) 
+			#print('vcpu/ratio ' + str(vm.vCPU*1.0/ node.ratioCPU))
+			tmpDisk = tmpDisk - vm.vDiskSpace*1.0 /node.ratioDiskSpace
+			tmpCPU = tmpCPU - vm.vCPU*1.0/ node.ratioCPU
+			#print(tmpCPU)
+			#add vm at node
 			node.children.append(vm)
-		if(tmp>0):
+		#add space of free ressources
+		if(tmpDisk >0 or tmpRAM>0 or tmpCPU>0):
+			#add "vm" free
 			free = Node("free")
-			free.vDiskSpace = tmp* node.ratio
+			#add free ressources
+			free.vDiskSpace = tmpDisk * node.ratioDiskSpace
+			free.vRAM = tmpRAM * node.ratioRAM
+			free.vCPU = tmpCPU * node.ratioCPU
+			
 			node.children.append(free)
 
 
@@ -79,6 +98,10 @@ def jsonGen(root) :
 			json +=', "pCPU" : ' + str(root.pCPU)
 			json +=', "pRAM" : ' + str(root.pRAM) 
 			json += ', "pDiskSpace" :' + str(root.pDiskSpace)
+			json +=', "rCPU" : ' + str(root.ratioCPU)
+			json +=', "rRAM" : ' + str(root.ratioRAM)
+			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
+			
 
 	if root.children != []:
 		json += ', \n "children" : ['

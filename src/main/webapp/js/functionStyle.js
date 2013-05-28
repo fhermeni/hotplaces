@@ -40,12 +40,17 @@ window.onresize = function(e) {
 function displayAllInfos(d) {
 
     str = "&thinsp; Current Root : ";
+    
     tabNodes = d.id.split(".");
+    
     var stop = currentRoot.depth + 1;
     for(var i=0; i<tabNodes.length; i++) {
         if(i === stop) str += "<br>&emsp; &emsp; &ensp; &#8594; &thinsp; ";
         str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
         if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
+    }
+    if(d.depth ===4){
+	    console.log(d.vRAM + " " + d.vCPU + " " + d.vDiskSpace + " " + d.parent.pCPU + " " + d.parent.rCPU);
     }
     document.getElementById("information").innerHTML = str;
 
