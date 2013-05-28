@@ -418,6 +418,8 @@ document.search_form.search_field.onkeypress = function() {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
+        .attr("rx", function(d){ return Math.min((x(d.x + d.dx) - x(d.x))/10, (y(d.y + d.dy) - y(d.y))/10);})
+        .attr("ry", function(d){ return Math.min((x(d.x + d.dx) - x(d.x))/10, (y(d.y + d.dy) - y(d.y))/10);})
         .style("fill", function(d){ return this.getAttribute('class')==='grandChild'?  d.color : "#FFF" });
 
   }
