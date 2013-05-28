@@ -42,7 +42,7 @@ function displayAllInfos(d) {
     str = "&thinsp; Current Root : ";
     
     tabNodes = d.id.split(".");
-    
+
     var stop = currentRoot.depth + 1;
     for(var i=0; i<tabNodes.length; i++) {
         if(i === stop) str += "<br>&emsp; &emsp; &ensp; &#8594; &thinsp; ";
@@ -70,6 +70,7 @@ function displayInfo(d) {
         if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
     }
     document.getElementById("information").innerHTML = str;
+
 }
 
 
@@ -159,6 +160,7 @@ function highLight(div) {
             //in safari and chrome
             var current = div.childNodes[i];
             for (var j = 1; j < current.childNodes.length; j++) {
+
 
 
                 var color = current.childNodes[j].style.fill;

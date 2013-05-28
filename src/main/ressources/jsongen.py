@@ -33,6 +33,7 @@ class Node:
 		self.ratioDiskSpace=0
 		
 
+
 def makeCluster(id, nb):
 	cluster = Node(id)
 	#print(cluster.pCPU)
@@ -88,6 +89,7 @@ def printNode(root):
 
 def jsonGen(root) :
 
+
 	
 	json = '{ "name" : "' + root.name + '" '
 	if(root.name != "g5k"):
@@ -104,6 +106,7 @@ def jsonGen(root) :
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
 			
+
 
 
 	if root.children != []:

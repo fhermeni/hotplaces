@@ -59,6 +59,7 @@ var firstDisplay = true;
 
 
     d.color = "#33cc33";
+
     if(d.parent) {
         d.id = "" + d.parent.id + "." + d.name;
         d.depth = d.id.split(".").length -1;
@@ -225,6 +226,7 @@ document.search_form.search_field.onkeypress = function() {
         .append("title")
         .text(function(d) { return d.depth<4? d.name: null; })
 
+
 ;
 
 
@@ -235,7 +237,8 @@ document.search_form.search_field.onkeypress = function() {
         .attr("name", function(d) { return d.name ;})
         .attr("id", function(d){return d.id;})
         .call(rect)
-        .on("mouseover", function(d) {onHover(this.parentNode);})        
+        .on("mouseover", function(d) {onHover(this.parentNode);})
+        
 ;
 
     g2.append("rect").attr("class", "grandChildren")
@@ -271,6 +274,7 @@ document.search_form.search_field.onkeypress = function() {
         .enter().append("text")
         .attr("class", "textChild")
         .text(function(d) { return d.depth<4? d.name : null;})
+
         .attr("dy", ".75em")
         .attr("lengthAdjust", "spacingAndGlyphs")
         .call(textChild);
@@ -290,6 +294,7 @@ document.search_form.search_field.onkeypress = function() {
             return;
         transitioning = true;
         removeDisplay();
+
 
         var g2 = display(d),
                 t1 = g1.transition().duration(300),
@@ -336,7 +341,6 @@ document.search_form.search_field.onkeypress = function() {
         currentRoot = d;
         displayInfo(d);
 
-
     }
         
         // function for goback to root button
@@ -348,6 +352,10 @@ document.search_form.search_field.onkeypress = function() {
                 }
             }
         }
+        
+
+        
+
         
         //search function
         var search_field = document.search_form.search_field;
@@ -419,6 +427,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
         .style("fill", function(d){ return this.getAttribute('class')==='grandChild'? (this.parentNode.getAttribute('name')==='free'?  "#cd853f" :d.color ): "#FFF" });
+
 
   }
   
