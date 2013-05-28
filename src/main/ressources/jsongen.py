@@ -50,6 +50,10 @@ def makeCluster(id, nb):
 			vm.vDiskSpace = rand
 			tmp = tmp - rand/node.ratio
 			node.children.append(vm)
+		if(tmp>0):
+			free = Node("free")
+			free.vDiskSpace = tmp* node.ratio
+			node.children.append(free)
 
 
 

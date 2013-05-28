@@ -57,7 +57,7 @@ var firstDisplay = true;
   */
   function layout(d) {
 
-    d.color = "#109D00";
+    d.color = "#33cc33";
     if(d.parent) {
         d.id = "" + d.parent.id + "." + d.name;
         d.depth = d.id.split(".").length -1;
@@ -222,7 +222,7 @@ document.search_form.search_field.onkeypress = function() {
         //.attr("stroke-width", "1")
         .call(rect)
         .append("title")
-        .text(function(d) { return d.name; })
+        .text(function(d) { return d.depth<4? d.name: null; })
 
 ;
 
@@ -260,7 +260,7 @@ document.search_form.search_field.onkeypress = function() {
     g.append("text")
         .attr("dy", "1.75em")
         .attr("class", "textChildren")
-        .text(function(d) { return d.name; })
+        .text(function(d) { return d.depth<4? d.name : null; })
         .call(text);
     
     // prints text on children nodes
@@ -268,8 +268,7 @@ document.search_form.search_field.onkeypress = function() {
         .data(function(d) { return d.children || [d]; })
         .enter().append("text")
         .attr("class", "textChild")
-        //.text(function(d) { return x(d.dx)>30? d.name: ""; })
-        .text(function(d) { return d.name;})
+        .text(function(d) { return d.depth<4? d.name : null;})
         .attr("dy", ".75em")
         .attr("lengthAdjust", "spacingAndGlyphs")
         .call(textChild);
@@ -289,13 +288,11 @@ document.search_form.search_field.onkeypress = function() {
             return;
         transitioning = true;
         removeDisplay();
-        //layout(d);
         var g2 = display(d),
                 t1 = g1.transition().duration(300),
                 t2 = g2.transition().duration(300);
                 
-                console.log(g1);
-                console.log(gOld);
+                
 
 
         // Update the domain only after entering new elements.
@@ -418,7 +415,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'?  d.color : "#FFF" });
+        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'? (this.parentNode.getAttribute('name')==='free'?  "#cd853f" :d.color ): "#FFF" });
 
   }
   
