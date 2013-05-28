@@ -1,5 +1,5 @@
 var pad = 3, pas =1;
-
+var firstDisplay = true;
 /*
  * function
  * parameters : URI, callback function
@@ -329,9 +329,17 @@ document.search_form.search_field.onkeypress = function() {
 
         currentRoot = d;
 
-
-
     }
+        
+        // function for goback to root button
+        if(firstDisplay) {
+            document.search_form.rootButton.onclick = function() {
+                if(currentRoot.depth !== 0) {
+                    removeDisplay();
+                    transition(inaltered_Root);
+                }
+            }
+        }
         
         //search function
         var search_field = document.search_form.search_field;
@@ -366,7 +374,7 @@ document.search_form.search_field.onkeypress = function() {
             }
         }
         
-        
+        firstDisplay = false;
         document.onmousedown=mouseDown;
         return g;
   }
