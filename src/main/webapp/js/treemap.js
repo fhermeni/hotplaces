@@ -116,9 +116,11 @@ function getNodes(regexp, d) {
   
   //Return Lowest Common Ancestor (LCA)
   function common_ancestor(keywords) {
-      keywords = keywords.replace(/^/, "^").replace(/$/, "$");
-      keywords = keywords.replace(/(\,|\s|;)+/g, "$|^");
-      keywords = keywords.replace(/\*/g, "(\\S)*");
+      keywords = keywords.replace(/^/, "^").replace(/$/, "$")
+              .replace(/(\,|\s|;)+/g, "$|^")
+              .replace(/\*/g, "(\\S)*")
+              .replace(/\?/g, "\\S")
+      ;
       console.log(keywords);
       var regexp = new RegExp(keywords, "i");
 
