@@ -1,8 +1,12 @@
 var root;
 var currentRoot;
 var inaltered_Root;
-
+var pad = 3, pas =1;
+var firstDisplay = true;
 var nodes= [] ;
+var freeIsDisplaying = false;
+var colorFree= "#cd853f";
+var colorNoProb= "#33cc33";
 
 
 var gOld;
@@ -44,7 +48,7 @@ var treemap = d3.layout.treemap()
     //.sort(function(a, b) { return a.value - b.value; })
     .ratio(height / width  * (1 + Math.sqrt(5)))
     .round(false)
-    .value(function(d) { return d.ressources? d.ressource : 1000 ; });
+    .value(function(d) { return somChildrenValue(d); });
 
 /*
 **variable: svg

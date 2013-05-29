@@ -1,5 +1,4 @@
-var pad = 3, pas =1;
-var firstDisplay = true;
+
 /*
  * function
  * parameters : URI, callback function
@@ -57,8 +56,8 @@ var firstDisplay = true;
   */
   function layout(d) {
 
-
-    d.color = "#33cc33";
+	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
+    
 
     if(d.parent) {
         d.id = "" + d.parent.id + "." + d.name;
@@ -162,15 +161,11 @@ function getNodes(node_names, d) {
   }
   
 
-var select = document.getElementById("ressources_select");
-select.onchange= function(){
-	console.log(select.options[select.selectedIndex].value);
-}
+
 /*for (i in radios) {
     radios[i].onclick = function() {
 
-        this.value === "count"? treemap.value(function(d) { return 2000; })
-        : treemap.value(function(d) { return d.ressource; });
+        
         
         accumulate(currentRoot);
         layout(currentRoot);
@@ -289,8 +284,7 @@ document.search_form.search_field.onkeypress = function() {
      * description : change root by given parameter, used for zoomin/zoomout
      */
     function transition(d) {
-        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
-        layout(d);
+        
         unHighLight(undefined);
         if (transitioning || !d)
             return;
@@ -308,6 +302,9 @@ document.search_form.search_field.onkeypress = function() {
         // Update the domain only after entering new elements.
         x.domain([d.x, d.x + d.dx]);
         y.domain([d.y, d.y + d.dy]);
+        
+        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
+        layout(d);
 
         // Enable anti-aliasing during the transition.
         // Desabled for  more fluent transitions
@@ -342,6 +339,7 @@ document.search_form.search_field.onkeypress = function() {
         
         currentRoot = d;
         displayInfo(d);
+        console.log(d);
 
     }
         
@@ -371,6 +369,37 @@ document.search_form.search_field.onkeypress = function() {
         }
         launch_search = false;
         
+        
+        /*
+        *change treemap organisation depending of ressources's type selected
+        *call when select item has changed
+        */
+        var select = document.getElementById("ressources_select");
+        select.onchange= function(){
+	        var value = select.options[select.selectedIndex].value;
+	        value === 'Count'? document.getElementById("displayFreeSpace").setAttribute('disabled') :  document.getElementById("displayFreeSpace").removeAttribute('disabled');
+	        treemap.value(function(d){
+	        		        return d.name==='free'? somChildrenValue(d)*freeIsDisplaying :somChildrenValue(d);
+	        })
+	        transition(currentRoot);
+	        }
+	        
+	        
+	        
+	    var displayFreeSpace = document.getElementById("displayFreeSpace");
+	    displayFreeSpace.onclick= function(){
+	    	
+		    treemap.value(function(d){return d.children? d.value : (d.name=== "free"? (freeIsDisplaying? getGoodRessources(d): 0): d.value) });
+		    freeIsDisplaying = !freeIsDisplaying;
+		    freeIsDisplaying? displayFreeSpace.value="hidde free ressource": displayFreeSpace.value="display free ressource"
+		    
+		    transition(currentRoot);
+		    	
+
+	    }
+	    
+
+	    	
 
         
         /*
@@ -428,10 +457,31 @@ document.search_form.search_field.onkeypress = function() {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'? (this.parentNode.getAttribute('name')==='free'?  "#cd853f" :d.color ): "#FFF" });
+        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'? d.color : "#FFF" });
 
 
   }
+  
+  function somChildrenValue(d){
+	  var som = 0;
+	  
+	  d.children? d.children.forEach(function(c) { som = som + somChildrenValue(c) }) : som += getGoodRessources(d);
+	  return som;
+  }
+  
+	function getGoodRessources(d){
+		var select = document.getElementById("ressources_select");
+		var typeOfRessources= select.options[select.selectedIndex].value;
+		return typeOfRessources === "Count"? 
+								(d.name==='free'? 0:1)
+								: (typeOfRessources === "RAM"?
+														d.RAM
+														:(typeOfRessources === "CPU"?
+																				d.CPU
+																				:(typeOfRessources=== "Disk"?
+																											d.DiskSpace
+																										:1)));
+	}
   
   document.oncontextmenu=RightMouseDown;
   function RightMouseDown() { return false; } 

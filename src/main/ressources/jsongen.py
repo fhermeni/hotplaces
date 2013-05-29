@@ -39,20 +39,20 @@ def makeCluster(id, nb):
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1))
-		node.ratioDiskSpace = random.randint(1,16)
-		node.ratioRAM= random.randint(1,16)
+		node.ratioDiskSpace = random.randint(1,5)
+		node.ratioRAM= random.randint(1,5)
 		node.ratioCPU= random.randint(1,16)
 		node.pCPU =tmpCPU =  random.randint(1,32)
 		node.pRAM =tmpRAM= random.randint(1024,65536)
-		node.pDiskSpace= tmpDisk = random.randint(100000,100000000)
+		node.pDiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
-		while(tmpCPU>1.0/node.ratioCPU and tmpRAM>1.0/node.ratioRAM and tmpDisk >1.0/node.ratioDiskSpace and len(node.children) < 20):
+		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
 			vm = Node(str(uuid.uuid4()))
 			#add random virtual ressources
 			print('cpu ' + str(tmpCPU* node.ratioCPU))
 			print('RAM ' + str(tmpRAM*node.ratioRAM))
 			vm.vRAM = random.randint(1,int(tmpRAM*node.ratioRAM))
-			vm.vDiskSpace = random.randint(1, int(tmpDisk*node.ratioDiskSpace))
+			vm.vDiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
 			vm.vCPU= random.randint(1, int(tmpCPU* node.ratioCPU))
 			#remove ressource of new vm at node
 			tmpRAM = tmpRAM - vm.vRAM*1.0/node.ratioRAM
@@ -95,13 +95,13 @@ def jsonGen(root) :
 	if(root.name != "g5k"):
 		if root.children == []:
 
-			json +=', "vCPU" : ' + str(root.vCPU) 
-			json +=', "vRAM" : ' + str(root.vRAM) 
-			json += ', "vDiskSpace" :' + str(root.vDiskSpace)
+			json +=', "CPU" : ' + str(root.vCPU) 
+			json +=', "RAM" : ' + str(root.vRAM) 
+			json += ', "DiskSpace" :' + str(root.vDiskSpace)
 		elif root.children[0].children == []:
-			json +=', "pCPU" : ' + str(root.pCPU)
-			json +=', "pRAM" : ' + str(root.pRAM) 
-			json += ', "pDiskSpace" :' + str(root.pDiskSpace)
+			json +=', "CPU" : ' + str(root.pCPU)
+			json +=', "RAM" : ' + str(root.pRAM) 
+			json += ', "DiskSpace" :' + str(root.pDiskSpace)
 			json +=', "rCPU" : ' + str(root.ratioCPU)
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)

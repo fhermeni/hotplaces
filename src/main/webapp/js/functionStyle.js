@@ -16,6 +16,8 @@ window.onresize = function(e) {
         y = d3.scale.linear()
                 .domain([0, height])
                 .range([0, height]);
+        pas=1;
+        pad= 4;
         var svgTag = document.getElementById('svg');
         svgTag.setAttribute("width", window.innerWidth);
         svgTag.setAttribute("height", window.innerHeight * 0.8);
@@ -31,6 +33,8 @@ window.onresize = function(e) {
 
 
 }
+
+
 
 
 /*function:
@@ -49,9 +53,6 @@ function displayAllInfos(d) {
         str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
         if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
 
-    }
-    if(d.depth ===4){
-	    console.log(d.vRAM + " " + d.vCPU + " " + d.vDiskSpace + " " + d.parent.pCPU + " " + d.parent.rCPU);
     }
     document.getElementById("information").innerHTML = str;
 
