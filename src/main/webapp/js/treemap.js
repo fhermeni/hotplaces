@@ -116,15 +116,16 @@ function getNodes(regexp, d) {
   
   //Return Lowest Common Ancestor (LCA)
   function common_ancestor(keywords) {
+      //Construct the regexp corresponding to keywords
       keywords = keywords.replace(/^/, "^").replace(/$/, "$")
               .replace(/(\,|\s|;)+/g, "$|^")
               .replace(/\*/g, "(\\S)*")
               .replace(/\?/g, "\\S")
       ;
-      console.log(keywords);
+      //console.log(keywords);
       var regexp = new RegExp(keywords, "i");
 
-      //var nodes = getNodes(keywords.replace(/\s/g, "").split(","), inaltered_Root);
+      //get the search result
       var nodes = getNodes(regexp, inaltered_Root);
       
       //if no result
@@ -149,10 +150,7 @@ function getNodes(regexp, d) {
       }
       
       //if first result is the LCA
-      if(path_divergence === 0) {
-          //return nodes[0].parent? nodes[0].parent : nodes[0];
-          return nodes[0];
-      }
+      if(path_divergence === 0) return nodes[0];
 
       //Get to the LCA from the root
       var tmpNode = inaltered_Root;
