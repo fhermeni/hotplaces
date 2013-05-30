@@ -36,6 +36,14 @@
             <name>project</name>
             <url>file:${project.basedir}/repository</url>
         </repository>
+        <repository>
+            <id>btrp-releases</id>
+            <url>http://btrp.inria.fr/repos/releases</url>
+        </repository>
+        <repository>
+            <id>btrp-snapshots</id>
+            <url>http://btrp.inria.fr/repos/snapshot-releases</url>
+        </repository>
     </repositories>
     
     <!-- dependance jar distant -->
@@ -67,6 +75,11 @@
             <artifactId>servlet-api</artifactId>
             <version>3.0-alpha-1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>btrplace</groupId>
+            <artifactId>solver-bundle</artifactId>
+            <version>0.29</version>
         </dependency>
     </dependencies>
     
