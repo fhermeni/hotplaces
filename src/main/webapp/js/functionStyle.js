@@ -52,10 +52,31 @@ function displayAllInfos(d) {
         str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
         if(i !== tabNodes.length-1 && i !== 3) str += ".";
         } else {
+            var ram = d.RAM;
+            var disk = d.DiskSpace;
+            var unit = 0;
+            while(ram >= 1024 && unit < 2) {
+                ram /= 1024;
+                unit++;
+            }
+            var ram_unit = "MB";
+            if(unit === 1) ram_unit = "GB";
+            if(unit === 2) ram_unit = "TB";
+            
+            unit = 0;
+            while(disk >= 1024 && unit < 3) {
+                disk /= 1024;
+                unit++;
+            }
+            var disk_unit = "MB";
+            if(unit === 1) disk_unit = "GB";
+            if(unit === 2) disk_unit = "TB";
+            if(unit === 3) disk_unit = "PB";
+            
             str += '<br> &thinsp; VM : <span class="nodeLv4">' + tabNodes[i] + '</span>';
-            str += "<br> &thinsp; Ram : " + d.RAM + "MB"
+            str += "<br> &thinsp; Ram : " + Math.floor(ram) + ram_unit
                     + " | CPUs : " + d.CPU
-                    + " | DiskSpace : " + d.DiskSpace + "MB"
+                    + " | DiskSpace : " + Math.floor(disk) + disk_unit
             ;
         }
 
