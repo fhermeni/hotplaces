@@ -469,26 +469,28 @@ document.search_form.search_field.onkeypress = function() {
 
   }
   
-  function somChildrenValue(d){
-	  var som = 0;
-	  
-	  d.children? d.children.forEach(function(c) { som = som + somChildrenValue(c) }) : som += getGoodRessources(d);
-	  return som;
-  }
+function somChildrenValue(d) {
+    var som = 0;
+
+    d.children ? d.children.forEach(function(c) {
+        som = som + somChildrenValue(c)
+    }) : som += getGoodRessources(d);
+    return som;
+}
   
-	function getGoodRessources(d){
-		var select = document.getElementById("ressources_select");
-		var typeOfRessources= select.options[select.selectedIndex].value;
-		return typeOfRessources === "Count"? 
-								(d.name==='free'? 0:1)
-								: (typeOfRessources === "RAM"?
-														d.RAM
-														:(typeOfRessources === "CPU"?
-																				d.CPU
-																				:(typeOfRessources=== "Disk"?
-																											d.DiskSpace
-																										:1)));
-	}
+function getGoodRessources(d) {
+    var select = document.getElementById("ressources_select");
+    var typeOfRessources = select.options[select.selectedIndex].value;
+    return typeOfRessources === "Count" ?
+            (d.name === 'free' ? 0 : 1)
+            : (typeOfRessources === "RAM" ?
+            d.RAM
+            : (typeOfRessources === "CPU" ?
+            d.CPU
+            : (typeOfRessources === "Disk" ?
+            d.DiskSpace
+            : 1)));
+}
   
   document.oncontextmenu=RightMouseDown;
   function RightMouseDown() { return false; } 

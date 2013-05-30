@@ -53,6 +53,10 @@ function displayAllInfos(d) {
         if(i !== tabNodes.length-1 && i !== 3) str += ".";
         } else {
             str += '<br> &thinsp; VM : <span class="nodeLv4">' + tabNodes[i] + '</span>';
+            str += "<br> &thinsp; Ram : " + d.RAM + "MB"
+                    + " | CPUs : " + d.CPU
+                    + " | DiskSpace : " + d.DiskSpace + "MB"
+            ;
         }
 
     }
