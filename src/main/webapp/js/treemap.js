@@ -100,15 +100,15 @@
   
   
   //Returns the nodes that matches the node_names search
-function getNodes(node_names, d) {
+function getNodes(regexp, d) {
     var nodes = Array();
-    if (isIn(node_names, d.name) || isIn(node_names, d.id)) {
+    if (regexp.test(d.name) || regexp.test(d.id) ) {
         nodes = nodes.concat(d);
     }
     if (!d.children)
         return null;
     for (var i = 0; i < d.children.length; i++) {
-        var res = getNodes(node_names, d.children[i]);
+        var res = getNodes(regexp, d.children[i]);
         if (res !== null)
             nodes = nodes.concat(res);
     }
@@ -117,7 +117,17 @@ function getNodes(node_names, d) {
   
   //Return Lowest Common Ancestor (LCA)
   function common_ancestor(keywords) {
-      var nodes = getNodes(keywords.replace(/\s/g, "").split(","), inaltered_Root);
+      //Construct the regexp corresponding to keywords
+      keywords = keywords.replace(/^/, "^").replace(/$/, "$")
+              .replace(/(\,|\s|;)+/g, "$|^")
+              .replace(/\*/g, "(\\S)*")
+              .replace(/\?/g, "\\S")
+      ;
+      //console.log(keywords);
+      var regexp = new RegExp(keywords, "i");
+
+      //get the search result
+      var nodes = getNodes(regexp, inaltered_Root);
       
       //if no result
       if(nodes.length === 0) return null;
@@ -141,10 +151,7 @@ function getNodes(node_names, d) {
       }
       
       //if first result is the LCA
-      if(path_divergence === 0) {
-          //return nodes[0].parent? nodes[0].parent : nodes[0];
-          return nodes[0];
-      }
+      if(path_divergence === 0) return nodes[0];
 
       //Get to the LCA from the root
       var tmpNode = inaltered_Root;
