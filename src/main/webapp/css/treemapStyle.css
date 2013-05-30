@@ -29,7 +29,6 @@ text {
     width: 100%;
     min-width: 400px;
     height: 4em;
-    padding-top: 1em;
     background-color: #EFEBA9;
 }
 
@@ -63,4 +62,12 @@ text {
 
 .nodeLvl0 {
     font-size: large;
+}
+
+.nodeInfo {
+    float: left;
+}
+
+.VMInfo {
+    float: right;
 }

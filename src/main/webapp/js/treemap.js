@@ -346,7 +346,7 @@ document.search_form.search_field.onkeypress = function() {
         
         currentRoot = d;
         displayInfo(d);
-        console.log(d);
+        //console.log(d);
 
     }
         
@@ -398,7 +398,7 @@ document.search_form.search_field.onkeypress = function() {
 	    	
 		    treemap.value(function(d){return d.children? d.value : (d.name=== "free"? (freeIsDisplaying? getGoodRessources(d): 0): d.value) });
 		    freeIsDisplaying = !freeIsDisplaying;
-		    freeIsDisplaying? displayFreeSpace.value="hidde free ressource": displayFreeSpace.value="display free ressource"
+		    freeIsDisplaying? displayFreeSpace.value="hide free ressource": displayFreeSpace.value="display free ressources"
 		    
 		    transition(currentRoot);
 		    	

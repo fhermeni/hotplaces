@@ -35,52 +35,54 @@ window.onresize = function(e) {
 }
 
 
-
+function getUnit(number) {
+    var unit = 0;
+    while(number >= 1024 && unit < 3) {
+        number /= 1024;
+        unit++;
+    }
+    number = Math.floor(number);
+    var number_unit = "MB";
+    if(unit === 1) number_unit = "GB";
+    if(unit === 2) number_unit = "TB";
+    if(unit === 3) number_unit = "PB";
+    
+    return [number, number_unit];
+}
 
 /*function:
  ** parameter: current hovered node
  ** description: display informations of on the hovered element (d)
  */
 function displayAllInfos(d) {
-
-    str = "&thinsp; Current Root : ";
+    var str = "";
     
     tabNodes = d.id.split(".");
+    var tmp = d.depth === 4? d.parent : d;
+    str = '<div class="nodeInfo" width=100%>';
+    str += "<table border='1px' width=100%><tr><td>Node Name</td><td>RAM</td><td>CPUs</td><td>DiskSpace</td></tr><tr><td width=50%>";
+    str += tmp.id;
+    var ram = getUnit(tmp.rRAM? tmp.RAM *tmp.rRAM  : tmp.RAM);
+    var cpu = tmp.rCPU? tmp.CPU * tmp.rCPU  : tmp.CPU;
+    var ds = getUnit(tmp.rDiskSpace? tmp.DiskSpace * tmp.rDiskSpace : tmp.DiskSpace);
+    
+    str += "</td><td>" + ram[0] + ram[1]
+        + "</td><td>" + cpu
+        + "</td><td>" + ds[0] + ds[1]
+    + "</td></tr></table></div>";
 
-    for(var i=0; i<tabNodes.length; i++) {
-        if(i !== 4) {
-        str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
-        if(i !== tabNodes.length-1 && i !== 3) str += ".";
-        } else {
-            var ram = d.RAM;
-            var disk = d.DiskSpace;
-            var unit = 0;
-            while(ram >= 1024 && unit < 2) {
-                ram /= 1024;
-                unit++;
-            }
-            var ram_unit = "MB";
-            if(unit === 1) ram_unit = "GB";
-            if(unit === 2) ram_unit = "TB";
-            
-            unit = 0;
-            while(disk >= 1024 && unit < 3) {
-                disk /= 1024;
-                unit++;
-            }
-            var disk_unit = "MB";
-            if(unit === 1) disk_unit = "GB";
-            if(unit === 2) disk_unit = "TB";
-            if(unit === 3) disk_unit = "PB";
-            
-            str += '<br> &thinsp; VM : <span class="nodeLv4">' + tabNodes[i] + '</span>';
-            str += "<br> &thinsp; Ram : " + Math.floor(ram) + ram_unit
-                    + " | CPUs : " + d.CPU
-                    + " | DiskSpace : " + Math.floor(disk) + disk_unit
-            ;
-        }
-
+    if(d.depth === 4) {
+        str += '<div class="VMInfo">';
+        str += "<table border='1px'><tr><td>VM UUID</td><td>RAM</td><td>CPUs</td><td>DiskSpace</td></tr><tr><td>";
+        ram = getUnit(d.RAM);
+        ds = getUnit(d.DiskSpace);
+        str += d.name
+            + "</td><td>" + ram[0] + ram[1]
+            + "</td><td>" + d.CPU
+            + "</td><td>" + ds[0] + ds[1]
+        + "</td></tr></table></div>";
     }
+
     document.getElementById("information").innerHTML = str;
 
 }
@@ -89,7 +91,7 @@ function displayAllInfos(d) {
  **description: displays infos on the currentRoot
  */
 function displayInfo(d) {
-    
+    /*
     str = "&thinsp; Current Root : ";
     tabNodes = d.id.split(".");
     var stop = currentRoot.depth + 1;
@@ -98,6 +100,8 @@ function displayInfo(d) {
         if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
     }
     document.getElementById("information").innerHTML = str;
+*/
+    displayAllInfos(d);
 
 }
 
