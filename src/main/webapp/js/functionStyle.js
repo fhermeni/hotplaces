@@ -47,11 +47,13 @@ function displayAllInfos(d) {
     
     tabNodes = d.id.split(".");
 
-    var stop = currentRoot.depth + 1;
     for(var i=0; i<tabNodes.length; i++) {
-        if(i === stop) str += "<br>&emsp; &emsp; &ensp; &#8594; &thinsp; ";
+        if(i !== 4) {
         str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
-        if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
+        if(i !== tabNodes.length-1 && i !== 3) str += ".";
+        } else {
+            str += '<br> &thinsp; VM : <span class="nodeLv4">' + tabNodes[i] + '</span>';
+        }
 
     }
     document.getElementById("information").innerHTML = str;
