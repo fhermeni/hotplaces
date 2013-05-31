@@ -59,8 +59,9 @@ function displayAllInfos(d) {
     
     tabNodes = d.id.split(".");
     var tmp = d.depth === 4? d.parent : d;
-    str = '<div class="nodeInfo" width=100%>';
-    str += "<table border='1px' width=100%><tr><td>Node Name</td><td>RAM</td><td>CPUs</td><td>DiskSpace</td></tr><tr><td width=50%>";
+
+    str += "<table class='nodeInfo'><tr>" + 
+            "<td width='60%'>Node Name</td><td>RAM</td><td>CPUs</td><td width=15%>DiskSpace</td></tr><tr><td>";
     str += tmp.id;
     var ram = getUnit(tmp.rRAM? tmp.RAM *tmp.rRAM  : tmp.RAM);
     var cpu = tmp.rCPU? tmp.CPU * tmp.rCPU  : tmp.CPU;
@@ -69,11 +70,10 @@ function displayAllInfos(d) {
     str += "</td><td>" + ram[0] + ram[1]
         + "</td><td>" + cpu
         + "</td><td>" + ds[0] + ds[1]
-    + "</td></tr></table></div>";
+    + "</td></tr></table>";
 
     if(d.depth === 4) {
-        str += '<div class="VMInfo">';
-        str += "<table border='1px'><tr><td>VM UUID</td><td>RAM</td><td>CPUs</td><td>DiskSpace</td></tr><tr><td>";
+        str += "<table class='VMInfo'><tr><td width=60%>VM UUID</td><td width=15%>RAM</td><td>CPUs</td><td width=15%>DiskSpace</td></tr><tr><td>";
         ram = getUnit(d.RAM);
         ds = getUnit(d.DiskSpace);
         str += d.name
@@ -83,6 +83,7 @@ function displayAllInfos(d) {
         + "</td></tr></table></div>";
     }
 
+
     document.getElementById("information").innerHTML = str;
 
 }
@@ -91,17 +92,14 @@ function displayAllInfos(d) {
  **description: displays infos on the currentRoot
  */
 function displayInfo(d) {
-    /*
-    str = "&thinsp; Current Root : ";
-    tabNodes = d.id.split(".");
-    var stop = currentRoot.depth + 1;
-    for(var i=0; i<stop; i++) {
-        str += '<span class="nodeLvl' + i + '">' + tabNodes[i] + '</span>';
-        if(i !== tabNodes.length-1 && i !== stop-1) str += ".";
-    }
+
+    var str = "";
+
+    str += "<table class='nodeInfo2'><tr>" +
+            "<td width='60%'>Current Root</td></tr><tr><td>";
+    str += currentRoot.id;
+    str += "</td></tr></table>";
     document.getElementById("information").innerHTML = str;
-*/
-    displayAllInfos(d);
 
 }
 

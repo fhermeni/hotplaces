@@ -66,8 +66,34 @@ text {
 
 .nodeInfo {
     float: left;
+    border: 1px solid black;
+    width: 30%;
+    table-layout: fixed;
+    border-collapse:collapse
+
+}
+.nodeInfo td {
+    border: 1px solid black;
 }
 
 .VMInfo {
     float: right;
+    border: 1px solid black;
+    width: 30%;
+    border-collapse:collapse
+}
+.VMInfo td {
+    border: 1px solid black;
+}
+
+.nodeInfo2 {
+    float: left;
+    border: 1px solid black;
+    width: 18%;
+    table-layout: fixed;
+    border-collapse:collapse
+}
+
+.nodeInfo2 td {
+    border: 1px solid black;
 }
