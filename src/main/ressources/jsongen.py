@@ -23,16 +23,63 @@ class Node:
 		#self.vRAM = random.randint(1,20)#Go
 		#self.pDiskSpace = random.randint(100,10000)#Go
 		#self.vDiskSpace = random.randint(100,10000)#Go
-		self.pCPU = 0
-		self.pRAM = 0
-		self.pDiskSpace = 0
-		self.vCPU = 0
-		self.vRAM = 0
-		self.vDiskSpace = 0
+		self.CPU = 0
+		self.RAM = 0
+		self.DiskSpace = 0
 		self.ratioCPU= 0
 		self.ratioRAM=0
 		self.ratioDiskSpace=0
+		self.nodeType= ""
 		
+class NodeConstraint:
+
+	def __init__(self,  name, id, nodes):
+		self.name=name
+		self.id = id
+		self.nodes= nodes
+		
+class VMConstraint:
+
+	def __init__(self, name, id, vms):
+		self.name=name
+		self.id=id
+		self.vms=vms
+		self.satisfy= bool(random.randint(0,1))
+
+def findRandomNode(node, nodeType):
+	finalNode= node
+	while(finalNode.nodeType!=nodeType and len(finalNode.children)>0):
+		finalNode= finalNode.children[random.randint(0, len(finalNode.children)-1)]
+		print("rnode")
+	
+	
+	if(finalNode.nodeType!= nodeType):
+		return None 
+	
+	return finalNode
+	
+	
+def makeConstraints():
+	nbNC = random.randint(1, 20)
+	nbVMC = random.randint(1, 20)
+	for i in range(nbVMC):
+		name = "VMC" +str(i)
+		id= random.choice([ "Among", "Gather", "Killed", "Lonely", "Ready", "Root", "Running", "SequentialVMTransitions", "Sleeping", "Split", "Spread"])
+		vms=[]
+		while(random.randint(0,5)!=0):
+			vms.append(findRandomNode(g5k, "vm"))
+			print("add vm")
+		constraints.append(VMConstraint(name, id, vms))
+		
+	for i in range(nbNC):
+		name = "NC" +str(i)
+		id= random.choice([ "Offline", "Online", "Quarantine"])
+		nodes=[]
+		while(random.randint(0,5)!=0):
+			nodes.append(findRandomNode(g5k, "node"))
+			print("add node")
+		constraints.append(NodeConstraint(name, id, nodes))
+	
 
 
 def makeCluster(id, nb):
@@ -40,23 +87,25 @@ def makeCluster(id, nb):
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1), str(uuid.uuid4()))
+		node.nodeType="node"
 		node.ratioDiskSpace = random.randint(1,5)
 		node.ratioRAM= random.randint(1,5)
 		node.ratioCPU= random.randint(1,16)
-		node.pCPU =tmpCPU =  random.randint(1,32)
-		node.pRAM =tmpRAM= random.randint(1024,65536)
-		node.pDiskSpace= tmpDisk = random.randint(1000000,100000000)
+		node.CPU =tmpCPU =  random.randint(1,32)
+		node.RAM =tmpRAM= random.randint(1024,65536)
+		node.DiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
 		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
 			vm = Node(str(uuid.uuid4()), str(uuid.uuid4()))
+			vm.nodeType="vm"
 			#add random virtual ressources
-			vm.vRAM = random.randint(1,int(tmpRAM*node.ratioRAM))
-			vm.vDiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
-			vm.vCPU= random.randint(1, int(tmpCPU* node.ratioCPU))
+			vm.RAM = random.randint(1,int(tmpRAM*node.ratioRAM))
+			vm.DiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
+			vm.CPU= random.randint(1, int(tmpCPU* node.ratioCPU))
 			#remove ressource of new vm at node
-			tmpRAM = tmpRAM - vm.vRAM*1.0/node.ratioRAM
-			tmpDisk = tmpDisk - vm.vDiskSpace*1.0 /node.ratioDiskSpace
-			tmpCPU = tmpCPU - vm.vCPU*1.0/ node.ratioCPU
+			tmpRAM = tmpRAM - vm.RAM*1.0/node.ratioRAM
+			tmpDisk = tmpDisk - vm.DiskSpace*1.0 /node.ratioDiskSpace
+			tmpCPU = tmpCPU - vm.CPU*1.0/ node.ratioCPU
 
 			#add vm at node
 			node.children.append(vm)
@@ -64,10 +113,11 @@ def makeCluster(id, nb):
 		if(tmpDisk >0 or tmpRAM>0 or tmpCPU>0):
 			#add "vm" free
 			free = Node("free", str(uuid.uuid4()))
+			free.nodeType="vm"
 			#add free ressources
-			free.vDiskSpace = tmpDisk * node.ratioDiskSpace
-			free.vRAM = tmpRAM * node.ratioRAM
-			free.vCPU = tmpCPU * node.ratioCPU
+			free.DiskSpace = tmpDisk * node.ratioDiskSpace
+			free.RAM = tmpRAM * node.ratioRAM
+			free.CPU = tmpCPU * node.ratioCPU
 			
 			node.children.append(free)
 
@@ -87,16 +137,17 @@ def jsonGen(root) :
 
 	
 	json = '{ "name" : "' + root.name + '" '
+	json +=', "UUID" : ' + str(root.uuid)
 	if(root.name != "g5k"):
 		if root.children == []:
 
-			json +=', "CPU" : ' + str(root.vCPU) 
-			json +=', "RAM" : ' + str(root.vRAM) 
-			json += ', "DiskSpace" :' + str(root.vDiskSpace)
+			json +=', "CPU" : ' + str(root.CPU) 
+			json +=', "RAM" : ' + str(root.RAM) 
+			json += ', "DiskSpace" :' + str(root.DiskSpace)
 		elif root.children[0].children == []:
-			json +=', "CPU" : ' + str(root.pCPU)
-			json +=', "RAM" : ' + str(root.pRAM) 
-			json += ', "DiskSpace" :' + str(root.pDiskSpace)
+			json +=', "CPU" : ' + str(root.CPU)
+			json +=', "RAM" : ' + str(root.RAM) 
+			json += ', "DiskSpace" :' + str(root.DiskSpace)
 			json +=', "rCPU" : ' + str(root.ratioCPU)
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
@@ -172,6 +223,8 @@ sophia.children.append(makeCluster("sol", 50))
 toulouse.children.append(makeCluster("chocolatine", 51))
 toulouse.children.append(makeCluster("chocapique", 93))
 
+constraints= []
+makeConstraints()
 
 mock = open("g5kMock.json", "w")
 mock.write(jsonGen(g5k))

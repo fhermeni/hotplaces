@@ -5,7 +5,7 @@ function removeDisplay() {
     });
 }
 
-window.onresize = function(e) {
+/*window.onresize = function(e) {
 
     if (window.innerWidth > 800) {
         width = window.innerWidth - margin.left - margin.right;
@@ -32,7 +32,7 @@ window.onresize = function(e) {
 
 
 
-}
+}*/
 
 
 
