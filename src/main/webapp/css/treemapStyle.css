@@ -9,16 +9,26 @@ text {
 
 #chart {
   margin: auto;
-  position: relative;
-  width: 960px;
+  width: 100%;
+  min-width: 400px;
+}
+
+#ressources{
+	float: left;
+}
+
+#search{
+	  float: right;
+	  
+	
 }
 
 .information {
     margin: auto;
     position: relative;
-    width: 960px;
-    height: 2em;
-    padding-top: 1em;
+    width: 100%;
+    min-width: 400px;
+    height: 4em;
     background-color: #EFEBA9;
 }
 
@@ -32,19 +42,58 @@ text {
 	font-size: smaller
 }
 
-.nodeLvl0 {
+.nodeLvl4 {
     font-size: larger;
     font-weight: bold;
+}
+
+.nodeLvl3 {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.nodeLvl2 {
+    font-size: large;
 }
 
 .nodeLvl1 {
     font-size: large;
 }
 
-.nodeLvl2 {
-    font-size: medium;
+.nodeLvl0 {
+    font-size: large;
 }
 
-.nodeLvl3 {
-    font-size: medium;
+.nodeInfo {
+    float: left;
+    border: 1px solid black;
+    width: 30%;
+    table-layout: fixed;
+    border-collapse:collapse
+
+}
+.nodeInfo td {
+    border: 1px solid black;
+}
+
+.VMInfo {
+    float: right;
+    border: 1px solid black;
+    width: 30%;
+    border-collapse:collapse
+}
+.VMInfo td {
+    border: 1px solid black;
+}
+
+.nodeInfo2 {
+    float: left;
+    border: 1px solid black;
+    width: 18%;
+    table-layout: fixed;
+    border-collapse:collapse
+}
+
+.nodeInfo2 td {
+    border: 1px solid black;
 }

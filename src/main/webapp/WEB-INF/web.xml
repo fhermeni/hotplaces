@@ -6,9 +6,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-    <display-name>coucou</display-name>
+    <display-name>server</display-name>
     <servlet>
-        <servlet-name>coucou</servlet-name>
+        <servlet-name>server</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>coucou</param-value>
+            <param-value>server</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
@@ -25,7 +25,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>coucou</servlet-name>
+        <servlet-name>server</servlet-name>
         <url-pattern>/webapp/*</url-pattern>
     </servlet-mapping>
     <welcome-file-list>

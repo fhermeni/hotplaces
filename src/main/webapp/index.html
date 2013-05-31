@@ -3,14 +3,46 @@
     <head>
         <link href="/css/treemapStyle.css" rel="stylesheet">
         <title>Grid5000 Treemap</title>
+        <script>
+            var launch_search = false;
+        </script>
     </head>
 <body>
+<div class="navigationBar" id="navigationBar">
 
+    <form id="search_form" name="search_form" onsubmit='return false;'>
+    	<span id = "ressources">
+        <select id = "ressources_select">
+	        <option value="CPU">CPU</option>
+	        <option value="RAM">RAM</option>
+	        <option value="Disk">Disk Space</option>
+	        <option value="Count" selected>Count</option>
+	    </select>
+	    <input type='button' id='displayFreeSpace' value='Display free space' disabled />
+    	</span>
+       
+        
+    	<span id="search">
+    	<input type='button' name='rootButton' value='Root' />
+        <label >
+            <input id="search_field" type="search" name="search_field" size="31" placeholder="Enter Keywords" autofocus/>
+         </label>
+         <label>
+            <input id="search_button" name="search_button" type="button" value="Find" />
+        </label>
+        
+
+    
+</div>
 <p id="chart">
 <div class="information" id="information"></div>
-
+<!--
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
+-->
+<script src="/js/D3Lib/d3.js"></script>
+
 <script src="/js/treemapVar.js"></script>
+<script src="/js/request.js"></script>
 <script src="./js/functionStyle.js"></script>
 <script src="/js/treemap.js"></script>
 

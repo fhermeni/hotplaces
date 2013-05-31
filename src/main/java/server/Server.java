@@ -1,4 +1,4 @@
-package coucou;
+package server;
 
 import java.io.*;
 import javax.ws.rs.GET;
@@ -11,8 +11,8 @@ import org.codehaus.jettison.json.JSONException;
 
 
 
-@Path("/coucou")
-public class Coucou {
+@Path("/server")
+public class Server {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
