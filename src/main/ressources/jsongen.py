@@ -48,10 +48,11 @@ def makeCluster(id, nb):
 		node.pDiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
 		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
-			vm = Node(str(uuid.uuid4()), str(uuid.uuid4()))
+			uid = str(uuid.uuid4())
+			vm = Node(uid, uid)
 			#add random virtual ressources
-			print('cpu ' + str(tmpCPU* node.ratioCPU))
-			print('RAM ' + str(tmpRAM*node.ratioRAM))
+			#print('cpu ' + str(tmpCPU* node.ratioCPU))
+			#print('RAM ' + str(tmpRAM*node.ratioRAM))
 			vm.vRAM = random.randint(1,int(tmpRAM*node.ratioRAM))
 			vm.vDiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
 			vm.vCPU= random.randint(1, int(tmpCPU* node.ratioCPU))
@@ -93,6 +94,8 @@ def jsonGen(root) :
 
 	
 	json = '{ "name" : "' + root.name + '" '
+	json +=', "uuid" : ' + '"' + root.uuid +'"'
+
 	if(root.name != "g5k"):
 		if root.children == []:
 
