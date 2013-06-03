@@ -122,15 +122,21 @@ function displayInfo(d) {
     td = document.createElement("td");
     cRootId.forEach(function(name) {
         var span = document.createElement("span");
-        span.setAttribute("class", "nodeLink");
+        
         span.innerHTML = name;
-        td.appendChild(span);
         if (name !== cRootId[cRootId.length - 1])
+            span.setAttribute("class", "nodeLink");
+        td.appendChild(span);
+        if (name !== cRootId[cRootId.length - 1]) {
             td.innerHTML += ".";
+        }
     });
 
     tr.appendChild(td);
-
+    
+     /* if current node is a server
+      * print node specs in the table
+      */
     if (currentRoot.depth === 3) {
         var ram = getUnit(tmp.rRAM ? tmp.RAM * tmp.rRAM : tmp.RAM);
         var cpu = tmp.rCPU ? tmp.CPU * tmp.rCPU : tmp.CPU;
@@ -152,11 +158,12 @@ function displayInfo(d) {
     table.appendChild(tr);
     document.getElementById("information").appendChild(table);
 
+    // add on  click events
     var nodelist = document.getElementsByClassName("nodeLink");
     var path = Array();
     var tmpnode = inaltered_Root;
 
-    for (var i = 0; i < nodelist.length - 1; i++) {
+    for (var i = 0; i < nodelist.length; i++) {
 
         if (tmpnode.name !== nodelist[i].innerHTML) {
             for (var j = 0; j < tmpnode.children.length; j++) {
@@ -171,11 +178,6 @@ function displayInfo(d) {
         nodelist[i].onclick = function() {
             search(this.innerHTML);
         };
-        /*
-         nodelist[i].onmouseover = function() {
-         console.log("over");
-         };
-         */
     }
 }
 
