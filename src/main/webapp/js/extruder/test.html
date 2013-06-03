@@ -1,0 +1,122 @@
+<!doctype html>
+
+
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>mb.extruder</title>
+	<style type="text/css">
+		body{
+			font-family:Arial, Helvetica, sans-serif;
+			margin:10px;
+		}
+
+
+
+			/*
+									custom style for extruder
+									*/
+
+		.extruder.left.a .flap{
+			font-size:18px;
+			color:white;
+			top:0;
+			padding:10px 0 10px 10px;
+			background:#772B14;
+			width:30px;
+			position:absolute;
+			right:0;
+			-moz-border-radius:0 10px 10px 0;
+			-webkit-border-top-right-radius:10px;
+			-webkit-border-bottom-right-radius:10px;
+			-moz-box-shadow:#666 2px 0px 3px;
+			-webkit-box-shadow:#666 2px 0px 3px;
+		}
+
+
+
+
+		.extruder.left.a .flap .flapLabel{
+			background:#772B14;
+		}
+/*
+
+		.extruder.top{
+			margin-left:-200px!important;
+		}
+*/
+	</style>
+
+	<link href="css/mbExtruder.css" media="all" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+	<script type="text/javascript" src="inc/jquery.hoverIntent.min.js"></script>
+	<script type="text/javascript" src="inc/jquery.mb.flipText.js"></script>
+	<script type="text/javascript" src="inc/mbExtruder.js"></script>
+	<script type="text/javascript">
+
+		$(function(){
+
+
+			
+
+			
+
+			$("#extruderLeft").buildMbExtruder({
+				position:"left",
+				width:300,
+				extruderOpacity:.8,
+				
+
+				//hidePanelsOnClose:false,
+				//accordionPanels:false,
+				onExtOpen:function(){},
+				onExtContentLoad:function(){},
+				onExtClose:function(){}
+			});
+			$("#extruderLeft2").buildMbExtruder({
+				position:"top",
+				width:300,
+				//positionFixed:false,
+				//top:0,
+				extruderOpacity:.8,
+				onExtOpen:function(){},
+				onExtContentLoad:function(){},
+				onExtClose:function(){}
+			});
+
+
+			
+
+		});
+
+	</script>
+</head>
+<body >
+
+<form>
+<input type="button" value="Click me" >
+</form>
+
+		<div id="extruderLeft2" class="{title:'content in place'}" >
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin purus orci, volutpat ut pulvinar volutpat, convallis in orci. Quisque eget arcu convallis dui lacinia vestibulum non ut odio. Cras fringilla mollis mattis. Cras dictum rutrum ultricies. Donec auctor, risus eu tincidunt auctor, diam ligula facilisis libero, sit amet interdum felis enim ut est. Maecenas nec nulla quis ante convallis volutpat convallis at justo. Pellentesque quam orci, consectetur sit amet interdum a, tempus eget erat. Nam in ante odio. Vivamus nec augue vitae mi molestie pretium sed id elit. Aenean ultrices auctor ipsum eu vestibulum. Phasellus non dolor vel nisi congue egestas in a eros. Phasellus nunc nulla, interdum ut viverra eu, tristique sed sapien.
+		</div>
+
+	
+	
+
+<div id="extruderLeft" class="a {title:'menu part', url:'parts/extruderLeft.html'}"></div>
+
+</body>
+<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+	try {
+		var pageTracker = _gat._getTracker("UA-10907260-1");
+		pageTracker._trackPageview();
+	} catch(err) {}
+</script>
+
+</html>

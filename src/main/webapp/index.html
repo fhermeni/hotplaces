@@ -6,9 +6,61 @@
         <script>
             var launch_search = false;
         </script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+        <script type="text/javascript" src="js/extruder/inc/jquery.hoverIntent.min.js"></script>
+        <script type="text/javascript" src="js/extruder/inc/jquery.mb.flipText.js"></script>
+        <script type="text/javascript" src="js/extruder/inc/mbExtruder.js"></script>
+        <script type="text/javascript">
+
+		$(function(){
+
+
+			
+
+			
+
+			$("#extruderLeft").buildMbExtruder({
+				position:"left",
+				width:300,
+				extruderOpacity:.8,
+				top:20,
+
+				//hidePanelsOnClose:false,
+				//accordionPanels:false,
+				onExtOpen:function(){},
+				onExtContentLoad:function(){},
+				onExtClose:function(){}
+			});
+			$("#extruderLeft2").buildMbExtruder({
+				position:"left",
+				width:300,
+				positionFixed:false,
+				top:0,
+				extruderOpacity:.8,
+				onExtOpen:function(){},
+				onExtContentLoad:function(){},
+				onExtClose:function(){}
+			});
+
+
+			
+
+		});
+
+	</script>
     </head>
 <body>
-<div class="navigationBar" id="navigationBar">
+	<div class="longText" style="position:absolute;">
+		<div id="extruderLeft2" class="{title:'content in place'}" >
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin purus orci, volutpat ut pulvinar volutpat, convallis in orci. Quisque eget arcu convallis dui lacinia vestibulum non ut odio. Cras fringilla mollis mattis. Cras dictum rutrum ultricies. Donec auctor, risus eu tincidunt auctor, diam ligula facilisis libero, sit amet interdum felis enim ut est. Maecenas nec nulla quis ante convallis volutpat convallis at justo. Pellentesque quam orci, consectetur sit amet interdum a, tempus eget erat. Nam in ante odio. Vivamus nec augue vitae mi molestie pretium sed id elit. Aenean ultrices auctor ipsum eu vestibulum. Phasellus non dolor vel nisi congue egestas in a eros. Phasellus nunc nulla, interdum ut viverra eu, tristique sed sapien.
+		</div>
+	</div>
+
+	
+	
+
+<div id="extruderLeft" class="a {title:'menu part'}">
+	<div class="navigationBar" id="navigationBar">
 
     <form id="search_form" name="search_form" onsubmit='return false;'>
     	<span id = "ressources">
@@ -30,10 +82,16 @@
          <label>
             <input id="search_button" name="search_button" type="button" value="Find" />
         </label>
+    	</span>
+    </form>
         
 
     
 </div>
+
+</div>
+
+
 <p id="chart">
 <div class="information" id="information"></div>
 <!--
