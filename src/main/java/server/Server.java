@@ -8,44 +8,39 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONException;
-
-
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 @Path("/server")
 public class Server {
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response repondre() {
-        JSONObject data=null;
-        String chaine="";
-        String fichier ="./src/main/ressources/g5kMock.json";
-        
-        //lecture du fichier texte
-        try{
-            InputStream ips=new FileInputStream(fichier);
-            InputStreamReader ipsr=new InputStreamReader(ips);
-            BufferedReader br=new BufferedReader(ipsr);
-            String ligne;
-            while ((ligne=br.readLine())!=null){
-                chaine+=ligne+"\n";
-            }
-            br.close();
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response repondre() throws FileNotFoundException, IOException {
+        JSONObject data = null;
+        String chaine = "";
+        String path = "./src/main/ressources/g5kMock.json";
+
+        FileInputStream stream = new FileInputStream(new File(path));
+        try {
+            FileChannel fc = stream.getChannel();
+            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            chaine = Charset.defaultCharset().decode(bb).toString();
+            fc.close();
+        } finally {
+            stream.close();
         }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-        try{
+
+        try {
             data = new JSONObject(chaine);
 
-        }
-        catch(JSONException JSe){
+        } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
+        
+        
         return Response.ok(data.toString()).build();
 
-	}
-	
-	
+    }
 }
-

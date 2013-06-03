@@ -89,16 +89,6 @@
   }
   
   
-  //Returns true if a string is an occurence of one of the array strings
-  function isIn(array, str) {
-      for(var i = 0; i< array.length; i++) {
-          if(str.indexOf(array[i]) !== -1 && array[i].length !== 0)
-              return true;
-      }
-      return false;
-  }
-  
-  
   //Returns the nodes that matches the node_names search
 function getNodes(regexp, d) {
     var nodes = Array();
@@ -167,31 +157,20 @@ function getNodes(regexp, d) {
       return tmpNode;
   }
   
-
-
-/*for (i in radios) {
-    radios[i].onclick = function() {
-
-        
-        
-        accumulate(currentRoot);
-        layout(currentRoot);
-        removeDisplay();
-        display(currentRoot);
-    };*/
-//}
+function search(searchField) {
+    keyWords = searchField;
+    launch_search = true;
+    removeDisplay();
+    display(currentRoot);
+}
 
 document.search_form.search_button.onclick = function() {
-    launch_search = true;
-     removeDisplay();
-    display(currentRoot);
+    search(document.search_form.search_field.value);
 };
 
 document.search_form.search_field.onkeypress = function() {
     if(window.event.keyCode === 13) {
-        launch_search = true;
-         removeDisplay();
-        display(currentRoot);
+        search(document.search_form.search_field.value);
     }
 };
 
@@ -243,6 +222,7 @@ document.search_form.search_field.onkeypress = function() {
         .call(rect)
         .on("mouseover", function(d) {onHover(this.parentNode);})
         
+        
 ;
 
     g2.append("rect").attr("class", "grandChildren")
@@ -262,6 +242,10 @@ document.search_form.search_field.onkeypress = function() {
         .call(rect)
         .on("mouseout", function(d) {displayInfo(d);})
         .on("mouseover", function(d) {displayAllInfos(d);})
+        .on("dblclick", function(d) {
+            console.log(d.name);
+            transition(d);
+        })
 ;
 
  
@@ -343,10 +327,8 @@ document.search_form.search_field.onkeypress = function() {
             transitioning = false;
         });
         
-        
         currentRoot = d;
         displayInfo(d);
-        //console.log(d);
 
     }
         
@@ -358,16 +340,14 @@ document.search_form.search_field.onkeypress = function() {
                     transition(inaltered_Root);
                 }
             }
-        }
-        
-
-        
+        } 
 
         
         //search function
-        var search_field = document.search_form.search_field;
-        if(launch_search && search_field.value.length !== 0) {
-            var new_node = common_ancestor(search_field.value);
+        //var search_field = keyWords;
+        
+        if(launch_search && keyWords.length !== 0) {
+            var new_node = common_ancestor(keyWords);
             search_field.value = "";
             if(new_node !== null && new_node !== d) {
                 d = new_node;
