@@ -30,6 +30,7 @@ class Node:
 		self.ratioRAM=0
 		self.ratioDiskSpace=0
 		self.nodeType= ""
+		self.constraints = []
 		
 class NodeConstraint:
 
@@ -37,24 +38,25 @@ class NodeConstraint:
 		self.name=name
 		self.id = id
 		self.nodes= nodes
+		self.satisfy= bool(random.randint(0,1))
 		
 class VMConstraint:
 
 	def __init__(self, name, id, vms):
 		self.name=name
 		self.id=id
-		self.vms=vms
+		self.nodes=vms
 		self.satisfy= bool(random.randint(0,1))
 
 def findRandomNode(node, nodeType):
 	finalNode= node
 	while(finalNode.nodeType!=nodeType and len(finalNode.children)>0):
 		finalNode= finalNode.children[random.randint(0, len(finalNode.children)-1)]
-		print("rnode")
 	
 	
-	if(finalNode.nodeType!= nodeType):
-		return None 
+	if(finalNode.nodeType!= nodeType or finalNode.name =='free'):
+		print(finalNode.nodeType)
+		finalNode = findRandomNode(node, nodeType) 
 	
 	return finalNode
 	
@@ -68,8 +70,8 @@ def makeConstraints():
 		vms=[]
 		while(random.randint(0,5)!=0):
 			vms.append(findRandomNode(g5k, "vm"))
-			print("add vm")
 		constraints.append(VMConstraint(name, id, vms))
+		
 		
 	for i in range(nbNC):
 		name = "NC" +str(i)
@@ -77,7 +79,6 @@ def makeConstraints():
 		nodes=[]
 		while(random.randint(0,5)!=0):
 			nodes.append(findRandomNode(g5k, "node"))
-			print("add node")
 		constraints.append(NodeConstraint(name, id, nodes))
 	
 
@@ -118,6 +119,7 @@ def makeCluster(id, nb):
 			free.DiskSpace = tmpDisk * node.ratioDiskSpace
 			free.RAM = tmpRAM * node.ratioRAM
 			free.CPU = tmpCPU * node.ratioCPU
+			free.nodeType="free"
 			
 			node.children.append(free)
 
@@ -144,6 +146,10 @@ def jsonGen(root) :
 			json +=', "CPU" : ' + str(root.CPU) 
 			json +=', "RAM" : ' + str(root.RAM) 
 			json += ', "DiskSpace" :' + str(root.DiskSpace)
+			json += ', "constraints" : ['
+			for i in range(len(root.constraints)):
+				json+= '{ "name" : ' + root.constraints[i][0] + ', "satisfy" : ' +  str(root.constraints[i][2]) + '}, '
+			json += '] '
 		elif root.children[0].children == []:
 			json +=', "CPU" : ' + str(root.CPU)
 			json +=', "RAM" : ' + str(root.RAM) 
@@ -151,6 +157,10 @@ def jsonGen(root) :
 			json +=', "rCPU" : ' + str(root.ratioCPU)
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
+			json += ', "constraints" : ['
+			for i in range(len(root.constraints)):
+				json+= '{ "name" : ' + root.constraints[i][0] + ', "satisfy" : ' +  str(root.constraints[i][2]) + '}, '
+			json += '] '
 			
 
 
@@ -225,6 +235,18 @@ toulouse.children.append(makeCluster("chocapique", 93))
 
 constraints= []
 makeConstraints()
+for i in range(len(constraints)):
+	print(constraints[i].name + " " + constraints[i].id + " " + str(constraints[i].satisfy))
+	stri= "noeud associer: " 
+	for j in range(len(constraints[i].nodes)):
+		stri += constraints[i].nodes[j].name + " "
+	print(stri)
+
+for i in range(len(constraints)):
+	for j in range(len(constraints[i].nodes)):
+		constraints[i].nodes[j].constraints.append((constraints[i].name, constraints[i].id, constraints[i].satisfy))
+	
+	
 
 mock = open("g5kMock.json", "w")
 mock.write(jsonGen(g5k))

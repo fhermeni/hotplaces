@@ -57,6 +57,13 @@
   function layout(d) {
 
 	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
+	if (d.constraints){
+	for(var i = 0; i< d.constraints.length; i ++){
+		d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
+		
+		
+	}
+	}
     
 
     if(d.parent) {
