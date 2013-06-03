@@ -93,75 +93,70 @@ function displayAllInfos(d) {
  **description: displays infos on the currentRoot
  */
 function displayInfo(d) {
-    
+    document.getElementById("information").innerHTML = "";
     var cRootId;
-    if(currentRoot.id.length === 1) {
+    if (currentRoot.id.length === 1) {
         cRootId = [currentRoot.id];
     } else {
         cRootId = currentRoot.id.split(".");
     }
 
     var str = "";
+    var tmp = d.depth === 4 ? d.parent : d;
+    var table = document.createElement("table");
+    table.setAttribute("class", "nodeInfo2");
+    var tr = document.createElement("tr");
+
+    str += '<td width="65%">Node Name</td>';
     
-    if(currentRoot.depth === 3) {
-        var tmp = d;
-        str += "<table class='nodeInfo'><tr>" +
-                "<td width='65%'>Node Name</td><td>RAM</td><td>CPUs</td><td width=15%>Disk</td></tr><tr><td>";
-        str += tmp.id;
+    // if current node is a server
+    if (currentRoot.depth === 3) {
+        table.setAttribute("class", "nodeInfo");
+        str += "<td>RAM</td><td>CPUs</td><td width=15%>Disk</td>";
+    }
+
+    tr.innerHTML = str;
+    table.appendChild(tr);
+
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    cRootId.forEach(function(name) {
+        var span = document.createElement("span");
+        span.setAttribute("class", "nodeLink");
+        span.innerHTML = name;
+        td.appendChild(span);
+        if (name !== cRootId[cRootId.length - 1])
+            td.innerHTML += ".";
+    });
+
+    tr.appendChild(td);
+
+    if (currentRoot.depth === 3) {
         var ram = getUnit(tmp.rRAM ? tmp.RAM * tmp.rRAM : tmp.RAM);
         var cpu = tmp.rCPU ? tmp.CPU * tmp.rCPU : tmp.CPU;
         var ds = getUnit(tmp.rDiskSpace ? tmp.DiskSpace * tmp.rDiskSpace : tmp.DiskSpace);
 
-        str += "</td><td>" + ram[0] + ram[1]
-                + "</td><td>" + cpu
-                + "</td><td>" + ds[0] + ds[1]
-                + "</td></tr></table>";
-    } else {
-
-        document.getElementById("information").innerHTML = "";
-        var table = document.createElement("table");
-        table.setAttribute("class", "nodeInfo2");
-        
-        var tr = document.createElement("tr");
-        var td = document.createElement("td");
-        td.setAttribute("width", "65%");
-        td.innerHTML = "Node Name";
-        tr.appendChild(td);
-        table.appendChild(tr);
-        
-        tr = document.createElement("tr");
         td = document.createElement("td");
-        cRootId.forEach(function(name) {
-            var span = document.createElement("span");
-            span.setAttribute("class", "nodeLink");
-            span.innerHTML = name;
-            td.appendChild(span);
-            if (name !== cRootId[cRootId.length - 1])
-                td.innerHTML += ".";
-        });
-        
+        td.innerHTML = ram[0] + ram[1];
         tr.appendChild(td);
-        table.appendChild(tr);
-        document.getElementById("information").appendChild(table);
-        
-        str += "<table class='nodeInfo2'><tr>" +
-                "<td width='65%'>Node Name</td></tr><tr><td>";
-        cRootId.forEach(function(name) {
-            
-            str += "<span class='nodeLink'>" + name + "</span>";
-            if (name !== cRootId[cRootId.length - 1])
-                str += ".";
-        });
-        str += "</td></tr></table>";
+
+        td = document.createElement("td");
+        td.innerHTML = cpu;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerHTML = ds[0] + ds[1];
+        tr.appendChild(td);
     }
-    //document.getElementById("information").innerHTML = str;
-    
+
+    table.appendChild(tr);
+    document.getElementById("information").appendChild(table);
+
     var nodelist = document.getElementsByClassName("nodeLink");
     var path = Array();
     var tmpnode = inaltered_Root;
 
-    for(var i=0; i<nodelist.length-1; i++) {
-        
+    for (var i = 0; i < nodelist.length - 1; i++) {
 
         if (tmpnode.name !== nodelist[i].innerHTML) {
             for (var j = 0; j < tmpnode.children.length; j++) {
@@ -177,10 +172,10 @@ function displayInfo(d) {
             search(this.innerHTML);
         };
         /*
-        nodelist[i].onmouseover = function() {
-            console.log("over");
-        };
-        */
+         nodelist[i].onmouseover = function() {
+         console.log("over");
+         };
+         */
     }
 }
 
