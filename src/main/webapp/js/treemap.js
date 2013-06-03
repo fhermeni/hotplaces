@@ -57,6 +57,13 @@
   function layout(d) {
 
 	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
+	if (d.constraints){
+	for(var i = 0; i< d.constraints.length; i ++){
+		d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
+		
+		
+	}
+	}
     
 
     if(d.parent) {
@@ -310,8 +317,8 @@ document.search_form.search_field.onkeypress = function() {
         x.domain([d.x, d.x + d.dx]);
         y.domain([d.y, d.y + d.dy]);
         
-        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
-        layout(d);
+        /*d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);*/
+        //layout(d);
 
         // Enable anti-aliasing during the transition.
         // Desabled for  more fluent transitions
@@ -388,6 +395,7 @@ document.search_form.search_field.onkeypress = function() {
 	        treemap.value(function(d){
 	        		        return d.name==='free'? somChildrenValue(d)*freeIsDisplaying :somChildrenValue(d);
 	        })
+	        layout(currentRoot);
 	        transition(currentRoot);
 	        }
 	        
@@ -398,8 +406,8 @@ document.search_form.search_field.onkeypress = function() {
 	    	
 		    treemap.value(function(d){return d.children? d.value : (d.name=== "free"? (freeIsDisplaying? getGoodRessources(d): 0): d.value) });
 		    freeIsDisplaying = !freeIsDisplaying;
-		    freeIsDisplaying? displayFreeSpace.value="hide free ressource": displayFreeSpace.value="display free ressources"
-		    
+		    freeIsDisplaying? displayFreeSpace.value="hidde free ressource": displayFreeSpace.value="display free ressource"
+		    layout(currentRoot);
 		    transition(currentRoot);
 		    	
 
