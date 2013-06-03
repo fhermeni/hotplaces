@@ -181,6 +181,22 @@ document.search_form.search_field.onkeypress = function() {
   * description : displays a node with its components
   */
   function display(d) {
+      
+      function singleClick(d) {
+        if (!window.clicktimer)
+            window.clicktimer = setTimeout(function() {
+               d.children? transition(d): null;
+                window.clicktimer = undefined;
+            }
+            ,200);
+      }
+      
+      function doubleClick(d) {
+        clearTimeout(clicktimer);
+        d.children? transition(d) : transition(d.parent);
+        window.clicktimer = undefined;
+    }
+      
     // create attribute depth
     var g1 = svg.insert("g", ".grandparent")
         .datum(d.children)
@@ -195,7 +211,11 @@ document.search_form.search_field.onkeypress = function() {
         .classed("children", true)
         .attr("name", function(d) { return d.name ;})
         .attr("id", function(d){return d.id;})
-        .on("click", function(d){d.children? transition(d): null;})
+        .on("click", function(d){
+    //d.children? transition(d): null;
+    singleClick(d);
+
+})
         .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; })
 
         ;
@@ -243,8 +263,10 @@ document.search_form.search_field.onkeypress = function() {
         .on("mouseout", function(d) {displayInfo(d);})
         .on("mouseover", function(d) {displayAllInfos(d);})
         .on("dblclick", function(d) {
-            console.log(d.name);
+            /*console.log(d.name);
             transition(d);
+            */
+           doubleClick(d);
         })
 ;
 
