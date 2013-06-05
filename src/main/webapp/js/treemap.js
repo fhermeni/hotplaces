@@ -5,12 +5,12 @@
  * description : sends a GET http request, receives
  * a json structure and executes a callback function.
  */
-
+  currentRoot= root;
   initialize(root);
   accumulate(root);
   layout(root);
   display(root);
-  currentRoot= root;
+ 
   displayInfo(root);
  
   /*
@@ -209,12 +209,25 @@ document.search_form.search_field.onkeypress = function() {
   * description : displays a node with its components
   */
   function display(d) {
+  	
+  	
+  	    grandparent.append("text")
+	.attr("class", "textParent")
+    .attr("x",function(){return this.parentNode.parentNode.parentNode.getAttribute("width")/2})
+    .attr("y", 0 - margin.top)
+    .attr("dy", ".75em");
+  	grandparent.datum(d.parent)
+        .select("text")
+        .text(d.id);
     // create attribute depth
     var g1 = svg.insert("g", ".grandparent")
         .datum(d.children)
         .attr("class", "depth");
         
+        
         gOld= g1;
+        
+
  
     // sets parameters for "g" tag
     var g = g1.selectAll("g")
@@ -353,7 +366,6 @@ document.search_form.search_field.onkeypress = function() {
         
         currentRoot = d;
         displayInfo(d);
-        //console.log(d);
 
     }
         
@@ -472,7 +484,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){ return this.getAttribute('class')==='grandChild'? d.color : "#FFF" });
+        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" });
 
 
   }

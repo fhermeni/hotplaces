@@ -16,7 +16,7 @@ var gOld;
 **description: definition for the aspect of treemap with d3.js
 */
 
-var margin = {top: 5, right: 10, bottom: 10, left: 10},
+var margin = {top: 20, right: 10, bottom: 10, left: 10},
     width = window.innerWidth*0.95 - margin.left - margin.right,
     height =  window.innerHeight*0.8 - margin.top - margin.bottom,
     formatNumber = d3.format(",d"),
@@ -72,6 +72,15 @@ var svg = d3.select("#chart").append("svg")
 */ 
 var grandparent = svg.append("g")
     .attr("class", "grandparent");
+    
+    
+grandparent.append("rect")
+    .attr("y", -margin.top)
+    .attr("width", width)
+    .attr("height", margin.top)
+    .style("fill", "#72DEF9");
+
+
 
 //current element hignlighted
 var memEletSelect ;

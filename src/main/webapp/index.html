@@ -2,78 +2,74 @@
 <html>
     <head>
         <link href="/css/treemapStyle.css" rel="stylesheet">
+        <link href="/css/styleDock.css" rel="stylesheet">
+        <link href='css/mb.containerPlus.css' rel='stylesheet' type='text/css'>
+
         <title>Grid5000 Treemap</title>
         <script>
             var launch_search = false;
         </script>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-        <script type="text/javascript" src="js/extruder/inc/jquery.hoverIntent.min.js"></script>
-        <script type="text/javascript" src="js/extruder/inc/jquery.mb.flipText.js"></script>
-        <script type="text/javascript" src="js/extruder/inc/mbExtruder.js"></script>
-        <script type="text/javascript">
+            <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/inc/jquery.mb.containerPlus.js"></script>
+    <script type="text/javascript" src="js/inc/mb.containerPlus.plugins.js"></script>
+        <script type="text/javascript" src="js/simpleDock.min.js"></script>
+        
+        	<script type="text/javascript">
 
-		$(function(){
 
+		$(window).load(function(){
+			$('#dockmenu').makeDock({
+				value: 20,
+				timeOn: 200,
+				timeOff: 300,
+				animation: "right",
+				type: "vertical"
 
-			
-
-			
-
-			$("#extruderLeft").buildMbExtruder({
-				position:"left",
-				width:300,
-				extruderOpacity:.8,
-				top:20,
-
-				//hidePanelsOnClose:false,
-				//accordionPanels:false,
-				onExtOpen:function(){},
-				onExtContentLoad:function(){},
-				onExtClose:function(){}
 			});
-			$("#extruderLeft2").buildMbExtruder({
-				position:"left",
-				width:300,
-				positionFixed:false,
-				top:0,
-				extruderOpacity:.8,
-				onExtOpen:function(){},
-				onExtContentLoad:function(){},
-				onExtClose:function(){}
-			});
-
-
-			
-
 		});
-
 	</script>
+
     </head>
-<body>
-	<div class="longText" style="position:absolute;">
-		<div id="extruderLeft2" class="{title:'content in place'}" >
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin purus orci, volutpat ut pulvinar volutpat, convallis in orci. Quisque eget arcu convallis dui lacinia vestibulum non ut odio. Cras fringilla mollis mattis. Cras dictum rutrum ultricies. Donec auctor, risus eu tincidunt auctor, diam ligula facilisis libero, sit amet interdum felis enim ut est. Maecenas nec nulla quis ante convallis volutpat convallis at justo. Pellentesque quam orci, consectetur sit amet interdum a, tempus eget erat. Nam in ante odio. Vivamus nec augue vitae mi molestie pretium sed id elit. Aenean ultrices auctor ipsum eu vestibulum. Phasellus non dolor vel nisi congue egestas in a eros. Phasellus nunc nulla, interdum ut viverra eu, tristique sed sapien.
-		</div>
-	</div>
+<body id="body">
+
+
+
+
+<ul id="dockmenu">
+			<li class="dock-objet" onclick='$("#ressources").containerize("open",500)'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
+			<li class="dock-objet" onclick=opCl()><a href="#"><img src="images/music.png" alt="Info" /></a></li>
+			<li class="dock-objet"onclick='$("#search_form").containerize("open",500)'><a href="#"><img src="images/shop.png" alt="Constraints" /></a></li>
+
+		</ul>
 
 	
-	
+	 <div id="dock"></div>
 
-<div id="extruderLeft" class="a {title:'menu part'}">
-	<div class="navigationBar" id="navigationBar">
 
-    <form id="search_form" name="search_form" onsubmit='return false;'>
-    	<span id = "ressources">
+
+
+    
+    	
+    	<div id = "ressources" class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=false data-buttons="dock,fullscreen,close">
+    	<h2>Ressource management</h2>
+    	
+        <p><br/><br/></p>
+    	<p>
         <select id = "ressources_select">
 	        <option value="CPU">CPU</option>
 	        <option value="RAM">RAM</option>
 	        <option value="Disk">Disk Space</option>
 	        <option value="Count" selected>Count</option>
 	    </select>
-	    <input type='button' id='displayFreeSpace' value='Display free space' disabled />
-    	</span>
+    	
+	    <input type='button' id='displayFreeSpace' value='Display free space' disabled /></p>
+	    
+    	</div>
+    	
        
-        
+        <form id="search_form" name="search_form" onsubmit='return false;' class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=false data-buttons="dock,fullscreen,close">
+        <h2>Search</h2>
     	<span id="search">
     	<input type='button' name='rootButton' value='Root' />
         <label >
@@ -87,18 +83,23 @@
         
 
     
-</div>
 
-</div>
+
+
 
 
 <p id="chart">
 <div class="information" id="information"></div>
-<!--
+<script >        	$(".container").containerize({
+            onClose: function(o) { }
+        });
+        $(".container").containerize("close", 0);
+        $(".mbc_content")[0].style.height='300px';
+        //console.log($(".mbc_content")[0]);
+        </script>
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
--->
-<script src="/js/D3Lib/d3.js"></script>
 
+<script type="text/javascript" src="js/functionContainer.js"></script>
 <script src="/js/treemapVar.js"></script>
 <script src="/js/request.js"></script>
 <script src="./js/functionStyle.js"></script>

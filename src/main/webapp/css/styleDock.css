@@ -1,0 +1,69 @@
+
+ul#dockmenu {
+position: absolute;
+	list-style:none;
+	overflow:hidden;
+	padding:15px 10px 10px 10px;
+	margin-top: 20%;
+	width: 20px;
+	background:rgb(77,84,93);
+	background: -moz-linear-gradient(
+		top,
+		rgba(100,110,120,.2),
+		rgba(100,110,120,.6)
+	);
+	background: -webkit-gradient(
+		linear,
+		left top, left bottom,
+		from(rgba(100,110,120,.2)),
+		to(rgba(100,110,120,.6))
+	);
+	background: -o-linear-gradient(
+		top,
+		rgba(100,110,120,.2),
+		rgba(100,110,120,.6)
+	);
+	border:1px #636a72 solid;
+	border-bottom:1px #4f545c solid;
+	box-shadow:0px 8px 6px #262626;
+	border-radius:8px;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+}
+ul#dockmenu li {
+	float:left;
+	position:relative;
+	top:0;
+	margin:8px 8px 8px 8px;
+	padding:0;
+	line-height:0;
+}
+ul#dockmenu li a img {
+	border:none;
+}
+div.p_textdock {
+	position:absolute;
+	display:none;
+	text-align:center;
+	width:100%;
+	color:white;
+	font-family:arial, helvetica;
+	text-shadow:1px 1px 1px #222222;
+	font-size:.8em;
+	line-height:16px;
+	text-transform:uppercase;
+}
+div#signature {
+	width:100%;
+	text-align:center;
+	font-size:.9em;
+	color:#888888;
+	font-family:arial, helvetica;
+}
+div#signature a {
+	text-decoration:none;
+	color:#888888;
+}
+div#signature a:hover {
+	color:#f37000;
+}
