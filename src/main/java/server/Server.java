@@ -19,6 +19,8 @@ public class Server {
     @Produces(MediaType.APPLICATION_JSON)
     public Response repondre() throws FileNotFoundException, IOException {
         JSONObject data = null;
+        JSONObject dataStruct = null;
+        JSONObject dataConst = null;
         String chaine = "";
         String path = "./src/main/ressources/g5kMock.json";
 
@@ -34,13 +36,16 @@ public class Server {
 
         try {
             data = new JSONObject(chaine);
-
+            String keys[] = {"struct"};
+            String keys2[] = {"name"};
+            dataStruct = new JSONObject(data, keys);
+            
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
         
         
-        return Response.ok(data.toString()).build();
+        return Response.ok(dataStruct.toString()).build();
 
     }
 }

@@ -6,10 +6,12 @@ req.onreadystatechange=function()
   if (req.readyState==4 && req.status==200)
     {
     root= JSON.parse(req.responseText);
-    inaltered_Root = root
+    console.log(root.struct);
+    root = root.struct;
+    inaltered_Root = root;
 
     }
-  }
+  };
   req.send(null);
   
   
