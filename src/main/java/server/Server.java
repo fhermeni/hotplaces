@@ -11,6 +11,16 @@ import org.codehaus.jettison.json.JSONException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import btrplace.*;
+import btrplace.model.*;
+import btrplace.model.constraint.*;
+import btrplace.model.view.ShareableResource;
+import btrplace.plan.DependencyBasedPlanApplier;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.TimeBasedPlanApplier;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
 @Path("/server")
 public class Server {
@@ -43,10 +53,15 @@ public class Server {
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
+
         
-        
-        
-        
+        Model model = new DefaultModel();
+                System.out.println("\n\n\n\n");
+        System.out.println("jhfjshfkjg");
+        System.out.println("\n\n\n\n");
+        /*
+        Node node = model.newNode();
+        */
         return Response.ok(data.toString()).build();
 
     }
