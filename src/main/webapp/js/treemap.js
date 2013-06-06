@@ -353,7 +353,6 @@ document.search_form.search_field.onkeypress = function() {
         
         currentRoot = d;
         displayInfo(d);
-        console.log(d);
 
     }
         
