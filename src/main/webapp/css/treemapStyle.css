@@ -12,8 +12,9 @@ text {
 }
 
 #chart {
-  margin-right: 0px;
-  margin-left: auto;
+	margin-top: 50px;
+  margin-right: 10px;
+  margin-left: 80px;
   width: 95%;
   min-width: 400px;
   min-height: 400px;

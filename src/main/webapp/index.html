@@ -37,9 +37,9 @@
 
 
 <ul id="dockmenu">
-			<li class="dock-objet" onclick='$("#ressources").containerize("open",500)'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
-			<li class="dock-objet" onclick=opCl()><a href="#"><img src="images/music.png" alt="Info" /></a></li>
-			<li class="dock-objet"onclick='$("#search_form").containerize("open",500)'><a href="#"><img src="images/shop.png" alt="Constraints" /></a></li>
+			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",500);'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
+			<li class="dock-objet" onclick=creatContainer()><a href="#"><img src="images/music.png" alt="Info" /></a></li>
+			<li class="dock-objet"onclick='if($("#ressources").get(0).isClosed) $("#ressources").containerize("open",500);'><a href="#"><img src="images/shop.png" alt="Constraints" /></a></li>
 
 		</ul>
 
@@ -51,7 +51,7 @@
 
     
     	
-    	<div id = "ressources" class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=false data-buttons="dock,fullscreen,close">
+    	<div id = "ressources" class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="fullscreen,close">
     	<h2>Ressource management</h2>
     	
         <p><br/><br/></p>
@@ -68,7 +68,7 @@
     	</div>
     	
        
-        <form id="search_form" name="search_form" onsubmit='return false;' class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=false data-buttons="dock,fullscreen,close">
+        <form id="search_form" name="search_form" onsubmit='return false;' class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="close">
         <h2>Search</h2>
     	<span id="search">
     	<input type='button' name='rootButton' value='Root' />
@@ -91,11 +91,8 @@
 <p id="chart">
 <div class="information" id="information"></div>
 <script >        	$(".container").containerize({
-            onClose: function(o) { }
         });
-        $(".container").containerize("close", 0);
-        $(".mbc_content")[0].style.height='300px';
-        //console.log($(".mbc_content")[0]);
+                //console.log($(".mbc_content")[0]);
         </script>
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
 

@@ -40,7 +40,7 @@
 }
 
 	        .container{
-            width: 500px;
+            width: auto;
             height: auto;
         }
 
@@ -154,7 +154,7 @@
 .mbproxy {
   border: 1px dotted gray;
   background: rgba(0, 0, 0, 0.1);
-  min-height: 100px;
+  min-height: 200px;
   min-width: 100px;
 }
 
@@ -207,7 +207,7 @@ footer, header, hgroup, menu, nav, section {
   background: -ms-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* IE10+ */
   background: linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0); /* IE6-9 */
-  min-height: 100px;
+  min-height: 200px;
   min-width: 100px;
   border-radius: 10px;
 }
