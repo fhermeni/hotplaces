@@ -1,5 +1,4 @@
 var root;
-var res;
 var constraints;
 var currentRoot;
 var inaltered_Root;
