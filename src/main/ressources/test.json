@@ -1,0 +1,29 @@
+ { "name" : "constraints" ,
+	"list" : [ 
+		{ "name" : "VMC0" ,
+			"id" : "Spread" , 
+			"VMs" : {
+					"VM0" : "04dc95a1-eb60-4fc9-81ef-06fbd30d06c1",
+					"VM1" : "0ead4075-fbec-4e99-87c5-f74c505462a4",
+					"VM2" : "7b132a43-afa4-49f0-bf31-42b89ef5c96a",
+					"VM3" : "5d33378b-43f1-4ee6-bafe-ad005a2d097a",
+					"VM4" : "0b140ff1-480d-461a-ad4b-483bf399d6f0",
+					"VM5" : "4adb8c59-b88b-4694-9423-e097e790b693",
+					"VM6" : "0c8e1461-f48c-48f1-bba3-08fb3dd4a014",
+					"VM7" : "f6f519f2-9447-40bf-8039-7988a6c08986",
+					"VM8" : "dd8d3415-9cd1-4b9b-962f-05f21f2adb7b",
+					"VM9" : "4f44d951-4af9-4e1e-a4e3-421d9d39e2bf",
+					"VM10" : "4bfd6878-35be-4862-9d21-6b9edc0261b8",
+					"VM11" : "0fea9482-09a0-4f77-9c98-d52cb3a1150e",
+					"VM12" : "0aba757f-5a1a-46b2-a911-30dee92a8892"
+					}
+		} ,
+		{ "name" : "VMC1" ,
+			"id" : "Among" , 
+			"VMs" : {
+					"VM0" : "a227a3b7-9ab1-4025-8bb4-b7de42877481",
+					"VM1" : "50295f49-b2da-4617-9a3c-9890d2c51330"
+			}
+		}
+	]
+}
