@@ -37,12 +37,14 @@ public class Server {
         try {
             data = new JSONObject(chaine);
             String keys[] = {"struct"};
-            String keys2[] = {"name"};
+            String keys2[] = {"const"};
             dataStruct = new JSONObject(data, keys);
-            
+            dataConst = new JSONObject(data, keys2);
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
+        
+        
         
         
         return Response.ok(dataStruct.toString()).build();
