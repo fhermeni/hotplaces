@@ -87,6 +87,7 @@ def makeConstraints():
 
 
 def makeCluster(id, nb):
+
 	cluster = Node(id,str(uuid.uuid4()) )
 	#print(cluster.pCPU)
 	for i in range(nb):
@@ -100,12 +101,14 @@ def makeCluster(id, nb):
 		node.DiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
 		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
+
 			vm = Node(str(uuid.uuid4()), str(uuid.uuid4()))
 			vm.nodeType="vm"
 			#add random virtual ressources
 			vm.RAM = random.randint(1,int(tmpRAM*node.ratioRAM))
 			vm.DiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
 			vm.CPU= random.randint(1, int(tmpCPU* node.ratioCPU))
+
 			#remove ressource of new vm at node
 			tmpRAM = tmpRAM - vm.RAM*1.0/node.ratioRAM
 			tmpDisk = tmpDisk - vm.DiskSpace*1.0 /node.ratioDiskSpace
@@ -117,6 +120,7 @@ def makeCluster(id, nb):
 		if(tmpDisk >0 or tmpRAM>0 or tmpCPU>0):
 			#add "vm" free
 			free = Node("free", str(uuid.uuid4()))
+
 			free.nodeType="vm"
 			#add free ressources
 			free.DiskSpace = tmpDisk * node.ratioDiskSpace
@@ -142,6 +146,7 @@ def jsonGen(root) :
 
 	
 	json = '{ "name" : "' + root.name + '" '
+
 	json +=', "UUID" : ' + str(root.uuid)
 	if(root.name != "g5k"):
 		if root.children == []:
@@ -204,6 +209,7 @@ def constraintsGen():
 	return json
 
 g5k = Node("g5k", str(uuid.uuid4()))
+
 
 
 g5k.children.append(Node("bordeaux", str(uuid.uuid4())))
