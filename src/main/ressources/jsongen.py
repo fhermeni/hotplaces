@@ -88,11 +88,13 @@ def makeConstraints():
 
 def makeCluster(id, nb):
 
+
 	cluster = Node(id,str(uuid.uuid4()) )
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1), str(uuid.uuid4()))
 		node.nodeType="node"
+
 		node.ratioDiskSpace = random.randint(1,5)
 		node.ratioRAM= random.randint(1,5)
 		node.ratioCPU= random.randint(1,16)
@@ -122,6 +124,7 @@ def makeCluster(id, nb):
 			free = Node("free", str(uuid.uuid4()))
 
 			free.nodeType="vm"
+
 			#add free ressources
 			free.DiskSpace = tmpDisk * node.ratioDiskSpace
 			free.RAM = tmpRAM * node.ratioRAM
@@ -148,6 +151,7 @@ def jsonGen(root) :
 	json = '{ "name" : "' + root.name + '" '
 
 	json +=', "UUID" : ' + str(root.uuid)
+
 	if(root.name != "g5k"):
 		if root.children == []:
 
