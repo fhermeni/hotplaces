@@ -21,7 +21,7 @@ function removeDisplay() {
         var svgTag = document.getElementById('svg');
         svgTag.setAttribute("width", window.innerWidth);
         svgTag.setAttribute("height", window.innerHeight * 0.8);
-        treemap.ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
+        treemap.ratio(height / width * 0.5 * (1 + Math.sqrt(5)));
         removeDisplay();
         initialize(currentRoot);
         //accumulate(currentRoot);
@@ -32,7 +32,9 @@ function removeDisplay() {
 
 
 
+
 }*/
+
 
 
 function getUnit(number) {
@@ -61,7 +63,7 @@ function displayAllInfos(d) {
     var tmp = d.depth === 4? d.parent : d;
 
     str += "<table class='nodeInfo'><tr>" + 
-            "<td width='60%'>Node Name</td><td>RAM</td><td>CPUs</td><td width=15%>DiskSpace</td></tr><tr><td>";
+            "<td width='65%'>Node Name</td><td>RAM</td><td>CPUs</td><td width=15%>Disk</td></tr><tr><td>";
     str += tmp.id;
     var ram = getUnit(tmp.rRAM? tmp.RAM *tmp.rRAM  : tmp.RAM);
     var cpu = tmp.rCPU? tmp.CPU * tmp.rCPU  : tmp.CPU;
@@ -73,17 +75,18 @@ function displayAllInfos(d) {
     + "</td></tr></table>";
 
     if(d.depth === 4) {
-        str += "<table class='VMInfo'><tr><td width=60%>VM UUID</td><td width=15%>RAM</td><td>CPUs</td><td width=15%>DiskSpace</td></tr><tr><td>";
+        str += "<table class='VMInfo'><tr><td width=60%>VM UUID</td><td width=15%>RAM</td><td>CPUs</td><td width=15%>Disk</td></tr><tr><td>";
         ram = getUnit(d.RAM);
         ds = getUnit(d.DiskSpace);
-        str += d.name
-            + "</td><td>" + ram[0] + ram[1]
+        
+        if(d.name === "free") str += "Free Space";
+        else str += d.name;
+        
+        str += "</td><td>" + ram[0] + ram[1]
             + "</td><td>" + d.CPU
             + "</td><td>" + ds[0] + ds[1]
         + "</td></tr></table></div>";
     }
-
-
     document.getElementById("information").innerHTML = str;
 
 }
@@ -92,15 +95,92 @@ function displayAllInfos(d) {
  **description: displays infos on the currentRoot
  */
 function displayInfo(d) {
+    document.getElementById("information").innerHTML = "";
+    var cRootId;
+    if (currentRoot.id.length === 1) {
+        cRootId = [currentRoot.id];
+    } else {
+        cRootId = currentRoot.id.split(".");
+    }
 
     var str = "";
+    var tmp = d.depth === 4 ? d.parent : d;
+    var table = document.createElement("table");
+    table.setAttribute("class", "nodeInfo2");
+    var tr = document.createElement("tr");
 
-    str += "<table class='nodeInfo2'><tr>" +
-            "<td width='60%'>Current Root</td></tr><tr><td>";
-    str += currentRoot.id;
-    str += "</td></tr></table>";
-    document.getElementById("information").innerHTML = str;
+    str += '<td width="65%">Node Name</td>';
+    
+    // if current node is a server
+    if (currentRoot.depth === 3) {
+        table.setAttribute("class", "nodeInfo");
+        str += "<td>RAM</td><td>CPUs</td><td width=15%>Disk</td>";
+    }
 
+    tr.innerHTML = str;
+    table.appendChild(tr);
+
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    cRootId.forEach(function(name) {
+        var span = document.createElement("span");
+        
+        span.innerHTML = name;
+        if (name !== cRootId[cRootId.length - 1])
+            span.setAttribute("class", "nodeLink");
+        td.appendChild(span);
+        if (name !== cRootId[cRootId.length - 1]) {
+            td.innerHTML += ".";
+        }
+    });
+
+    tr.appendChild(td);
+    
+     /* if current node is a server
+      * print node specs in the table
+      */
+    if (currentRoot.depth === 3) {
+        var ram = getUnit(tmp.rRAM ? tmp.RAM * tmp.rRAM : tmp.RAM);
+        var cpu = tmp.rCPU ? tmp.CPU * tmp.rCPU : tmp.CPU;
+        var ds = getUnit(tmp.rDiskSpace ? tmp.DiskSpace * tmp.rDiskSpace : tmp.DiskSpace);
+
+        td = document.createElement("td");
+        td.innerHTML = ram[0] + ram[1];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerHTML = cpu;
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerHTML = ds[0] + ds[1];
+        tr.appendChild(td);
+    }
+
+    table.appendChild(tr);
+    document.getElementById("information").appendChild(table);
+
+    // add on  click events
+    var nodelist = document.getElementsByClassName("nodeLink");
+    var path = Array();
+    var tmpnode = inaltered_Root;
+
+    for (var i = 0; i < nodelist.length; i++) {
+
+        if (tmpnode.name !== nodelist[i].innerHTML) {
+            for (var j = 0; j < tmpnode.children.length; j++) {
+                if (tmpnode.children[j].name === nodelist[i].innerHTML) {
+                    tmpnode = tmpnode.children[j];
+                }
+            }
+        }
+        path.push(tmpnode);
+
+
+        nodelist[i].onclick = function() {
+            search(this.innerHTML);
+        };
+    }
 }
 
 
@@ -173,8 +253,6 @@ function unHighLight(div) {
 
 
         memEletSelect = undefined;
-
-
 
     }
 }

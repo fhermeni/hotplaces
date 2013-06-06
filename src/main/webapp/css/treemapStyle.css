@@ -30,7 +30,7 @@ text {
     width: 100%;
     min-width: 400px;
     height: 4em;
-    background-color: #EFEBA9;
+    background-color: #72DEF9;
 }
 
 .textChildren{
@@ -43,32 +43,11 @@ text {
 	font-size: smaller
 }
 
-.nodeLvl4 {
-    font-size: larger;
-    font-weight: bold;
-}
-
-.nodeLvl3 {
-    font-size: larger;
-    font-weight: bold;
-}
-
-.nodeLvl2 {
-    font-size: large;
-}
-
-.nodeLvl1 {
-    font-size: large;
-}
-
-.nodeLvl0 {
-    font-size: large;
-}
-
 .nodeInfo {
     float: left;
     border: 1px solid black;
     width: 30%;
+    height: 4em;
     table-layout: fixed;
     border-collapse:collapse
 
@@ -81,6 +60,7 @@ text {
     float: right;
     border: 1px solid black;
     width: 30%;
+    height: 4em;
     border-collapse:collapse
 }
 .VMInfo td {
@@ -90,11 +70,18 @@ text {
 .nodeInfo2 {
     float: left;
     border: 1px solid black;
-    width: 18%;
+    width: 19.5%;
+    height: 4em;
     table-layout: fixed;
     border-collapse:collapse
 }
 
 .nodeInfo2 td {
     border: 1px solid black;
+}
+
+.nodeLink:hover {
+    border-bottom:1px solid;
+    font-weight: bold;
+    color: blue;
 }
