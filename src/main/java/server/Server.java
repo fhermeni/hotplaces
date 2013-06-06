@@ -47,7 +47,7 @@ public class Server {
         
         
         
-        return Response.ok(dataStruct.toString()).build();
+        return Response.ok(data.toString()).build();
 
     }
 }

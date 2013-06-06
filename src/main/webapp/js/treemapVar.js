@@ -1,4 +1,6 @@
 var root;
+var res;
+var constraints;
 var currentRoot;
 var inaltered_Root;
 var pad = 3, pas =1;
