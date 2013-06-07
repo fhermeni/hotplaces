@@ -35,7 +35,25 @@ function removeDisplay() {
 
 }*/
 
-
+function getInfo(d){
+	var info = Array();
+	console.log(d);
+	info.push(d.children.length);
+	info.push(d.depth);
+	if(d.depth>2){
+		info.push(d.ram);
+		info.push(d.CPU);
+	}
+	
+	return info;
+	}
+	
+function ToStringInfo(list){
+	var result="";
+	result += "<p>numbers of children: " + list[0] +"</p> <br/> <p>Depth of node: " + list[1] + "</p><br/> <p>CPU of node: " + list[3] + "</p><br/>";
+	return result;
+	
+}
 
 function getUnit(number) {
     var unit = 0;
@@ -62,31 +80,14 @@ function displayAllInfos(d) {
     tabNodes = d.id.split(".");
     var tmp = d.depth === 4? d.parent : d;
 
-    str += "<table class='nodeInfo'><tr>" + 
-            "<td width='65%'>Node Name</td><td>RAM</td><td>CPUs</td><td width=15%>Disk</td></tr><tr><td>";
     str += tmp.id;
     var ram = getUnit(tmp.rRAM? tmp.RAM *tmp.rRAM  : tmp.RAM);
     var cpu = tmp.rCPU? tmp.CPU * tmp.rCPU  : tmp.CPU;
     var ds = getUnit(tmp.rDiskSpace? tmp.DiskSpace * tmp.rDiskSpace : tmp.DiskSpace);
     
-    str += "</td><td>" + ram[0] + ram[1]
-        + "</td><td>" + cpu
-        + "</td><td>" + ds[0] + ds[1]
-    + "</td></tr></table>";
 
-    if(d.depth === 4) {
-        str += "<table class='VMInfo'><tr><td width=60%>VM UUID</td><td width=15%>RAM</td><td>CPUs</td><td width=15%>Disk</td></tr><tr><td>";
-        ram = getUnit(d.RAM);
-        ds = getUnit(d.DiskSpace);
-        
-        if(d.name === "free") str += "Free Space";
-        else str += d.name;
-        
-        str += "</td><td>" + ram[0] + ram[1]
-            + "</td><td>" + d.CPU
-            + "</td><td>" + ds[0] + ds[1]
-        + "</td></tr></table></div>";
-    }
+
+
     document.getElementById("information").innerHTML = str;
 
 }
@@ -105,60 +106,24 @@ function displayInfo(d) {
 
     var str = "";
     var tmp = d.depth === 4 ? d.parent : d;
-    var table = document.createElement("table");
-    table.setAttribute("class", "nodeInfo2");
-    var tr = document.createElement("tr");
+
 
     str += '<td width="65%">Node Name</td>';
     
-    // if current node is a server
-    if (currentRoot.depth === 3) {
-        table.setAttribute("class", "nodeInfo");
-        str += "<td>RAM</td><td>CPUs</td><td width=15%>Disk</td>";
-    }
 
-    tr.innerHTML = str;
-    table.appendChild(tr);
 
-    tr = document.createElement("tr");
-    td = document.createElement("td");
     cRootId.forEach(function(name) {
         var span = document.createElement("span");
         
         span.innerHTML = name;
         if (name !== cRootId[cRootId.length - 1])
             span.setAttribute("class", "nodeLink");
-        td.appendChild(span);
+            document.getElementById("information").appendChild(span);
         if (name !== cRootId[cRootId.length - 1]) {
-            td.innerHTML += ".";
+            document.getElementById("information").innerHTML += ".";
         }
     });
 
-    tr.appendChild(td);
-    
-     /* if current node is a server
-      * print node specs in the table
-      */
-    if (currentRoot.depth === 3) {
-        var ram = getUnit(tmp.rRAM ? tmp.RAM * tmp.rRAM : tmp.RAM);
-        var cpu = tmp.rCPU ? tmp.CPU * tmp.rCPU : tmp.CPU;
-        var ds = getUnit(tmp.rDiskSpace ? tmp.DiskSpace * tmp.rDiskSpace : tmp.DiskSpace);
-
-        td = document.createElement("td");
-        td.innerHTML = ram[0] + ram[1];
-        tr.appendChild(td);
-
-        td = document.createElement("td");
-        td.innerHTML = cpu;
-        tr.appendChild(td);
-
-        td = document.createElement("td");
-        td.innerHTML = ds[0] + ds[1];
-        tr.appendChild(td);
-    }
-
-    table.appendChild(tr);
-    document.getElementById("information").appendChild(table);
 
     // add on  click events
     var nodelist = document.getElementsByClassName("nodeLink");

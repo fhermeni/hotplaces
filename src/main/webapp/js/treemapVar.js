@@ -17,9 +17,9 @@ var gOld;
 **description: definition for the aspect of treemap with d3.js
 */
 
-var margin = {top: 20, right: 10, bottom: 10, left: 30},
+var margin = {top: 20, right: 0, bottom: 10, left: 0},
     width = window.innerWidth*0.95 - margin.left - margin.right,
-    height =  window.innerHeight*0.8 - margin.top - margin.bottom,
+    height =  window.innerHeight*0.9 - margin.top - margin.bottom,
     formatNumber = d3.format(",d"),
     color = d3.scale.category20(),
     transitioning;
@@ -61,8 +61,6 @@ var svg = d3.select("#chart").append("svg")
     .attr("height", height + margin.bottom + margin.top)
     .attr("id", "svg")
     .attr("onmouseout", "unHighLight(undefined);")
-    .style("margin-left", -margin.left + "px")
-    .style("margin.right", -margin.right + "px")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .style("shape-rendering", null);
@@ -72,14 +70,11 @@ var svg = d3.select("#chart").append("svg")
 **description:definition of grandparent notion,append svg element with a recursive g element
 */ 
 var grandparent = svg.append("g")
-    .attr("class", "grandparent");
+    .attr("class", "grandparent")
+    .attr("id", "grandparent");
     
     
-grandparent.append("rect")
-    .attr("y", -margin.top)
-    .attr("width", width)
-    .attr("height", margin.top)
-    .style("fill", "#72DEF9");
+
 
 
 

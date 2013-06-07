@@ -190,16 +190,6 @@ document.search_form.search_field.onkeypress = function() {
   function display(d) {
 
   	
-  	
-  	grandparent.append("text")
-	.attr("class", "textParent")
-    .attr("x",function(){return this.parentNode.parentNode.parentNode.getAttribute("width")/2})
-    .attr("y", 0 - margin.top)
-    .attr("dy", ".75em");
-    
-  	grandparent.datum(d.parent)
-        .select("text")
-        .text(d.id);
 
       
       function singleClick(d) {
