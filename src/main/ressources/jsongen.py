@@ -55,7 +55,7 @@ def findRandomNode(node, nodeType):
 	
 	
 	if(finalNode.nodeType!= nodeType or finalNode.name =='free'):
-		print(finalNode.nodeType)
+		#print(finalNode.nodeType)
 		finalNode = findRandomNode(node, nodeType) 
 	
 	return finalNode
@@ -68,9 +68,12 @@ def makeConstraints():
 		name = "VMC" +str(i)
 		id= random.choice([ "Among", "Gather", "Killed", "Lonely", "Ready", "Root", "Running", "SequentialVMTransitions", "Sleeping", "Split", "Spread"])
 		vms=[]
-		while(random.randint(0,5)!=0):
+		again=1
+		while(again!=0):
 			vms.append(findRandomNode(g5k, "vm"))
+			again =random.randint(0,5)
 		constraints.append(VMConstraint(name, id, vms))
+
 		
 		
 	for i in range(nbNC):
@@ -146,10 +149,7 @@ def jsonGen(root) :
 			json +=', "CPU" : ' + str(root.CPU) 
 			json +=', "RAM" : ' + str(root.RAM) 
 			json += ', "DiskSpace" :' + str(root.DiskSpace)
-			json += ', "constraints" : ['
-			for i in range(len(root.constraints)):
-				json+= '{ "name" : ' + root.constraints[i][0] + ', "satisfy" : ' +  str(root.constraints[i][2]) + '}, '
-			json += '] '
+			
 		elif root.children[0].children == []:
 			json +=', "CPU" : ' + str(root.CPU)
 			json +=', "RAM" : ' + str(root.RAM) 
@@ -157,10 +157,6 @@ def jsonGen(root) :
 			json +=', "rCPU" : ' + str(root.ratioCPU)
 			json +=', "rRAM" : ' + str(root.ratioRAM)
 			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
-			json += ', "constraints" : ['
-			for i in range(len(root.constraints)):
-				json+= '{ "name" : ' + root.constraints[i][0] + ', "satisfy" : ' +  str(root.constraints[i][2]) + '}, '
-			json += '] '
 			
 
 
@@ -172,11 +168,40 @@ def jsonGen(root) :
 		json = json[:len(json)-2]
 		json += '] \n'
 	json += '}'
+
 	return json
 
+def constraintsGen():
+	json = '\n\n { "name" : "constraints" ,\n'
+	json += ' "list" : [ \n '
 
+	for i in range(len(constraints)):
+		json += '{ "name" : "' + constraints[i].name + '" ,\n'
+		json += '"id" : "' + constraints[i].id + '" , \n'
 
+		if(type(constraints[i]) == VMConstraint):
+			json += '"VMs" : {\n'
+			for j in range(len(constraints[i].nodes)):
+				json += '"VM' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
+				if j != (len(constraints[i].nodes) -1):
+					json += ',\n' 
 
+		elif(type(constraints[i]) == NodeConstraint):
+			json += '"Nodes" : {\n'
+			for j in range(len(constraints[i].nodes)):
+				json += '"Node' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
+				if j != (len(constraints[i].nodes) -1):
+					json += ',\n' 
+
+		json += '}\n'
+
+		if i != (len(constraints) -1):
+			json += '} , \n' 
+		else :
+			json += '} \n'
+		#json += '} ,\n'
+	json += '] \n } '
+	return json
 
 g5k = Node("g5k", str(uuid.uuid4()))
 
@@ -235,6 +260,7 @@ toulouse.children.append(makeCluster("chocapique", 93))
 
 constraints= []
 makeConstraints()
+'''
 for i in range(len(constraints)):
 	print(constraints[i].name + " " + constraints[i].id + " " + str(constraints[i].satisfy))
 	stri= "noeud associer: " 
@@ -245,11 +271,15 @@ for i in range(len(constraints)):
 for i in range(len(constraints)):
 	for j in range(len(constraints[i].nodes)):
 		constraints[i].nodes[j].constraints.append((constraints[i].name, constraints[i].id, constraints[i].satisfy))
-	
-	
+	'''
+
+def finalJSON(root):
+	#return '{ \n "name" : "struct", "children" : [ \n' + jsonGen(root) + '\n, \n' + constraintsGen() + ']\n}'
+	return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
+	#return jsonGen(root)
 
 mock = open("g5kMock.json", "w")
-mock.write(jsonGen(g5k))
+mock.write(finalJSON(g5k))
 mock.close()
 
 

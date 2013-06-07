@@ -1,4 +1,5 @@
 var root;
+var constraints;
 var currentRoot;
 var inaltered_Root;
 var pad = 3, pas =1;
@@ -85,4 +86,4 @@ grandparent.append("rect")
 //current element hignlighted
 var memEletSelect ;
 
-var foundColor = "#FFF700";
+var keyWords;
