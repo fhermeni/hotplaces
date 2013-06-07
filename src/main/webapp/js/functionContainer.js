@@ -1,5 +1,9 @@
-	function creatContainer(id, title, content, width, height){
+	function creatContainer(id, title, content, x, y){
 	var container = document.createElement("div")
+	var titleTag = document.createElement("H2");
+	container.innerHTML=content;
+	titleTag.innerHTML=title;
+	container.appendChild(titleTag);
 	container.setAttribute("id", id);
 	container.setAttribute("data-skin", "black");
 	container.setAttribute("data-drag", "true");
@@ -9,11 +13,8 @@
 	container.setAttribute("data-containment", "document");
 	container.setAttribute("data-dock", "dock");
 	container.setAttribute("data-buttons", "dock,fullscreen,close");
-	var title = document.createElement("h2");
-	title.innerHTML=title;
-	container.appendChild(title);
 	document.getElementById("body").appendChild(container);
-	container.innerHTML=content;
+
 	$(container).containerize({onLoad: function(el){}, //$(el).css({opacity:.7})
             onClose: function(o) { 
             if(!o.isIconized){
