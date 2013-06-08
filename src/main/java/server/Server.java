@@ -7,27 +7,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import btrplace.*;
+
 import btrplace.model.*;
 import btrplace.model.constraint.*;
-import btrplace.model.view.ShareableResource;
-import btrplace.plan.DependencyBasedPlanApplier;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.TimeBasedPlanApplier;
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.model.constraint.checker.*;
+import java.util.ArrayList;
 
 @Path("/server")
 public class Server {
-
+    
+   Model model = new DefaultModel();
+   Mapping map = model.getMapping();
+   
+   
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response repondre() throws FileNotFoundException, IOException {
+    public Response repondre() throws FileNotFoundException, IOException, JSONException {
         JSONObject data = null;
         JSONObject dataStruct = null;
         JSONObject dataConst = null;
@@ -50,20 +50,82 @@ public class Server {
             String keys2[] = {"const"};
             dataStruct = new JSONObject(data, keys);
             dataConst = new JSONObject(data, keys2);
+
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
 
         
-        Model model = new DefaultModel();
-                System.out.println("\n\n\n\n");
-        System.out.println("jhfjshfkjg");
-        System.out.println("\n\n\n\n");
         /*
+        
         Node node = model.newNode();
+        Node node2 = model.newNode();
+        VM vm = model.newVM();
+        VM vm2 = model.newVM();
+        
+        map.addOnlineNode(node);
+        map.addOnlineNode(node2);
+        map.addRunningVM(vm, node);
+        map.addRunningVM(vm2, node2);
+        
+        ArrayList<VM> vms = new ArrayList<VM>();
+        vms.add(vm);
+        vms.add(vm2);
+        
+        Gather gather = new Gather(vms);
+        
+        System.out.println(gather.isSatisfied(model));
         */
+        mapBuild(dataStruct.optJSONObject("struct"));
+        
+        System.out.println(map);
+        
         return Response.ok(data.toString()).build();
 
     }
+    
+    public boolean isVM(JSONObject jo) {
+        if(jo.has("children"))
+            return false;
+        return true;
+    }
+    
+    //returns true if node is a server
+    public boolean isServer(JSONObject jo) {
+        if(! isVM(jo)) {
+            JSONArray children = jo.optJSONArray("children");
+            if(isVM(children.optJSONObject(0)))
+                return true;
+        }
+        return false;
+    }
+    
+    public JSONObject mapBuild(JSONObject jo) {
+        JSONArray children = jo.optJSONArray("children");
+        if(isServer(jo)) {
+            
+            Node node = model.newNode();
+            map.addOnlineNode(node);
+            VM vm;
+            for(int i =0; i< children.length(); i++) {
+                // UUID --> Integer ?
+                vm = model.newVM();
+                map.addRunningVM(vm, node);
+            }
+            
+            
+        } else {
+            if(! isVM(jo)) {
+                for(int i =0; i< children.length(); i++) {
+                    mapBuild(children.optJSONObject(i));
+                }
+            }
+        }
+
+        return jo;
+    }
+    
 }
+
+
 
