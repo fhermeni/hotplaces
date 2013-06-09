@@ -17,6 +17,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.constraint.checker.*;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Path("/server")
 public class Server {
@@ -77,11 +78,29 @@ public class Server {
         System.out.println(gather.isSatisfied(model));
         */
         mapBuild(dataStruct.optJSONObject("struct"));
+        Set<VM> vms = map.getAllVMs();
+        Set<Node> nodes = map.getAllNodes();
         
-        System.out.println(map);
+        
         
         return Response.ok(data.toString()).build();
 
+    }
+    
+    public VM getVM(Set<VM> vms, int id) {
+        for(VM vm : vms) {
+            if(vm.id() == id)
+                return vm;
+        }
+        return null;
+    }
+    
+    public Node getNode(Set<Node> nodes, int id) {
+        for(Node node : nodes) {
+            if(node.id() == id)
+                return node;
+        }
+        return null;
     }
     
     public boolean isVM(JSONObject jo) {
@@ -100,7 +119,7 @@ public class Server {
         return false;
     }
     
-    public JSONObject mapBuild(JSONObject jo) {
+    public JSONObject mapBuild(JSONObject jo) throws JSONException {
         JSONArray children = jo.optJSONArray("children");
         if(isServer(jo)) {
             
@@ -111,8 +130,11 @@ public class Server {
                 // UUID --> Integer ?
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
+                children.optJSONObject(i).put("btrpID", vm.id());
+                
             }
-            
+            jo.put("btrpID", node.id());
+
             
         } else {
             if(! isVM(jo)) {
@@ -123,6 +145,45 @@ public class Server {
         }
 
         return jo;
+    }
+    
+    public int getBtrpServerID(JSONObject jo, String uuid) throws JSONException {
+        
+        if(isServer(jo)) {
+            if(jo.get("UUID").equals(uuid))
+                return jo.getInt("btrpID");
+            
+        }
+        
+        if (!isVM(jo)) {
+            JSONArray children = jo.getJSONArray("children");
+            for (int i = 0; i < children.length(); i++) {
+                int res = getBtrpServerID(children.optJSONObject(i), uuid);
+                if(res != -1)
+                    return res;
+            }
+        }
+        
+        return -1;
+    }
+    
+    public int getBtrpVMID(JSONObject jo, String uuid) throws JSONException {
+        
+        if(isVM(jo)) {
+            if(jo.get("UUID").equals(uuid))
+                return jo.getInt("btrpID");
+            
+        } else {
+        
+            JSONArray children = jo.getJSONArray("children");
+            for (int i = 0; i < children.length(); i++) {
+                int res = getBtrpVMID(children.optJSONObject(i), uuid);
+                if(res != -1)
+                    return res;
+            }
+        }
+        
+        return -1;
     }
     
 }
