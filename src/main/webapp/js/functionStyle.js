@@ -35,14 +35,43 @@ function removeDisplay() {
 
 }*/
 
+function constraintsToString(){
+	var cList = constraints.list;
+	var result= "<p>Constraints: </p><br/>";
+	
+	cList.forEach(function(el){
+		result+= "<p> " + el.id +": "
+		console.log(el.VMs);
+		if(el.VMs){
+			result+= el.VMs.length + " VMs "
+		} 
+		if(el.Nodes){
+			result+= el.Nodes.length + " Nodes "
+		} 
+		
+		if(el.rcid){
+			result += ", ressources: " + el.rcid
+			}
+		if(el.ratio){
+			result += ", ratio: " + el.ratio 
+		}
+		if(el.amount){
+			result += ", amount: " + el.amount 
+		}
+		
+	})
+	return result;
+}
+
 function getInfo(d){
 	var info = Array();
-	console.log(d);
-	info.push(d.children.length);
+	info.push(d.parent? d.parent.id : "none")
+	info.push(d.children? d.children.length : 0);
 	info.push(d.depth);
 	if(d.depth>2){
-		info.push(d.ram);
+		info.push(d.RAM);
 		info.push(d.CPU);
+		info.push(d.DiskSpace);
 	}
 	
 	return info;
@@ -50,7 +79,12 @@ function getInfo(d){
 	
 function ToStringInfo(list){
 	var result="";
-	result += "<p>numbers of children: " + list[0] +"</p> <br/> <p>Depth of node: " + list[1] + "</p><br/> <p>CPU of node: " + list[3] + "</p><br/>";
+	result += "<p id='parentLink'>Parent : " + list[0] +"</p> <br/> <p>numbers of children: " + list[1] +"</p> <br/> <ul id='childList'></ul> <p>Depth of node: " + list[2] + "</p><br/> ";
+	
+	if(list.length>3){
+		result += "<p> ressources : <br/> <ul> <li> Ram: " + list[3] + "</li><li> CPU: " +list[4] + "</li><li> Disk Space: " +list[5] + "</li></ul></p>"
+	}
+	
 	return result;
 	
 }

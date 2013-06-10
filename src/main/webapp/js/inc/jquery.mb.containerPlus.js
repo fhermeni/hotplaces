@@ -716,7 +716,6 @@
 					el.$.containerize("open",false);
 				}
 
-				console.log("toto")
 					el.$.containerize("close");
 				
 				return el.$;

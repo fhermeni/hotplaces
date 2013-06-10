@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/inc/jquery.mb.containerPlus.js"></script>
     <script type="text/javascript" src="js/inc/mb.containerPlus.plugins.js"></script>
         <script type="text/javascript" src="js/simpleDock.min.js"></script>
+
         
         	<script type="text/javascript">
 
@@ -38,8 +39,10 @@
 
 <ul id="dockmenu">
 			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",500);'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
-			<li class="dock-objet"onclick='if($("#ressources").get(0).isClosed) $("#ressources").containerize("open",500);'><a href="#"><img src="images/ressource.png" alt="Constraints" /></a></li>
-			<li class="dock-objet" onclick='creatContainer(33, currentRoot.name, ToStringInfo(getInfo(currentRoot)), 10, 10)'><a href="#"><img src="images/music.png" alt="Info" /></a></li>
+			<li class="dock-objet"onclick='if($("#ressources").get(0).isClosed) $("#ressources").containerize("open",500);'><a href="#"><img src="images/ressource.png" alt="Ressources" /></a></li>
+			<li class="dock-objet" onclick='creatContainerInfo(currentRoot.UUID, currentRoot.name, ToStringInfo(getInfo(currentRoot)), "230px", "50%")'><a href="#"><img src="images/music.png" alt="Info" /></a></li>
+			<li class="dock-objet" onclick='containerConstraints("250px", "50%")'><a href="#"><img src="images/constraints.png" alt="Constraints" /></a></li>
+
 
 
 		</ul>

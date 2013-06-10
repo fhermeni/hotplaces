@@ -1,11 +1,12 @@
-	function creatContainer(id, title, content, x, y){
+	function creatContainerInfo(id, title, content, x, y){
+	if($("#"+id).length ===0){
 	var container = document.createElement("div")
 	var titleTag = document.createElement("H2");
 	container.innerHTML=content;
 	titleTag.innerHTML=title;
 	container.appendChild(titleTag);
 	container.setAttribute("id", id);
-	container.setAttribute("data-skin", "black");
+	container.setAttribute("data-skin", "white");
 	container.setAttribute("data-drag", "true");
 	container.setAttribute("data-resize", "true");
 	container.setAttribute("data-collapsable", "true");
@@ -13,7 +14,10 @@
 	container.setAttribute("data-containment", "document");
 	container.setAttribute("data-dock", "dock");
 	container.setAttribute("data-buttons", "dock,fullscreen,close");
+	container.style.top=x;
+	container.style.left=y;
 	document.getElementById("body").appendChild(container);
+	
 
 	$(container).containerize({onLoad: function(el){}, //$(el).css({opacity:.7})
             onClose: function(o) { 
@@ -32,7 +36,32 @@
             
 	
 	}
+	else{
+		console.log($("#"+id)[0].childNodes[1].style);
+		
+	}
+	}
 	
+	function containerConstraints(x, y){
+	
+		var container = document.createElement("div")
+		var titleTag = document.createElement("H2");
+		container.innerHTML=constraintsToString();
+		titleTag.innerHTML="Constraints";
+		container.appendChild(titleTag);
+		container.setAttribute("data-skin", "white");
+		container.setAttribute("data-drag", "true");
+		container.setAttribute("data-resize", "true");
+		container.setAttribute("data-collapsable", "true");
+		container.setAttribute("data-remenberme", "true");
+		container.setAttribute("data-containment", "document");
+		container.setAttribute("data-dock", "dock");
+		container.setAttribute("data-buttons", "fullscreen,close");
+		container.style.top=x;
+		container.style.left=y;
+		document.getElementById("body").appendChild(container);
+		$(container).containerize()
+		}
 	
     $(function(){
 
