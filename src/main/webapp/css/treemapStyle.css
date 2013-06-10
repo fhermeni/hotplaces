@@ -20,13 +20,8 @@ text {
   min-height: 400px;
 }
 
-#ressources{
-}
-
-#search{
-	  
-	  
-	
+ul{
+	text-indent:20px;
 }
 
 .information {
@@ -74,6 +69,25 @@ text {
     border-collapse:collapse
 
 }
+.nodeLink:hover {
+    border-bottom:1px solid;
+    font-weight: bold;
+    color: blue;
+    cursor:pointer;
+}
+
+.childLink:hover{
+	cursor:pointer;
+    font-weight: lighter;
+    color: blue;
+}
+
+.nodeNumb:hover {
+	border:1px dashed;
+	cursor:pointer;
+	
+}
+
 .nodeInfo td {
     border: 1px solid black;
 }
@@ -150,8 +164,4 @@ text {
 
 		
 
-.nodeLink:hover {
-    border-bottom:1px solid;
-    font-weight: bold;
-    color: blue;
-}
+

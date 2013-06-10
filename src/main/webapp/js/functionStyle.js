@@ -58,6 +58,7 @@ function constraintsToString(){
 		if(el.amount){
 			result += ", amount: " + el.amount 
 		}
+		result+="</p><br>"
 		
 	})
 	return result;
@@ -66,7 +67,10 @@ function constraintsToString(){
 function getInfo(d){
 	var info = Array();
 	info.push(d.parent? d.parent.id : "none")
-	info.push(d.children? d.children.length : 0);
+	info.push(d.children? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
+	info.push(d.children? Array(d.children) : null);
+
+
 	info.push(d.depth);
 	if(d.depth>2){
 		info.push(d.RAM);
@@ -79,15 +83,32 @@ function getInfo(d){
 	
 function ToStringInfo(list){
 	var result="";
-	result += "<p id='parentLink'>Parent : " + list[0] +"</p> <br/> <p>numbers of children: " + list[1] +"</p> <br/> <ul id='childList'></ul> <p>Depth of node: " + list[2] + "</p><br/> ";
+	result += "<p id='parentLink'>Parent : " + list[0] +"</p> <br/> <span >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/> <p>Depth of node: " + list[3] + "</p><br/> ";
 	
-	if(list.length>3){
-		result += "<p> ressources : <br/> <ul> <li> Ram: " + list[3] + "</li><li> CPU: " +list[4] + "</li><li> Disk Space: " +list[5] + "</li></ul></p>"
+	if(list.length>6){
+		result += "<p> ressources : <br/> <ul> <li> Ram: " + list[4] + "</li><li> CPU: " +list[5] + "</li><li> Disk Space: " +list[6] + "</li></ul></p>"
 	}
 	
 	return result;
 	
 }
+ function displayChildren(childlist, ul){
+
+ 	childlist.forEach(function(el) {
+ 		if(el.name!="free"){
+ 	 var li = document.createElement("li");
+ 	 li.innerHTML=el.name;
+ 	 li.setAttribute("class", "childLink");
+ 	 ul.appendChild(li);
+ 	 
+ 	 li.onclick= function(){
+	 	 search(this.innerHTML);
+ 	 }
+ 	 }
+ 	 });
+ 	 
+ }
+
 
 function getUnit(number) {
     var unit = 0;

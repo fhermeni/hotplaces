@@ -18,6 +18,8 @@
 	container.style.left=y;
 	document.getElementById("body").appendChild(container);
 	
+	
+	
 
 	$(container).containerize({onLoad: function(el){}, //$(el).css({opacity:.7})
             onClose: function(o) { 
@@ -33,7 +35,33 @@
             onRestore:function(o){}
 
             });
-            
+      
+      var childN= $("#"+id)[0].childNodes;
+      
+      for (var i = 0; i<childN.length; i++){
+      	if(childN[i].getAttribute("class")=== "mbc_content"){
+	      	var span =childN[i].getElementsByTagName("span")[0];
+	      	var ul= childN[i].getElementsByTagName("ul")[0];
+		    displayChildren(currentRoot.children, ul);
+		    ul.style.display="none";
+		    ul.style.listStyle= "inside";
+		   ul.style.textIndent="20px";
+		   span.setAttribute("class", "nodeNumb");
+		      	
+		    span.onclick= function(){
+			if(ul.style.display=="none"){
+				      	ul.style.display="block";
+			      	}
+			 else{
+				      	ul.style.display="none";
+
+			      	}
+		      	}
+	      	}
+	      	
+      	}
+      	
+     //.onclick = function(){displayChildren(currentRoot.children)};     
 	
 	}
 	else{
@@ -63,8 +91,14 @@
 		$(container).containerize()
 		}
 	
-    $(function(){
+/*
+*sample of popup functionality
+*
+*
+*/
 
+
+    //$(function(){
 
 
         /*
@@ -152,6 +186,6 @@
 
         $("#cont1").containerize("addtotoolbar", [closeBtn]);
         $("#cont2").containerize("addtotoolbar", changeSkinBtn);
-        $("#cont3").containerize("addtotoolbar", [iconizeBtn,changeSkinBtn,dockBtn]);*/
+        $("#cont3").containerize("addtotoolbar", [iconizeBtn,changeSkinBtn,dockBtn]);
 
-    })
+    })*/
