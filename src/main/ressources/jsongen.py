@@ -38,7 +38,7 @@ class NodeConstraint:
 		self.name=name
 		self.id = id
 		self.nodes= nodes
-		self.satisfy= bool(random.randint(0,1))
+		
 		
 class VMConstraint:
 
@@ -46,7 +46,18 @@ class VMConstraint:
 		self.name=name
 		self.id=id
 		self.nodes=vms
-		self.satisfy= bool(random.randint(0,1))
+		
+
+class Ban_fence:
+	def __init__(self, name, id, vms, nodes):
+		self.name = name
+		self.id = id
+		self.vms = vms
+		self.nodes = nodes
+'''
+class Ressource_capacity:
+	def __init__(self, name, id, )
+'''
 
 def findRandomNode(node, nodeType):
 	finalNode= node
@@ -64,9 +75,11 @@ def findRandomNode(node, nodeType):
 def makeConstraints():
 	nbNC = random.randint(1, 20)
 	nbVMC = random.randint(1, 20)
+	nbBan_fence = random.randint(1, 10)
+
 	for i in range(nbVMC):
 		name = "VMC" +str(i)
-		id= random.choice([ "Among", "Gather", "Killed", "Lonely", "Ready", "Root", "Running", "SequentialVMTransitions", "Sleeping", "Split", "Spread"])
+		id= random.choice([ "Gather", "Killed", "Lonely", "Ready", "Root", "Running", "SequentialVMTransitions", "Sleeping", "Spread"])
 		vms=[]
 		again=1
 		while(again!=0):
@@ -83,7 +96,19 @@ def makeConstraints():
 		while(random.randint(0,5)!=0):
 			nodes.append(findRandomNode(g5k, "node"))
 		constraints.append(NodeConstraint(name, id, nodes))
-	
+
+	for i in range(nbBan_fence):
+		id = random.choice([ "Ban", "Fence" ])
+		name = id + str(i)
+		vms = []
+		node = []
+		while(random.randint(0,5)!=0):
+			nodes.append(findRandomNode(g5k, "node"))
+
+		while(random.randint(0,5)!=0):
+			vms.append(findRandomNode(g5k, "vm"))
+
+		constraints.append(Ban_fence(name, id, vms, nodes))
 
 
 def makeCluster(id, nb):
@@ -103,8 +128,8 @@ def makeCluster(id, nb):
 		node.DiskSpace= tmpDisk = random.randint(1000000,100000000)
 		
 		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
-
-			vm = Node(str(uuid.uuid4()), str(uuid.uuid4()))
+			uuidVM=str(uuid.uuid4())
+			vm = Node(uuidVM,uuidVM)
 			vm.nodeType="vm"
 			#add random virtual ressources
 			vm.RAM = random.randint(1,int(tmpRAM*node.ratioRAM))
@@ -185,30 +210,32 @@ def constraintsGen():
 	json += ' "list" : [ \n '
 
 	for i in range(len(constraints)):
-		json += '{ "name" : "' + constraints[i].name + '" ,\n'
-		json += '"id" : "' + constraints[i].id + '" , \n'
+		if((type(constraints[i]) == VMConstraint) or (type(constraints[i]) == NodeConstraint)):
+			json += '{ "name" : "' + constraints[i].name + '" ,\n'
+			json += '"id" : "' + constraints[i].id + '" , \n'
 
-		if(type(constraints[i]) == VMConstraint):
-			json += '"VMs" : {\n'
-			for j in range(len(constraints[i].nodes)):
-				json += '"VM' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
-				if j != (len(constraints[i].nodes) -1):
-					json += ',\n' 
+			if(type(constraints[i]) == VMConstraint):
+				json += '"VMs" : {\n'
+				for j in range(len(constraints[i].nodes)):
+					json += '"VM' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
+					if j != (len(constraints[i].nodes) -1):
+						json += ',\n' 
 
-		elif(type(constraints[i]) == NodeConstraint):
-			json += '"Nodes" : {\n'
-			for j in range(len(constraints[i].nodes)):
-				json += '"Node' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
-				if j != (len(constraints[i].nodes) -1):
-					json += ',\n' 
+			elif(type(constraints[i]) == NodeConstraint):
+				json += '"Nodes" : {\n'
+				for j in range(len(constraints[i].nodes)):
+					json += '"Node' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
+					if j != (len(constraints[i].nodes) -1):
+						json += ',\n' 
 
-		json += '}\n'
+			json += '}\n'
 
-		if i != (len(constraints) -1):
-			json += '} , \n' 
-		else :
-			json += '} \n'
-		#json += '} ,\n'
+			if i != (len(constraints) -1):
+				json += '} , \n' 
+			else :
+				json += '} \n'
+			#json += '} ,\n'
+		print(constraints[i].name)
 	json += '] \n } '
 	return json
 

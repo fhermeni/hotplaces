@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 
 import btrplace.model.*;
 import btrplace.model.constraint.*;
-import btrplace.model.constraint.checker.*;
+import btrplace.model.view.*;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -81,7 +81,8 @@ public class Server {
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
         
-        
+       
+        //System.out.println(model.getViews());
         
         return Response.ok(data.toString()).build();
 
@@ -125,17 +126,30 @@ public class Server {
             
             Node node = model.newNode();
             map.addOnlineNode(node);
+            String name = jo.optString("name");
+            int cpuCAP = jo.optInt("CPU");
+            int memCAP = jo.optInt("RAM");
+            int diskCAP = jo.optInt("DiskSpace");
+            
+            ShareableResource rcCPU = new ShareableResource("cpu_" + name, cpuCAP, 0);
+            ShareableResource rcMEM = new ShareableResource("mem_" + name, memCAP, 0);
+            ShareableResource rcDS = new ShareableResource("disk_" + name, diskCAP, 0);
+            
+            
             VM vm;
             for(int i =0; i< children.length(); i++) {
-                // UUID --> Integer ?
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
                 children.optJSONObject(i).put("btrpID", vm.id());
-                
+                rcCPU.setConsumption(vm, children.optJSONObject(i).optInt("CPU"));
+                rcMEM.setConsumption(vm, children.optJSONObject(i).optInt("RAM"));
+                rcDS.setConsumption(vm, children.optJSONObject(i).optInt("DiskSpace"));
             }
             jo.put("btrpID", node.id());
-
-            
+            //System.out.println(rcCPU);
+            model.attach(rcCPU);
+            model.attach(rcMEM);
+            model.attach(rcDS);
         } else {
             if(! isVM(jo)) {
                 for(int i =0; i< children.length(); i++) {
