@@ -45,7 +45,7 @@ class VMConstraint:
 	def __init__(self, name, id, vms):
 		self.name=name
 		self.id=id
-		self.nodes=vms
+		self.vms=vms
 		
 
 class Ban_fence:
@@ -54,10 +54,50 @@ class Ban_fence:
 		self.id = id
 		self.vms = vms
 		self.nodes = nodes
-'''
+
 class Ressource_capacity:
-	def __init__(self, name, id, )
-'''
+	def __init__(self, name, id, nodes, rc, amount):
+		self.name = name
+		self.id = id
+		self.nodes = nodes
+		self.rc = rc
+		self.amount = amount
+
+class Running_capacity:
+	def __init__(self, name, id, nodes, amount):
+		self.name = name
+		self.id = id
+		self.nodes = nodes
+		self.amount = amount
+
+class Preserve:
+	def __init__(self, name, id, vms, rc, amount):
+		self.name = name
+		self.id = id
+		self.vms = vms
+		self.rc = rc
+		self.amount = amount
+
+class Split:
+	def __init__(self, name, id, vms):
+		self.name = name
+		self.id = id
+		self.vms = vms
+
+class Among:
+	def __init__(self, name, id, vm, parts):
+		self.name = name
+		self.id = id
+		self.vm = vm
+		self.parts = parts
+
+class SplitAmong:
+	def __init__(self, name, id, vparts, pparts):
+		self.name = name
+		self.id = id
+		self.vparts = vparts
+		self.pparts = pparts
+
 
 def findRandomNode(node, nodeType):
 	finalNode= node
@@ -76,6 +116,7 @@ def makeConstraints():
 	nbNC = random.randint(1, 20)
 	nbVMC = random.randint(1, 20)
 	nbBan_fence = random.randint(1, 10)
+	nbRC = random.randint(1, 10);
 
 	for i in range(nbVMC):
 		name = "VMC" +str(i)
@@ -110,6 +151,92 @@ def makeConstraints():
 
 		constraints.append(Ban_fence(name, id, vms, nodes))
 
+	for i in range(nbRC):
+		id = random.choice([ "CumulatedResourceCapacity", "SingleResourceCapacity", "Overbook"])
+		name = id + str(i)
+		node = []
+		while(random.randint(0,5)!=0):
+			nodes.append(findRandomNode(g5k, "node"))
+		rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "node").name + str(random.randint(1, 20))
+		if(id == "Overbook"):
+			amount = random.uniform(0, 100)
+		else:
+			amount = random.randint(0, 100)
+		constraints.append(Ressource_capacity(name, id, node, rc, amount))
+	
+	nbRC = random.randint(1, 10);
+
+	for i in range(nbRC):
+		id = random.choice([ "CumulatedRunningCapacity", "SingleRunningCapacity"])
+		name = id + str(i)
+		node = []
+		while(random.randint(0,5)!=0):
+			nodes.append(findRandomNode(g5k, "node"))
+		amount = random.randint(0, 100)
+		constraints.append(Running_capacity(name, id, node, amount))
+
+	nbRC = random.randint(1, 10);
+
+	for i in range(nbRC):
+		id = "Preserve"
+		name = id + str(i)
+		vm = []
+		while(random.randint(0,5)!=0):
+			vm.append(findRandomNode(g5k, "vm"))
+		rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "vm").name + str(random.randint(1, 20))
+		amount = random.randint(0, 100)
+		constraints.append(Preserve(name, id, vm, rc, amount))
+
+	nbRC = random.randint(1, 10);
+
+	for i in range(nbRC):
+		id = "Split"
+		name = id + str(i)
+		vms = []
+		vm = []
+		while(random.randint(0,5)!=0):
+			while(random.randint(0, 6) != 0):
+				vm.append(findRandomNode(g5k, "vm"))
+			vms.append(vm)
+			vm = []
+		constraints.append(Split(name, id, vms))
+
+	nbRC = random.randint(1, 10);
+
+	for i in range(nbRC):
+		id = "Among"
+		name = id + str(i)
+		node = []
+		vm = []
+		nodes = []
+		while(random.randint(0,5)!=0):
+			vm.append(findRandomNode(g5k, "vm"))
+		while(random.randint(0,5)!=0):
+			while(random.randint(0, 6) != 0):
+				node.append(findRandomNode(g5k, "node"))
+			nodes.append(node)
+			node = []
+		constraints.append(Among(name, id, vm, nodes))
+
+	nbRC = random.randint(1, 10);
+
+	for i in range(nbRC):
+		id = "SplitAmong"
+		name = id + str(i)
+		vm = vms = []
+		node = nodes = []
+		while(random.randint(0,5)!=0):
+			while(random.randint(0, 6) != 0):
+				node.append(findRandomNode(g5k, "node"))
+			nodes.append(node)
+			node = []
+
+		while(random.randint(0,5)!=0):
+			while(random.randint(0, 6) != 0):
+				vm.append(findRandomNode(g5k, "vm"))
+			vms.append(vm)
+			vm = []
+		constraints.append(SplitAmong(name, id, vms, nodes))
 
 def makeCluster(id, nb):
 
@@ -208,32 +335,54 @@ def jsonGen(root) :
 def constraintsGen():
 	json = '\n\n { "name" : "constraints" ,\n'
 	json += ' "list" : [ \n '
-
+	print(len(constraints))
 	for i in range(len(constraints)):
-		if((type(constraints[i]) == VMConstraint) or (type(constraints[i]) == NodeConstraint)):
+		if((type(constraints[i]) == VMConstraint) or (type(constraints[i]) == NodeConstraint) or (type(constraints[i]) == Ban_fence)):
 			json += '{ "name" : "' + constraints[i].name + '" ,\n'
 			json += '"id" : "' + constraints[i].id + '" , \n'
 
 			if(type(constraints[i]) == VMConstraint):
-				json += '"VMs" : {\n'
-				for j in range(len(constraints[i].nodes)):
-					json += '"VM' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
-					if j != (len(constraints[i].nodes) -1):
-						json += ',\n' 
+				json += '"VMs" : [\n'
+				json += '{ "VMs" : ['
+				for j in range(len(constraints[i].vms)):
+					json += '"' + constraints[i].vms[j].uuid + '"'
+					if j != (len(constraints[i].vms) -1):
+						json += ',\n'
+				json += ']}]}'
+
 
 			elif(type(constraints[i]) == NodeConstraint):
-				json += '"Nodes" : {\n'
+				json += '"Nodes" : [\n'
+				json += '{ "Nodes" : ['
 				for j in range(len(constraints[i].nodes)):
-					json += '"Node' + str(j) + '" : "' + constraints[i].nodes[j].uuid + '"'
+					json += '"' + constraints[i].nodes[j].uuid + '"'
 					if j != (len(constraints[i].nodes) -1):
 						json += ',\n' 
 
-			json += '}\n'
+				json += ']}]}'
 
-			if i != (len(constraints) -1):
-				json += '} , \n' 
-			else :
-				json += '} \n'
+
+			elif(type(constraints[i]) == Ban_fence):
+				json += '"VMs" : [\n'
+				json += '{ "VMs" : ['
+				for j in range(len(constraints[i].vms)):
+					json += '"' + constraints[i].vms[j].uuid + '"'
+					if j != (len(constraints[i].vms) -1):
+						json += ',\n'
+				json += ']}],'
+
+				json += '"Nodes" : [\n'
+				json += '{ "Nodes" : ['
+				for j in range(len(constraints[i].nodes)):
+					json += '"' + constraints[i].nodes[j].uuid + '"'
+					if j != (len(constraints[i].nodes) -1):
+						json += ',\n' 
+				json += ']}]}'
+
+
+			if (i != len(constraints) -1):
+				json += ', \n' 
+			print(i)
 			#json += '} ,\n'
 		print(constraints[i].name)
 	json += '] \n } '
@@ -312,8 +461,8 @@ for i in range(len(constraints)):
 
 def finalJSON(root):
 	#return '{ \n "name" : "struct", "children" : [ \n' + jsonGen(root) + '\n, \n' + constraintsGen() + ']\n}'
-	return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
-	#return jsonGen(root)
+	#return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
+	return constraintsGen()
 
 mock = open("g5kMock.json", "w")
 mock.write(finalJSON(g5k))

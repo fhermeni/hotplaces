@@ -81,9 +81,11 @@ public class Server {
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
         
+        //CumulatedResourceCapacity crc = new CumulatedResourceCapacity(nodes, "", 10);
        
-        //System.out.println(model.getViews());
         
+        //System.out.println(model.getView("rc"));
+        //System.out.println(model.getViews());
         return Response.ok(data.toString()).build();
 
     }
