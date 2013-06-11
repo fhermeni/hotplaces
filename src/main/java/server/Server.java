@@ -120,7 +120,12 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     //System.out.println(nodeList);
-                    btrpConstraints.add(new Fence(vmList, nodeList));
+                    //btrpConstraints.add(new Fence(vmList, nodeList));
+                    break;
+                }
+                case "Gather": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    //btrpConstraints.add(new Gather(vmList));
                     break;
                 }
                 
