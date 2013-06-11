@@ -31,7 +31,7 @@ public class Server {
    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response repondre() throws FileNotFoundException, IOException, JSONException {
+    public Response repond() throws FileNotFoundException, IOException, JSONException {
         JSONObject data = null;
         JSONObject dataStruct = null;
         JSONObject dataConst = null;
@@ -87,6 +87,10 @@ public class Server {
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
         //System.out.println(btrpConstraints);
         
+        for(SatConstraint con : btrpConstraints) {
+            System.out.println(con.isSatisfied(model));
+        }
+        
         return Response.ok(data.toString()).build();
 
     }
@@ -100,31 +104,23 @@ public class Server {
                 
                 case "Among": {
                     
-                    JSONArray jVMs = constr.optJSONArray("VMs").optJSONObject(0).optJSONArray("VMs");
-                    Collection<VM> vmList = new ArrayList<>();
-                    Collection<Collection<Node>> nodeList = new ArrayList<>();
-                    
-                    for(int j =0; j< jVMs.length(); j++) {
-                        vmList.add(getVM(vms, getBtrpVMID(struct, jVMs.optString(j))));
-                    }
-                    //System.out.println(vmList + "\n");
-                    
-                    JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(0);
-
-                    Iterator it = jnodes.keys();
-                    
-                    while(it.hasNext()) {
-                        String name = it.next().toString();
-                        JSONArray servers = jnodes.optJSONArray(name);
-                        ArrayList<Node> groupNode = new ArrayList<Node>();
-                        for(int j =0; j< servers.length(); j++) {
-                            groupNode.add(getNode(nodes, getBtrpServerID(struct, servers.optString(j))));
-                        }
-                        nodeList.add(groupNode);
-                    }
-                    //btrpConstraints.add(new Among(vmList, nodeList));
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Collection<Collection<Node>> nodeList = getNodeParts(constr, nodes, struct);
                     //System.out.println(nodeList);
-                    
+                    //btrpConstraints.add(new Among(vmList, nodeList));
+                    break;
+                } 
+                case "Ban": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    //btrpConstraints.add(new Ban(vmList, nodeList));
+                    break;
+                }
+                case "Fence": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    //System.out.println(nodeList);
+                    btrpConstraints.add(new Fence(vmList, nodeList));
                     break;
                 }
                 
@@ -136,6 +132,40 @@ public class Server {
         //System.out.println(consts.length());
         
         
+    }
+    
+    public Collection<VM> getVMList(JSONObject constr, Set<VM> vms, JSONObject struct) throws JSONException {
+        JSONArray jVMs = constr.optJSONArray("VMs").optJSONObject(0).optJSONArray("VMs");
+        Collection<VM> vmList = new ArrayList<VM>();
+        for(int j =0; j< jVMs.length(); j++)
+            vmList.add(getVM(vms, getBtrpVMID(struct, jVMs.optString(j))));
+        return vmList;
+    }
+    
+    public Collection<Node> getNodeList(JSONObject constr, Set<Node> nodes, JSONObject struct) throws JSONException {
+        JSONArray jnodes = constr.optJSONArray("Nodes").optJSONObject(0).optJSONArray("Nodes");
+        Collection<Node> nodeList = new ArrayList<Node>();
+        for(int j =0; j< jnodes.length(); j++) 
+            nodeList.add(getNode(nodes, getBtrpServerID(struct, jnodes.optString(j))));
+        return nodeList;
+    }
+    
+    public Collection<Collection<Node>> getNodeParts(JSONObject constr, Set<Node> nodes, JSONObject struct) throws JSONException {
+        Collection<Collection<Node>> nodeList = new ArrayList<>();
+        JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(0);
+
+        Iterator it = jnodes.keys();
+        while (it.hasNext()) {
+            String name = it.next().toString();
+            JSONArray servers = jnodes.optJSONArray(name);
+            ArrayList<Node> groupNode = new ArrayList<Node>();
+            for (int j = 0; j < servers.length(); j++) {
+                groupNode.add(getNode(nodes, getBtrpServerID(struct, servers.optString(j))));
+            }
+            nodeList.add(groupNode);
+        }
+
+        return nodeList;
     }
     
     public VM getVM(Set<VM> vms, int id) {
