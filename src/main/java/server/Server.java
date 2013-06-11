@@ -59,33 +59,13 @@ public class Server {
             System.out.println("pbs JSON file");
         }
 
-        
-        /*
-        
-        Node node = model.newNode();
-        Node node2 = model.newNode();
-        VM vm = model.newVM();
-        VM vm2 = model.newVM();
-        
-        map.addOnlineNode(node);
-        map.addOnlineNode(node2);
-        map.addRunningVM(vm, node);
-        map.addRunningVM(vm2, node2);
-        
-        ArrayList<VM> vms = new ArrayList<VM>();
-        vms.add(vm);
-        vms.add(vm2);
-        
-        Gather gather = new Gather(vms);
-        
-        System.out.println(gather.isSatisfied(model));
-        */
+        //Mapping of VMs and Nodes
         mapBuild(dataStruct.optJSONObject("struct"));
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
         
+        //Build constraints and add satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
-        //System.out.println(btrpConstraints);
         
         for(SatConstraint con : btrpConstraints) {
             System.out.println(con.isSatisfied(model));
@@ -120,6 +100,9 @@ public class Server {
                     for(VM v : vmList){
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
+                    for(Node n : nodeList){
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    }
                     break;
                 }
                 case "Fence": {
@@ -131,23 +114,28 @@ public class Server {
                     for(VM v : vmList){
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
-                    //System.out.println(nodeList);
-                    //btrpConstraints.add(new Fence(vmList, nodeList));
+                    for(Node n : nodeList){
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    }
+
                     break;
                 }
                 case "Gather": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
+                    
+                    Gather gather = new Gather(vmList);
+                    boolean satisfied = gather.isSatisfied(model);
+                    for(VM v : vmList){
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    }
+                    
                     //btrpConstraints.add(new Gather(vmList));
                     break;
                 }
                 
             }
             
-            
-            //System.out.println(constr.optString("id"));
         }
-        //System.out.println(consts.length());
-        
         
     }
     
@@ -194,44 +182,67 @@ public class Server {
             if(jo.optInt("btrpID") == fatherID) {
                 for(int i =0; i< children.length(); i++){
                     //found the VM
-                    if(children.optJSONObject(i).optInt("btrpID") == vmID) {
-                        if(children.optJSONObject(i).has("Constraints")) {
-                            JSONObject constList = children.optJSONObject(i).optJSONObject("Constraints");
-                            if(constList.has(constraintID)) {
-                                JSONObject c = new JSONObject();
-                                c.put(constraintName, "" + satisfied);
-                                constList.optJSONArray(constraintID).put(c);
-                            } else {
-                                JSONArray list = new JSONArray();
-                                JSONObject c = new JSONObject();
-                                c.put(constraintName, "" + satisfied);
-                                list.put(c);
-                                constList.put(constraintID, list);
-                            }
-                                
-                        } else {
-                            JSONObject constList = new JSONObject();
-                            JSONObject c = new JSONObject();
-                            JSONArray list = new JSONArray();
-                            c.put(constraintName, "" + satisfied);
-                            list.put(c);
-                            constList.put(constraintID, list);
-                            children.optJSONObject(i).put("Constraints", constList);
-                        }
-                        //children.optJSONObject(i).append("", vmID)
-                        //System.out.println(children.optJSONObject(i));
-                    }
+                    if(children.optJSONObject(i).optInt("btrpID") == vmID)
+                        writeToJson(children.optJSONObject(i), constraintID, constraintName, satisfied);
                 }
-                //System.out.println("found the father");
             }
         } else {
             if(! isVM(jo)) {
                 for(int i =0; i< children.length(); i++){
+                    //Recursively check sons
                     addConstraintToJSON(children.optJSONObject(i), vm, constraintID, constraintName, satisfied);
                 }
             }
         }
         
+    }
+    
+    public void addConstraintToJSON(JSONObject jo, Node node, String constraintID, String constraintName, boolean satisfied) throws JSONException {
+        int nodeID = node.id();
+        JSONArray children = jo.optJSONArray("children");
+        if(isServer(jo)) {
+            //found the node
+            if(jo.optInt("btrpID") == nodeID) {
+                writeToJson(jo, constraintID, constraintName, satisfied);
+            }
+        } else {
+            if(! isVM(jo)) {
+                for(int i =0; i< children.length(); i++){
+                    //Recursively check sons
+                    addConstraintToJSON(children.optJSONObject(i), node, constraintID, constraintName, satisfied);
+                }
+            }
+        }
+        
+    }
+    
+    public void writeToJson(JSONObject children, String constraintID, String constraintName, boolean satisfied) throws JSONException {
+        //Have already some constraints set
+        if (children.has("Constraints")) {
+            JSONObject constList = children.optJSONObject("Constraints");
+            //Already have a constraint of this type
+            if (constList.has(constraintID)) {
+                JSONObject c = new JSONObject();
+                c.put(constraintName, "" + satisfied);
+                constList.optJSONArray(constraintID).put(c);
+                //First constraint of this type
+            } else {
+                JSONArray list = new JSONArray();
+                JSONObject c = new JSONObject();
+                c.put(constraintName, "" + satisfied);
+                list.put(c);
+                constList.put(constraintID, list);
+            }
+            // This is the first Constraint to be added
+        } else {
+            JSONObject constList = new JSONObject();
+            JSONObject c = new JSONObject();
+            JSONArray list = new JSONArray();
+            c.put(constraintName, "" + satisfied);
+            list.put(c);
+            constList.put(constraintID, list);
+            children.put("Constraints", constList);
+        }
     }
     
     public VM getVM(Set<VM> vms, int id) {
