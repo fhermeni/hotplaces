@@ -2544,6 +2544,7 @@
 "id" : "Fence" , 
 "VMs" : [
 { "VMs" : ["45ba249d-5862-48dd-a1e8-cbaf8f6ac3ab",
+"9185651b-cbe4-4145-905b-4eaa744f668e",
 "501e24ed-7100-4c74-9d72-d5156adb7443",
 "91296c74-862b-4c27-a095-74cd0c1c6662",
 "d93f7f7a-e379-4a34-a016-cfdcb55683ad"]}],"Nodes" : [
@@ -2607,7 +2608,7 @@
 { "name" : "Ban6" ,
 "id" : "Ban" , 
 "VMs" : [
-{ "VMs" : ["4edeb2ec-3f27-4462-9bf6-5ee323177d34"]}],"Nodes" : [
+{ "VMs" : ["4edeb2ec-3f27-4462-9bf6-5ee323177d34", "9185651b-cbe4-4145-905b-4eaa744f668e"]}],"Nodes" : [
 { "Nodes" : ["8a73c40d-ef74-46d1-ba5b-81eb3437feaf"]}]}, 
 { "name" : "SingleResourceCapacity0" ,
 "id" : "SingleResourceCapacity" , 

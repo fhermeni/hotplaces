@@ -113,12 +113,24 @@ public class Server {
                 case "Ban": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
-                    //btrpConstraints.add(new Ban(vmList, nodeList));
+                    Ban ban = new Ban(vmList, nodeList);
+                    //btrpConstraints.add(ban);
+                    
+                    boolean satisfied = ban.isSatisfied(model);
+                    for(VM v : vmList){
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    }
                     break;
                 }
                 case "Fence": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    
+                    Fence fence = new Fence(vmList, nodeList);
+                    boolean satisfied = fence.isSatisfied(model);
+                    for(VM v : vmList){
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    }
                     //System.out.println(nodeList);
                     //btrpConstraints.add(new Fence(vmList, nodeList));
                     break;
@@ -171,6 +183,55 @@ public class Server {
         }
 
         return nodeList;
+    }
+    
+    public void addConstraintToJSON(JSONObject jo, VM vm, String constraintID, String constraintName, boolean satisfied) throws JSONException {
+        int vmID = vm.id();
+        int fatherID = map.getVMLocation(vm).id();
+        JSONArray children = jo.optJSONArray("children");
+        if(isServer(jo)) {
+            //found the father node
+            if(jo.optInt("btrpID") == fatherID) {
+                for(int i =0; i< children.length(); i++){
+                    //found the VM
+                    if(children.optJSONObject(i).optInt("btrpID") == vmID) {
+                        if(children.optJSONObject(i).has("Constraints")) {
+                            JSONObject constList = children.optJSONObject(i).optJSONObject("Constraints");
+                            if(constList.has(constraintID)) {
+                                JSONObject c = new JSONObject();
+                                c.put(constraintName, "" + satisfied);
+                                constList.optJSONArray(constraintID).put(c);
+                            } else {
+                                JSONArray list = new JSONArray();
+                                JSONObject c = new JSONObject();
+                                c.put(constraintName, "" + satisfied);
+                                list.put(c);
+                                constList.put(constraintID, list);
+                            }
+                                
+                        } else {
+                            JSONObject constList = new JSONObject();
+                            JSONObject c = new JSONObject();
+                            JSONArray list = new JSONArray();
+                            c.put(constraintName, "" + satisfied);
+                            list.put(c);
+                            constList.put(constraintID, list);
+                            children.optJSONObject(i).put("Constraints", constList);
+                        }
+                        //children.optJSONObject(i).append("", vmID)
+                        //System.out.println(children.optJSONObject(i));
+                    }
+                }
+                //System.out.println("found the father");
+            }
+        } else {
+            if(! isVM(jo)) {
+                for(int i =0; i< children.length(); i++){
+                    addConstraintToJSON(children.optJSONObject(i), vm, constraintID, constraintName, satisfied);
+                }
+            }
+        }
+        
     }
     
     public VM getVM(Set<VM> vms, int id) {
