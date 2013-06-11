@@ -597,8 +597,8 @@ for i in range(len(constraints)):
 
 def finalJSON(root):
 	#return '{ \n "name" : "struct", "children" : [ \n' + jsonGen(root) + '\n, \n' + constraintsGen() + ']\n}'
-	#return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
-	return constraintsGen()
+	return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
+	#return constraintsGen()
 
 mock = open("g5kMock.json", "w")
 mock.write(finalJSON(g5k))

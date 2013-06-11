@@ -17,6 +17,9 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @Path("/server")
@@ -24,7 +27,7 @@ public class Server {
     
    Model model = new DefaultModel();
    Mapping map = model.getMapping();
-   
+   ArrayList<SatConstraint> btrpConstraints = new ArrayList<SatConstraint>();
    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,13 +84,58 @@ public class Server {
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
         
-        //CumulatedResourceCapacity crc = new CumulatedResourceCapacity(nodes, "", 10);
-       
+        buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
+        //System.out.println(btrpConstraints);
         
-        //System.out.println(model.getView("rc"));
-        //System.out.println(model.getViews());
         return Response.ok(data.toString()).build();
 
+    }
+    
+    public void buildConstraints(Set<VM> vms, Set<Node> nodes, JSONObject joConst, JSONObject struct) throws JSONException {
+        JSONArray consts = joConst.optJSONArray("list");
+        
+        for(int i =0; i< consts.length(); i++) {
+            JSONObject constr = consts.optJSONObject(i);
+            switch(constr.optString("id")) {
+                
+                case "Among": {
+                    
+                    JSONArray jVMs = constr.optJSONArray("VMs").optJSONObject(0).optJSONArray("VMs");
+                    Collection<VM> vmList = new ArrayList<>();
+                    Collection<Collection<Node>> nodeList = new ArrayList<>();
+                    
+                    for(int j =0; j< jVMs.length(); j++) {
+                        vmList.add(getVM(vms, getBtrpVMID(struct, jVMs.optString(j))));
+                    }
+                    //System.out.println(vmList + "\n");
+                    
+                    JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(0);
+
+                    Iterator it = jnodes.keys();
+                    
+                    while(it.hasNext()) {
+                        String name = it.next().toString();
+                        JSONArray servers = jnodes.optJSONArray(name);
+                        ArrayList<Node> groupNode = new ArrayList<Node>();
+                        for(int j =0; j< servers.length(); j++) {
+                            groupNode.add(getNode(nodes, getBtrpServerID(struct, servers.optString(j))));
+                        }
+                        nodeList.add(groupNode);
+                    }
+                    //btrpConstraints.add(new Among(vmList, nodeList));
+                    //System.out.println(nodeList);
+                    
+                    break;
+                }
+                
+            }
+            
+            
+            //System.out.println(constr.optString("id"));
+        }
+        //System.out.println(consts.length());
+        
+        
     }
     
     public VM getVM(Set<VM> vms, int id) {
