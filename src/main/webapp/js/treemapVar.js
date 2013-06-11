@@ -9,7 +9,7 @@ var freeIsDisplaying = false;
 var colorFree= "#cd853f";
 var colorNoProb= "#33cc33";
 var colorProb= "#FF3333";
-
+var hoverNode;
 var gOld;
 
 /*

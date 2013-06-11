@@ -6,6 +6,7 @@
  * a json structure and executes a callback function.
  */
   currentRoot= root;
+  hoverNode = root;
   initialize(root);
   accumulate(root);
   layout(root);
@@ -274,8 +275,8 @@ document.search_form.search_field.onkeypress = function() {
         .attr("class",  "grandChild")
         //.attr("stroke-width", "1")
         .call(rect)
-        .on("mouseout", function(d) {displayInfo(d);})
-        .on("mouseover", function(d) {displayAllInfos(d);})
+        .on("mouseout", function(d) {hoverNode= inaltered_Root;displayInfo(d);})
+        .on("mouseover", function(d) {hoverNode=d; displayAllInfos(d);})
         .on("dblclick", function(d) {
             /*console.log(d.name);
             transition(d);

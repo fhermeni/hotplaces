@@ -29,7 +29,7 @@
 		defaults:{
 			containment:"document",
 			mantainOnWindow:true,
-			effectDuration:100,
+			effectDuration:0,
 			zIndexContext:"auto", // or your selector (ex: ".containerPlus")
 			onLoad:function(o){},
 			onCollapse:function(o){},

@@ -5,6 +5,14 @@ function removeDisplay() {
     });
 }
 
+function keybordFunction(ev){
+	console.log(ev.keyCode +" "+ ev.altKey);
+	if (ev.keyCode === 32) creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%');
+	if (ev.keyCode ===6 || ev.keyCode ===402) if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200); 
+	
+
+}
+
 /*window.onresize = function(e) {
 
     if (window.innerWidth > 800) {
@@ -41,7 +49,6 @@ function constraintsToString(){
 	
 	cList.forEach(function(el){
 		result+= "<p> " + el.id +": "
-		console.log(el.VMs);
 		if(el.VMs){
 			result+= el.VMs.length + " VMs "
 		} 
