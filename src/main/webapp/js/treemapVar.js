@@ -6,9 +6,23 @@ var pad = 3, pas =1;
 var firstDisplay = true;
 var nodes= [] ;
 var freeIsDisplaying = false;
-var colorFree= "#cd853f";
-var colorNoProb= "#33cc33";
-var colorProb= "#FF3333";
+
+//palette1
+var ihmColor= "#1693A7";
+var colorFree= "#C8CF02";
+var colorNoProb= "#EDF1B6";
+var colorProb= "#CC0C39";
+var colorProb2= "#E6781E";
+
+
+//palette 2
+/*
+var ihmColor= "#1693A7";
+var colorFree= "#C8CF02";
+var colorNoProb= "#EDF1B6";
+var colorProb= "#CC0C39";
+var colorProb2= "#E6781E";*/
+
 var hoverNode;
 var gOld;
 

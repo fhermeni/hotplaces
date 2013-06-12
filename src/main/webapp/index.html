@@ -94,17 +94,20 @@
 
 
 
-<div class="information" id="information"></div>
-<p id="chart">
+<div class="information" id="information" ></div>
+<p id="chart"></p>
 
-<script >        	$(".container").containerize({
-        });
-                //console.log($(".mbc_content")[0]);
-        </script>
+
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
 
 <script type="text/javascript" src="js/functionContainer.js"></script>
 <script src="/js/treemapVar.js"></script>
+<script >        	
+	$(".container").containerize({});
+	document.getElementById("information").style.backgroundColor = ihmColor;
+         
+         
+        </script>
 <script src="/js/request.js"></script>
 <script src="./js/functionStyle.js"></script>
 <script src="/js/treemap.js"></script>

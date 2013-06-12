@@ -93,6 +93,10 @@
 			document.getElementById("body").appendChild(container);
 			$(container).containerize()
 		}
+		
+		else{$("#"+id).containerize("open", 100);
+			
+		}
 	}
 /*
 *sample of popup functionality
