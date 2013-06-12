@@ -3,7 +3,7 @@ import os
 import random
 import uuid
 
-
+nodelist = []
 class Node:
 
 	def __init__(self, name, uuid):
@@ -103,6 +103,7 @@ def findRandomNode(node, nodeType):
 	finalNode= node
 	while(finalNode.nodeType!=nodeType and len(finalNode.children)>0):
 		finalNode= finalNode.children[random.randint(0, len(finalNode.children)-1)]
+	global myvar 
 	
 	
 	if(finalNode.nodeType!= nodeType or finalNode.name =='free'):
@@ -111,6 +112,16 @@ def findRandomNode(node, nodeType):
 	
 	return finalNode
 	
+def findUniqueNode(node, nodeType):
+	global nodelist
+	n = findRandomNode(node, nodeType)
+	while(n in nodelist):
+		n = findRandomNode(node, nodeType)
+	
+	nodelist.append(n)
+	return n
+
+
 	
 def makeConstraints():
 	nbNC = random.randint(1, 20)
@@ -202,18 +213,19 @@ def makeConstraints():
 		name = id + str(i)
 		vms = []
 		vm = []
-		vm.append(findRandomNode(g5k, "vm"))
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0, 6) != 0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 		vms.append(vm)
 		vm = []
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 			while(random.randint(0, 6) != 0):
-				vm.append(findRandomNode(g5k, "vm"))
+				vm.append(findUniqueNode(g5k, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(Split(name, id, vms))
+		nodelist = []
 
 	nbRC = random.randint(1, 10);
 
@@ -223,21 +235,23 @@ def makeConstraints():
 		node = []
 		vm = []
 		nodes = []
-		vm.append(findRandomNode(g5k, "vm"))
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
-		node.append(findRandomNode(g5k, "node"))
+			vm.append(findUniqueNode(g5k, "vm"))
+		node.append(findUniqueNode(g5k, "node"))
 		while(random.randint(0, 6) != 0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 		nodes.append(node)
 		node = []
+		nodelist = []
 		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 			while(random.randint(0, 6) != 0):
-				node.append(findRandomNode(g5k, "node"))
+				node.append(findUniqueNode(g5k, "node"))
 			nodes.append(node)
 			node = []
 		constraints.append(Among(name, id, vm, nodes))
+		nodelist = []
 
 	nbRC = random.randint(1, 10);
 
@@ -248,31 +262,32 @@ def makeConstraints():
 		vms = []
 		node = []
 		nodes = []
-		node.append(findRandomNode(g5k, "node"))
+		node.append(findUniqueNode(g5k, "node"))
 		while(random.randint(0, 6) != 0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 		nodes.append(node)
 		node = []
 		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 			while(random.randint(0, 6) != 0):
-				node.append(findRandomNode(g5k, "node"))
+				node.append(findUniqueNode(g5k, "node"))
 			nodes.append(node)
 			node = []
-
-		vm.append(findRandomNode(g5k, "vm"))
+		nodelist = []
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0, 6) != 0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 		vms.append(vm)
 		vm = []
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 			while(random.randint(0, 6) != 0):
-				vm.append(findRandomNode(g5k, "vm"))
+				vm.append(findUniqueNode(g5k, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(SplitAmong(name, id, vms, nodes))
-
+		nodelist = []
+		
 def makeCluster(id, nb):
 
 
