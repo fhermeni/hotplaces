@@ -83,20 +83,6 @@ public class Server {
             JSONObject constr = consts.optJSONObject(i);
             switch(constr.optString("id")) {
                 
-                case "Among": {
-                    
-                    Collection<VM> vmList = getVMList(constr, vms, struct);
-                    Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
-                    /*
-                    Among among = new Among(vmList, nodeParts);
-                    boolean satisfied = among.isSatisfied(model);
-                    
-                    for(VM v : vmList)
-                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-                        */
-                    //btrpConstraints.add(new Among(vmList, nodeList));
-                    break;
-                } 
                 case "Ban": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
@@ -261,6 +247,118 @@ public class Server {
 
                     break;
                 }
+                case "Offline": {
+     
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    Offline offline = new Offline(nodeList);
+
+                    boolean satisfied = offline.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    //btrpConstraints.add(ban);
+                    break;
+                }
+                case "Online": {
+     
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    Online online = new Online(nodeList);
+
+                    boolean satisfied = online.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    //btrpConstraints.add(ban);
+                    break;
+                }
+                case "Quarantine": {
+     
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    Quarantine quarantine = new Quarantine(nodeList);
+
+                    boolean satisfied = quarantine.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    //btrpConstraints.add(ban);
+                    break;
+                }
+                case "Overbook": {
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    String rc = constr.optString("rcid");
+                    double amount = constr.optDouble("amount");
+                    
+                    Set<Node> set = new HashSet<>(nodeList);
+                    Overbook overbook = new Overbook(set, rc, amount);
+                    boolean satisfied = overbook.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "Preserve": {
+                    
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    String rc = constr.optString("rcid");
+                    int amount = constr.optInt("amount");
+                    Preserve preserve = new Preserve(vmList, rc, amount);
+                    boolean satisfied = preserve.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    break;
+                }
+                case "Among": {
+                    
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Collection<Collection<Node>> nodeParts;// = getNodeParts(constr, nodes, struct);
+                    nodeParts = new HashSet<>();
+                    
+                    Set<Node> no = new HashSet<Node>();
+                    Iterator it = nodes.iterator();
+                    int j=0;
+                    while(it.hasNext()) {
+                            Node n = (Node)it.next();
+                            if(j >= 10) {
+                                j = 0;
+                                nodeParts.add(no);
+                                no = new HashSet<Node>();
+                            }
+                            no.add(n);
+                            j++;
+                    }
+                    
+                    //System.out.println(nodeParts);
+                    Among among = new Among(vmList, nodeParts);
+                    /*
+                    boolean satisfied = among.isSatisfied(model);
+                    
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                        */
+                    //btrpConstraints.add(new Among(vmList, nodeList));
+                    break;
+                } 
+                case "Split": {
+                    
+                    Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
+                    /*
+                    Split split = new Split(vmParts);
+                    boolean satisfied = split.isSatisfied(model);
+                    for(Collection<VM> colV : vmParts)
+                        for(VM v : colV)
+                            addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+*/
+                    break;
+                }
+                case "SpltAmong" : {
+                    
+                    Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
+                    Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
+                    /*
+                    System.out.println("'");
+                    System.out.println(nodeParts);
+                    System.out.println("'");
+                    */
+                    break;
+                }
             }
             
         }
@@ -299,6 +397,24 @@ public class Server {
         }
 
         return nodeList;
+    }
+    
+    public Collection<Collection<VM>> getVMParts(JSONObject constr, Set<VM> allVMs, JSONObject struct) throws JSONException {
+        Collection<Collection<VM>> vmList = new ArrayList<>();
+        JSONObject jvms = constr.optJSONArray("VMs").optJSONObject(0);
+
+        Iterator it = jvms.keys();
+        while (it.hasNext()) {
+            String name = it.next().toString();
+            JSONArray vms = jvms.optJSONArray(name);
+            ArrayList<VM> groupVM = new ArrayList<VM>();
+            for (int j = 0; j < vms.length(); j++) {
+                groupVM.add(getVM(allVMs, getBtrpVMID(struct, vms.optString(j))));
+            }
+            vmList.add(groupVM);
+        }
+
+        return vmList;
     }
     
     public void addConstraintToJSON(JSONObject jo, VM vm, String constraintID, String constraintName, boolean satisfied) throws JSONException {
@@ -347,30 +463,24 @@ public class Server {
     public void writeToJson(JSONObject children, String constraintID, String constraintName, boolean satisfied) throws JSONException {
         //Have already some constraints set
         if (children.has("Constraints")) {
-            JSONObject constList = children.optJSONObject("Constraints");
-            //Already have a constraint of this type
-            if (constList.has(constraintID)) {
-                JSONObject c = new JSONObject();
-                c.put(constraintName, "" + satisfied);
-                constList.optJSONArray(constraintID).put(c);
-                //First constraint of this type
-            } else {
-                JSONArray list = new JSONArray();
-                JSONObject c = new JSONObject();
-                c.put(constraintName, "" + satisfied);
-                list.put(c);
-                constList.put(constraintID, list);
-            }
+            JSONArray constList = children.optJSONArray("Constraints");
+            JSONObject c = new JSONObject();
+            c.put("name", "" + constraintName);
+            c.put("satisfied", satisfied);
+            constList.put(c);
+
             // This is the first Constraint to be added
         } else {
-            JSONObject constList = new JSONObject();
+            
+            JSONArray constList = new JSONArray();
             JSONObject c = new JSONObject();
-            JSONArray list = new JSONArray();
-            c.put(constraintName, "" + satisfied);
-            list.put(c);
-            constList.put(constraintID, list);
+            c.put("name", "" + constraintName);
+            c.put("satisfied", satisfied);
+            constList.put(c);
             children.put("Constraints", constList);
+
         }
+        
     }
     
     public VM getVM(Set<VM> vms, int id) {
