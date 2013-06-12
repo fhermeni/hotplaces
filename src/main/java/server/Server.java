@@ -18,6 +18,7 @@ import btrplace.model.constraint.*;
 import btrplace.model.view.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -85,8 +86,14 @@ public class Server {
                 case "Among": {
                     
                     Collection<VM> vmList = getVMList(constr, vms, struct);
-                    Collection<Collection<Node>> nodeList = getNodeParts(constr, nodes, struct);
-                    //System.out.println(nodeList);
+                    Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
+                    /*
+                    Among among = new Among(vmList, nodeParts);
+                    boolean satisfied = among.isSatisfied(model);
+                    
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                        */
                     //btrpConstraints.add(new Among(vmList, nodeList));
                     break;
                 } 
@@ -97,42 +104,163 @@ public class Server {
                     //btrpConstraints.add(ban);
                     
                     boolean satisfied = ban.isSatisfied(model);
-                    for(VM v : vmList){
+                    for(VM v : vmList)
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-                    }
-                    for(Node n : nodeList){
+                    
+                    for(Node n : nodeList)
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
-                    }
+                    
                     break;
                 }
                 case "Fence": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
-                    
                     Fence fence = new Fence(vmList, nodeList);
                     boolean satisfied = fence.isSatisfied(model);
-                    for(VM v : vmList){
+                    for(VM v : vmList)
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-                    }
-                    for(Node n : nodeList){
+                    
+                    for(Node n : nodeList)
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
-                    }
 
                     break;
                 }
                 case "Gather": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
-                    
                     Gather gather = new Gather(vmList);
                     boolean satisfied = gather.isSatisfied(model);
-                    for(VM v : vmList){
+                    for(VM v : vmList)
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-                    }
-                    
                     //btrpConstraints.add(new Gather(vmList));
                     break;
                 }
-                
+                case "Killed": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Killed killed = new Killed(vmList);
+                    boolean satisfied = killed.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "Lonely": {
+                    
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Set<VM> set = new HashSet<VM>(vmList);
+                    Lonely lonely = new Lonely(set);
+                    boolean satisfied = lonely.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    break;
+                }
+                case "Ready": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Ready ready = new Ready(vmList);
+                    boolean satisfied = ready.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "Root": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Root root = new Root(vmList);
+                    boolean satisfied = root.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "Running": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Running running = new Running(vmList);
+                    boolean satisfied = running.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "SequentialVMTransitions": {
+                    
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    SequentialVMTransitions svt = new SequentialVMTransitions((List)vmList);
+                    boolean satisfied = svt.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    break;
+                }
+                case "Sleeping": {
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Sleeping sleeping = new Sleeping(vmList);
+                    boolean satisfied = sleeping.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "Spread": {
+                    
+                    Collection<VM> vmList = getVMList(constr, vms, struct);
+                    Set<VM> set = new HashSet<VM>(vmList);
+                    Spread spread = new Spread(set);
+                    boolean satisfied = spread.isSatisfied(model);
+                    for(VM v : vmList)
+                        addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    break;
+                }
+                case "CumulatedResourceCapacity": {
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    String rc = constr.optString("rcid");
+                    int amount = constr.optInt("amount");
+                    
+                    Set<Node> set = new HashSet<Node>(nodeList);
+                    CumulatedResourceCapacity crc = new CumulatedResourceCapacity(set, rc, amount);
+                    boolean satisfied = crc.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "SingleResourceCapacity": {
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    String rc = constr.optString("rcid");
+                    int amount = constr.optInt("amount");
+                    
+                    Set<Node> set = new HashSet<>(nodeList);
+                    SingleResourceCapacity src = new SingleResourceCapacity(set, rc, amount);
+                    boolean satisfied = src.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "CumulatedRunningCapacity": {
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    int amount = constr.optInt("amount");
+                    
+                    Set<Node> set = new HashSet<>(nodeList);
+                    CumulatedRunningCapacity crc = new CumulatedRunningCapacity(set, amount);
+                    boolean satisfied = crc.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
+                case "SingleRunningCapacity": {
+                    Collection<Node> nodeList = getNodeList(constr, nodes, struct);
+                    int amount = constr.optInt("amount");
+                    
+                    Set<Node> set = new HashSet<>(nodeList);
+                    SingleRunningCapacity src = new SingleRunningCapacity(set, amount);
+                    boolean satisfied = src.isSatisfied(model);
+                    for(Node n : nodeList)
+                        addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+
+                    break;
+                }
             }
             
         }
