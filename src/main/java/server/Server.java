@@ -339,12 +339,13 @@ public class Server {
                 case "Split": {
                     
                     Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
+                    /*
                     Split split = new Split(vmParts);
                     boolean satisfied = split.isSatisfied(model);
                     for(Collection<VM> colV : vmParts)
                         for(VM v : colV)
                             addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-
+*/
                     break;
                 }
                 case "SpltAmong" : {
@@ -462,30 +463,24 @@ public class Server {
     public void writeToJson(JSONObject children, String constraintID, String constraintName, boolean satisfied) throws JSONException {
         //Have already some constraints set
         if (children.has("Constraints")) {
-            JSONObject constList = children.optJSONObject("Constraints");
-            //Already have a constraint of this type
-            if (constList.has(constraintID)) {
-                JSONObject c = new JSONObject();
-                c.put(constraintName, "" + satisfied);
-                constList.optJSONArray(constraintID).put(c);
-                //First constraint of this type
-            } else {
-                JSONArray list = new JSONArray();
-                JSONObject c = new JSONObject();
-                c.put(constraintName, "" + satisfied);
-                list.put(c);
-                constList.put(constraintID, list);
-            }
+            JSONArray constList = children.optJSONArray("Constraints");
+            JSONObject c = new JSONObject();
+            c.put("name", "" + constraintName);
+            c.put("satisfied", satisfied);
+            constList.put(c);
+
             // This is the first Constraint to be added
         } else {
-            JSONObject constList = new JSONObject();
+            
+            JSONArray constList = new JSONArray();
             JSONObject c = new JSONObject();
-            JSONArray list = new JSONArray();
-            c.put(constraintName, "" + satisfied);
-            list.put(c);
-            constList.put(constraintID, list);
+            c.put("name", "" + constraintName);
+            c.put("satisfied", satisfied);
+            constList.put(c);
             children.put("Constraints", constList);
+
         }
+        
     }
     
     public VM getVM(Set<VM> vms, int id) {
