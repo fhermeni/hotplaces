@@ -59,14 +59,18 @@
 
 	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
 	
-	if (d.constraints){
-		console.log(d);
-		for(var i = 0; i< d.constraints.length; i ++){
-			d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
+	if (d.Constraints){
+	
+		for(var i = 0; i< d.Constraints.length; i ++){
+			console.log(d.Constraints[i]);
+			for(var j = 0; j< d.Constraints[i].length; j++){
+				console.log(d.Constraints[i][j]);
+			}
+			//d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
 		
-		
+	}	
 	}
-	}
+	
     
 
     if(d.parent) {
