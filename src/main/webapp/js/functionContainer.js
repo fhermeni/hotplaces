@@ -1,67 +1,72 @@
 	function creatContainerInfo(id, title, content, x, y){
 	if($("#"+id).length ===0){
-	var container = document.createElement("div")
-	var titleTag = document.createElement("H2");
-	container.innerHTML=content;
-	titleTag.innerHTML=title;
-	container.appendChild(titleTag);
-	container.setAttribute("id", id);
-	container.style.top=x;
-	container.style.left=y;
-	container.setAttribute("data-skin", "white");
-	container.setAttribute("data-drag", "true");
-	container.setAttribute("data-resize", "true");
-	container.setAttribute("data-collapsable", "true");
-	container.setAttribute("data-remenberme", "true");
-	container.setAttribute("data-containment", "document");
-	container.setAttribute("data-dock", "dock");
-	container.setAttribute("data-buttons", "dock,fullscreen,close");
+		var container = document.createElement("div")
+		var titleTag = document.createElement("H2");
+		container.innerHTML=content;
+		titleTag.innerHTML=title;
+		container.appendChild(titleTag);
+		container.setAttribute("id", id);
+		container.style.top=x;
+		container.style.left=y;
+		container.setAttribute("data-skin", "white");
+		container.setAttribute("data-drag", "true");
+		container.setAttribute("data-resize", "true");
+		container.setAttribute("data-collapsable", "true");
+		container.setAttribute("data-remenberme", "true");
+		container.setAttribute("data-containment", "document");
+		container.setAttribute("data-dock", "dock");
+		container.setAttribute("data-buttons", "dock,fullscreen,close");
+		
+		document.getElementById("body").appendChild(container);
+		
+		
+		
 	
-	document.getElementById("body").appendChild(container);
+		$(container).containerize({ //$(el).css({opacity:.7})
+	            onClose: function(o) { 
+	            if(!o.$.isIconized){
+		            document.getElementById("body").removeChild(document.getElementById(o.getAttribute("id"))) }           
+	            
+	            }
 	
 	
-	
-
-	$(container).containerize({ //$(el).css({opacity:.7})
-            onClose: function(o) { 
-            if(!o.isIconized){
-	            document.getElementById("body").removeChild(document.getElementById(o.getAttribute("id"))) }           
-            
-            }
-
-
-            });
-      
-      var childN= $("#"+id)[0].childNodes;
-      
-      for (var i = 0; i<childN.length; i++){
-      	if(childN[i].getAttribute("class")=== "mbc_content"){
-	      	var span =childN[i].getElementsByTagName("span")[0];
-	      	var ul= childN[i].getElementsByTagName("ul")[0];
-		    displayChildren(currentRoot.children, ul);
-		    ul.style.display="none";
-		    ul.style.listStyle= "inside";
-		   ul.style.textIndent="20px";
-		   span.setAttribute("class", "nodeNumb");
-		      	
-		    span.onclick= function(){
-			if(ul.style.display=="none"){
-				      	ul.style.display="block";
-			      	}
-			 else{
-				      	ul.style.display="none";
-
+	            });
+	      
+	      var childN= $("#"+id)[0].childNodes;
+	      
+	      for (var i = 0; i<childN.length; i++){
+	      	if(childN[i].getAttribute("class")=== "mbc_content"){
+		      	var span =childN[i].getElementsByTagName("span");
+		      	for(var j = 0; j <span.length; j++){
+			      	if(span[j].getAttribute("class")=== "nodeNumb"){
+				      	span=span[j];
+				      	break;
 			      	}
 		      	}
+		      	var ul= childN[i].getElementsByTagName("ul")[0];
+			    displayChildren(hoverNode.children, ul);
+			    ul.style.display="none";
+			    ul.style.listStyle= "inside";
+			   ul.style.textIndent="20px";
+			      	
+			    span.onclick= function(){
+				if(ul.style.display=="none"){
+					      	ul.style.display="block";
+				      	}
+				 else{
+					      	ul.style.display="none";
+	
+				      	}
+			      	}
+		      	}
+		      	
 	      	}
 	      	
-      	}
-      	
-     //.onclick = function(){displayChildren(currentRoot.children)};     
+	     //.onclick = function(){displayChildren(currentRoot.children)};     
 	
 	}
 	else{
-		console.log($("#"+id)[0].childNodes[1].style);
+		$("#"+hoverNode.UUID).containerize("restorePopup"); 
 		
 	}
 	}
@@ -96,7 +101,7 @@
 */
 
 
-    //$(function(){
+    $(function(){
 
 
         /*
@@ -104,17 +109,23 @@
          *
          * */
 
-        /*$.containerize.addMethod("showdata",function(){
+        $.containerize.addMethod("restorePopup",function(){
             var el = this;
-            var txt = "container properties:<br><br>";
-            var data = el.$.data();
-            for (var i in data){
-                txt += i+"= "+ data[i]+"<br>";
+            if(el.$.isIconized){
+	            el.$.containerize("restoreView")
+	            var tmp= el.$[0].id;
+	             var child = document.getElementById("dock").childNodes
+	             for( var i =0; i<child.length;i++){
+	            	if(child[i].getAttribute("name")=== tmp){
+		            	document.getElementById("dock").removeChild(child[i]);
+	            	}
+	            
+	            }
             }
-            txt += "<hr><br>"
-            el.content.prepend(txt);
+            else{el.$.containerize("close")}
         });
-*/
+        })
+
 
         /*
          * Example of how to add a new button for the button bar:

@@ -58,16 +58,15 @@
     	<div id = "ressources" class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="fullscreen,close">
     	<h2>Ressource management</h2>
     	
-        <p><br/><br/></p>
-    	<p>
-        <select id = "ressources_select">
+        <p style="text-align:center;">Choose a sort criteria:</p><br/>
+        <select id = "ressources_select" style=" position: absolute">
 	        <option value="CPU">CPU</option>
 	        <option value="RAM">RAM</option>
 	        <option value="Disk">Disk Space</option>
 	        <option value="Count" selected>Count</option>
 	    </select>
     	
-	    <input type='button' id='displayFreeSpace' value='Display free space' disabled /></p>
+	    <input style=" margin-left:100px; position: absolute;" type='button' id='displayFreeSpace' value='Display free space' disabled />
 	    
     	</div>
     	
@@ -75,13 +74,17 @@
         <form id="search_form" name="search_form" onsubmit='return false;' class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="close">
         <h2>Search</h2>
     	<span id="search">
-    	<input type='button' name='rootButton' value='Root' />
-        <label >
+    	<p>Enter one or more node names to display the lowest common ancestor</p>
+    	<p>Regular expressions are possible</p><br/>
+        <label style="text-align:center;">
             <input id="search_field" type="search" name="search_field" size="31" placeholder="Enter Keywords" autofocus/>
          </label>
          <label>
             <input id="search_button" name="search_button" type="button" value="Find" />
         </label>
+        <div>
+        <br/><p>eg: adonis&#149; to search node names begining with 'adonis'</p>
+        <br/><p>eg: ad?nis, '?' is a joker for all characteres (result = adanis, adenis, adonis , etc)</p></div>
     	</span>
     </form>
         

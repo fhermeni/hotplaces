@@ -6,9 +6,19 @@ function removeDisplay() {
 }
 
 function keybordFunction(ev){
-	console.log(ev.keyCode +" "+ ev.altKey);
-	if (ev.keyCode === 32) creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%');
-	if (ev.keyCode ===6 || ev.keyCode ===402) if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200); 
+	if (ev.keyCode === 32){
+		 if($("#"+hoverNode.UUID).length ===0){
+		 	console.log("crea");
+		 	
+		 	creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%');
+		 	
+		 	
+		 }
+		 else{
+		 	$("#"+hoverNode.UUID).containerize("restorePopup"); 
+			 
+		 }
+	}
 	
 
 }
@@ -90,7 +100,18 @@ function getInfo(d){
 	
 function ToStringInfo(list){
 	var result="";
-	result += "<p id='parentLink'>Parent : " + list[0] +"</p> <br/> <span >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/> <p>Depth of node: " + list[3] + "</p><br/> ";
+	var tmp = list[0].split(".");
+	tmp.forEach(function(el){
+		if(el==="g5k"){
+			result+= "<span class = 'nodeLink'>"+ el + "</span>"
+		}
+		else{
+		result+= ".<span class = 'nodeLink'>"+ el + "</span>"
+		}
+	
+	}
+	);
+	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/> <p>Depth of node: " + list[3] + "</p><br/> ";
 	
 	if(list.length>6){
 		result += "<p> ressources : <br/> <ul> <li> Ram: " + list[4] + "</li><li> CPU: " +list[5] + "</li><li> Disk Space: " +list[6] + "</li></ul></p>"
@@ -100,7 +121,7 @@ function ToStringInfo(list){
 	
 }
  function displayChildren(childlist, ul){
-
+	 if(childlist){
  	childlist.forEach(function(el) {
  		if(el.name!="free"){
  	 var li = document.createElement("li");
@@ -113,6 +134,7 @@ function ToStringInfo(list){
  	 }
  	 }
  	 });
+ 	 }
  	 
  }
 

@@ -275,7 +275,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("class",  "grandChild")
         //.attr("stroke-width", "1")
         .call(rect)
-        .on("mouseout", function(d) {hoverNode= inaltered_Root;displayInfo(d);})
+        .on("mouseout", function(d) {hoverNode= currentRoot;displayInfo(d);})
         .on("mouseover", function(d) {hoverNode=d; displayAllInfos(d);})
         .on("dblclick", function(d) {
             /*console.log(d.name);
@@ -370,14 +370,7 @@ document.search_form.search_field.onkeypress = function() {
     }
         
         // function for goback to root button
-        if(firstDisplay) {
-            document.search_form.rootButton.onclick = function() {
-                if(currentRoot.depth !== 0) {
-                    removeDisplay();
-                    transition(inaltered_Root);
-                }
-            }
-        } 
+ 
 
         
         //search function

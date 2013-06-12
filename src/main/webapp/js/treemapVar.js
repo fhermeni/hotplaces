@@ -17,8 +17,8 @@ var gOld;
 **description: definition for the aspect of treemap with d3.js
 */
 
-var margin = {top: 20, right: 0, bottom: 10, left: 0},
-    width = window.innerWidth*0.95 - margin.left - margin.right,
+var margin = {top: 20, right: 0, bottom: 0, left: 0},
+    width = window.innerWidth*0.9 - margin.left - margin.right,
     height =  window.innerHeight*0.9 - margin.top - margin.bottom,
     formatNumber = d3.format(",d"),
     color = d3.scale.category20(),

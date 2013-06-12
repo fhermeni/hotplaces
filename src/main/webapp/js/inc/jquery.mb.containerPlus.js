@@ -172,7 +172,7 @@
 			}
 			
 			el.$.containerize("closeme");
-
+			el.$.isIconized=false;
 			setTimeout(function(){
 				el.$.containerize("adjust");
 				$.containerize.applyMethods(el).addTouch();
@@ -449,7 +449,7 @@
 			restoreView:function(animate){
 				$.cMethods.restoreView = {name: "restoreView", author:"pupunzi", type:"built-in"};
 				var el = this;
-				el.isIconized=false;
+				el.$.isIconized=false;
 				
             	
 				el.$.containerize("open");
@@ -567,7 +567,7 @@
 				
 				$.cMethods.iconize = {name: "iconize", author:"pupunzi", type:"built-in"};
 				var el = this;
-				el.isIconized= true
+				el.$.isIconized= true
 
 				if(el.fullscreen)
 					return;
@@ -601,6 +601,7 @@
 					}else{
 
 						el.iconElement = $("<span/>").addClass("containerDocked").html(text);
+						el.iconElement[0].setAttribute("name", el.id);
 						$("#"+dockId).append(el.iconElement);
 					}
 
