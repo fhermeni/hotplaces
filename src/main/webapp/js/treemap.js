@@ -61,7 +61,20 @@
 	
 	if (d.Constraints){
 		for(var i = 0; i< d.Constraints.length; i ++){
-			d.Constraints[i].satisfied? d.color= d.color: (console.log(d), console.log(d.Constraints[i].satisfied + d.Constraints[i].name),d.color = colorProb);
+			if(d.Constraints[i].type == "Ban" || d.Constraints[i].type == "Among" || d.Constraints[i].type == "Fence" || d.Constraints[i].type == "Gather" || d.Constraints[i].type == "Lonely" || d.Constraints[i].type == "Split" || d.Constraints[i].type == "Spead"){
+				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ d.children? d.color=d.color : d.strokeColor = colorProb2);
+				}
+			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
+				d.Constraints[i].type==="Overbook"? (console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i])) : null;
+				
+				d.Constraints[i].satisfied? d.color= d.color: (console.log(d.name + " ressource " + d.Constraints[i].type ),d.color = colorProb);
+			}
+			else{ if(d.Constraints[i].type != "Killed" &&d.Constraints[i].type != "Ready" && d.Constraints[i].type != "Root" &&d.Constraints[i].type != "Quarantine" && d.Constraints[i].type != "Sleeping"){
+						//console.log("non evaluer: " + d.Constraints[i].type)
+						}} 
+						
+			}
+			
 			
 			
 			//d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
@@ -108,7 +121,7 @@
   //Returns the nodes that matches the node_names search
 function getNodes(regexp, d) {
     var nodes = Array();
-    if (regexp.test(d.name) || regexp.test(d.id) ) {
+    if (regexp.test(d.name) || regexp.test(d.id) || regexp.test(d.UUID) ) {
         nodes = nodes.concat(d);
     }
     if (!d.children)
@@ -291,8 +304,10 @@ document.search_form.search_field.onkeypress = function() {
             */
            doubleClick(d);
         })
+        
 ;
 
+	//console.log(g2.selectAll("rect").data(function(d){return d.strokeColor? "ok" : "no"}).enter());
  
     // prints a text on a node
     g.append("text")
@@ -319,6 +334,10 @@ document.search_form.search_field.onkeypress = function() {
      * parameters : node
      * description : change root by given parameter, used for zoomin/zoomout
      */
+     var a = document.getElementsByTagName("animate");
+	for (var i = 0; i < a.length; i++){
+		a[i].setAttribute("repeatCount", 0);
+	}
     function transition(d) {
         
         unHighLight(undefined);
@@ -483,7 +502,9 @@ document.search_form.search_field.onkeypress = function() {
         .attr("y", function(d) { return y(d.y); })
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" });
+        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" })
+        .style("stroke",function(d){return d.strokeColor});    
+
 
 
   }

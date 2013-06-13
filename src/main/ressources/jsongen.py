@@ -176,7 +176,7 @@ def makeConstraints():
 			node.append(findRandomNode(g5k, "node"))
 		rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "node").name
 		if(id == "Overbook"):
-			amount = random.uniform(0, 100)
+			amount = random.uniform(1, 10)
 		else:
 			amount = random.randint(0, 100)
 		constraints.append(Ressource_capacity(name, id, node, rc, amount))

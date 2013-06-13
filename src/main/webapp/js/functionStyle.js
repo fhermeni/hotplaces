@@ -53,18 +53,43 @@ function keybordFunction(ev){
 
 }*/
 
+	function stopAnimation(UUID){
+	var el = document.getElementsByClassName(UUID);
+	for (var i = 0; i < el.length; i++){
+		el[0].setAttribute("repeatCount", 0);
+	}
+	
+	}
+	
+	function startAnimation(UUID){
+	var el = document.getElementsByClassName(UUID);
+	for (var i = 0; i < el.length; i++){
+		el[0].setAttribute("repeatCount", "indefinite");
+	}
+	
+	}
+
 function constraintsToString(){
 	var cList = constraints.list;
 	var result= "<p>Constraints: </p><br/>";
 	
 	cList.forEach(function(el){
 		result+= "<p> " + el.id +": "
-		if(el.VMs){
-			//console.log(el.VMs);
-			result+= el.VMs.length + " VMs "
+		console.log(el);
+		if(el.VMs && el.VMs.length ===1 ){
+			//console.log("1 " + el.VMs);
+			result+= el.VMs[0].VMs.length + " VMs "
 		} 
-		if(el.Nodes){
-			result+= el.Nodes.length + " Nodes "
+		if(el.VMs && el.VMs.length >1 ){
+			console.log("+ " +el.VMs);
+			result+= el.VMs.length + "groupe de VMs "
+		} 
+		if(el.Nodes && el.Nodes.length ===1){
+			result+= el.Nodes[0].Nodes.length + " Nodes "
+		} 
+		
+		if(el.Nodes && el.Nodes.length >1 ){
+			result+= el.Nodes.length + "groupe de VMs "
 		} 
 		
 		if(el.rcid){
