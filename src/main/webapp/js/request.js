@@ -8,8 +8,10 @@ req.onreadystatechange = function() {
         inaltered_Root = root;
         constraints = res.const;
 
+
         console.log(constraints);
         console.log(root);
+        resources = res.resources;
 
     }
 };
