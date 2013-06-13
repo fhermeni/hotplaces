@@ -116,9 +116,8 @@ function getInfo(d){
 
 	info.push(d.depth);
 	if(d.depth>2){
-		info.push(d.RAM);
-		info.push(d.CPU);
-		info.push(d.DiskSpace);
+	
+		info.push(d.resources);
 	}
 	
 	return info;
@@ -139,8 +138,14 @@ function ToStringInfo(list){
 	);
 	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/> <p>Depth of node: " + list[3] + "</p><br/> ";
 	
-	if(list.length>6){
-		result += "<p> ressources : <br/> <ul> <li> Ram: " + list[4] + "</li><li> CPU: " +list[5] + "</li><li> Disk Space: " +list[6] + "</li></ul></p>"
+	if(list[4]){
+	result += "<p> ressources : <br/> <ul> "
+		//console.log(list[4]);
+		for(var r in list[4]){
+			result+= "<li>" + r+ ": " + list[4][r] + "</li>"
+			
+		} 
+		result+= "</ul></p>"
 	}
 	
 	return result;

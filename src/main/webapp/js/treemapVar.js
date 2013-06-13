@@ -1,6 +1,7 @@
 var root;
 var constraints;
 var currentRoot;
+var ressourcesEl;
 var inaltered_Root;
 var pad = 3, pas =1;
 var firstDisplay = true;

@@ -61,9 +61,6 @@
     	
         <p style="text-align:center;">Choose a sort criteria:</p><br/>
         <select id = "ressources_select" style=" position: absolute">
-	        <option value="CPU">CPU</option>
-	        <option value="RAM">RAM</option>
-	        <option value="Disk">Disk Space</option>
 	        <option value="Count" selected>Count</option>
 	    </select>
     	
@@ -113,6 +110,14 @@
 <script src="./js/functionStyle.js"></script>
 <script src="/js/treemap.js"></script>
 <script>
+	var select = document.getElementById("ressources_select");
+	for(var i = 0; i < ressourcesEl.length; i++){
+		option = document.createElement("option");
+		option.setAttribute("value", ressourcesEl[i]);
+		option.innerHTML= ressourcesEl[i];
+		select.appendChild(option);	
+		}
+	
 	
 	</script>
 

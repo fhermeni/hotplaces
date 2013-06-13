@@ -65,9 +65,9 @@
 				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ d.children? d.color=d.color : d.strokeColor = colorProb2);
 				}
 			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
-				d.Constraints[i].type==="Overbook"? (console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i])) : null;
+				d.Constraints[i].type==="Overbook"? /*(console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i]))*/null : null;
 				
-				d.Constraints[i].satisfied? d.color= d.color: (console.log(d.name + " ressource " + d.Constraints[i].type ),d.color = colorProb);
+				d.Constraints[i].satisfied? d.color= d.color: (/*console.log(d.name + " ressource " + d.Constraints[i].type ),*/d.color = colorProb);
 			}
 			else{ if(d.Constraints[i].type != "Killed" &&d.Constraints[i].type != "Ready" && d.Constraints[i].type != "Root" &&d.Constraints[i].type != "Quarantine" && d.Constraints[i].type != "Sleeping"){
 						//console.log("non evaluer: " + d.Constraints[i].type)
@@ -521,15 +521,7 @@ function somChildrenValue(d) {
 function getGoodRessources(d) {
     var select = document.getElementById("ressources_select");
     var typeOfRessources = select.options[select.selectedIndex].value;
-    return typeOfRessources === "Count" ?
-            (d.name === 'free' ? 0 : 1)
-            : (typeOfRessources === "RAM" ?
-            d.RAM
-            : (typeOfRessources === "CPU" ?
-            d.CPU
-            : (typeOfRessources === "Disk" ?
-            d.DiskSpace
-            : 1)));
+    return d.resources[typeOfRessources]? d.resources[typeOfRessources]: (d.name ==="free"? 0: 1);
 }
   
   document.oncontextmenu=RightMouseDown;
