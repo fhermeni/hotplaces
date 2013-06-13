@@ -60,12 +60,10 @@
 	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
 	
 	if (d.Constraints){
-	
 		for(var i = 0; i< d.Constraints.length; i ++){
-			console.log(d.Constraints[i]);
-			for(var j = 0; j< d.Constraints[i].length; j++){
-				console.log(d.Constraints[i][j]);
-			}
+			d.Constraints[i].satisfied? d.color= d.color: (console.log(d), console.log(d.Constraints[i].satisfied + d.Constraints[i].name),d.color = colorProb);
+			
+			
 			//d.constraints[i].satisfy? d.color= d.color: d.color = colorProb;
 		
 	}	
@@ -341,8 +339,8 @@ document.search_form.search_field.onkeypress = function() {
         x.domain([d.x, d.x + d.dx]);
         y.domain([d.y, d.y + d.dy]);
         
-        /*d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);*/
-        //layout(d);
+        d.depth > 0 ? (pad = 2, pas = 0.5) : (pad = 3, pas = 1);
+        layout(d);
 
         // Enable anti-aliasing during the transition.
         // Desabled for  more fluent transitions
@@ -414,7 +412,7 @@ document.search_form.search_field.onkeypress = function() {
 	        
 	        
 	        
-	    var displayFreeSpace = document.getElementById("displayFreeSpace");
+	    /*var displayFreeSpace = document.getElementById("displayFreeSpace");
 	    displayFreeSpace.onclick= function(){
 	    	
 		    treemap.value(function(d){return d.children? d.value : (d.name=== "free"? (freeIsDisplaying? getGoodRessources(d): 0): d.value) });
@@ -424,7 +422,7 @@ document.search_form.search_field.onkeypress = function() {
 		    transition(currentRoot);
 		    	
 
-	    }
+	    }*/
 	    
 
 	    	

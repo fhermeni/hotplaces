@@ -60,8 +60,8 @@ function constraintsToString(){
 	cList.forEach(function(el){
 		result+= "<p> " + el.id +": "
 		if(el.VMs){
-			console.log(el.VMs);
-			result+= el.VMs.VMs.length + " VMs "
+			//console.log(el.VMs);
+			result+= el.VMs.length + " VMs "
 		} 
 		if(el.Nodes){
 			result+= el.Nodes.length + " Nodes "

@@ -5,7 +5,7 @@ var inaltered_Root;
 var pad = 3, pas =1;
 var firstDisplay = true;
 var nodes= [] ;
-var freeIsDisplaying = false;
+var freeIsDisplaying = true;
 
 //palette1
 var ihmColor= "#1693A7";
