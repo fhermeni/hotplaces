@@ -3,7 +3,7 @@ import os
 import random
 import uuid
 
-
+nodelist = []
 class Node:
 
 	def __init__(self, name, uuid):
@@ -103,6 +103,7 @@ def findRandomNode(node, nodeType):
 	finalNode= node
 	while(finalNode.nodeType!=nodeType and len(finalNode.children)>0):
 		finalNode= finalNode.children[random.randint(0, len(finalNode.children)-1)]
+	global myvar 
 	
 	
 	if(finalNode.nodeType!= nodeType or finalNode.name =='free'):
@@ -111,6 +112,16 @@ def findRandomNode(node, nodeType):
 	
 	return finalNode
 	
+def findUniqueNode(node, nodeType):
+	global nodelist
+	n = findRandomNode(node, nodeType)
+	while(n in nodelist):
+		n = findRandomNode(node, nodeType)
+	
+	nodelist.append(n)
+	return n
+
+
 	
 def makeConstraints():
 	nbNC = random.randint(1, 20)
@@ -202,18 +213,19 @@ def makeConstraints():
 		name = id + str(i)
 		vms = []
 		vm = []
-		vm.append(findRandomNode(g5k, "vm"))
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0, 6) != 0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 		vms.append(vm)
 		vm = []
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 			while(random.randint(0, 6) != 0):
-				vm.append(findRandomNode(g5k, "vm"))
+				vm.append(findUniqueNode(g5k, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(Split(name, id, vms))
+		nodelist = []
 
 	nbRC = random.randint(1, 10);
 
@@ -223,21 +235,23 @@ def makeConstraints():
 		node = []
 		vm = []
 		nodes = []
-		vm.append(findRandomNode(g5k, "vm"))
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
-		node.append(findRandomNode(g5k, "node"))
+			vm.append(findUniqueNode(g5k, "vm"))
+		node.append(findUniqueNode(g5k, "node"))
 		while(random.randint(0, 6) != 0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 		nodes.append(node)
 		node = []
+		nodelist = []
 		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 			while(random.randint(0, 6) != 0):
-				node.append(findRandomNode(g5k, "node"))
+				node.append(findUniqueNode(g5k, "node"))
 			nodes.append(node)
 			node = []
 		constraints.append(Among(name, id, vm, nodes))
+		nodelist = []
 
 	nbRC = random.randint(1, 10);
 
@@ -248,31 +262,32 @@ def makeConstraints():
 		vms = []
 		node = []
 		nodes = []
-		node.append(findRandomNode(g5k, "node"))
+		node.append(findUniqueNode(g5k, "node"))
 		while(random.randint(0, 6) != 0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 		nodes.append(node)
 		node = []
 		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+			node.append(findUniqueNode(g5k, "node"))
 			while(random.randint(0, 6) != 0):
-				node.append(findRandomNode(g5k, "node"))
+				node.append(findUniqueNode(g5k, "node"))
 			nodes.append(node)
 			node = []
-
-		vm.append(findRandomNode(g5k, "vm"))
+		nodelist = []
+		vm.append(findUniqueNode(g5k, "vm"))
 		while(random.randint(0, 6) != 0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 		vms.append(vm)
 		vm = []
 		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
+			vm.append(findUniqueNode(g5k, "vm"))
 			while(random.randint(0, 6) != 0):
-				vm.append(findRandomNode(g5k, "vm"))
+				vm.append(findUniqueNode(g5k, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(SplitAmong(name, id, vms, nodes))
-
+		nodelist = []
+		
 def makeCluster(id, nb):
 
 
@@ -368,16 +383,19 @@ def jsonGen(root) :
 	return json
 
 def constraintsGen():
+
 	json = '\n\n { "name" : "constraints" ,\n'
 	json += ' "list" : [ \n '
-
+	numb = 0	
 	for i in range(len(constraints)):
+		numb += 1
 		json += '{ "name" : "' + constraints[i].name + '" ,\n'
 		json += '"id" : "' + constraints[i].id + '" , \n'
 
 		if(type(constraints[i]) == VMConstraint):
 			json += '"VMs" : [\n'
-			json += '{ "VMs" : ['
+			json += '{ "name" : "VMs_' + str(numb) + '" ,\n'
+			json += '"VMs": ['
 			for j in range(len(constraints[i].vms)):
 				json += '"' + constraints[i].vms[j].uuid + '"'
 				if j != (len(constraints[i].vms) -1):
@@ -387,18 +405,19 @@ def constraintsGen():
 
 		elif(type(constraints[i]) == NodeConstraint):
 			json += '"Nodes" : [\n'
-			json += '{ "Nodes" : ['
+			json += '{ "name" : "Nodes_' + str(numb) + '" ,\n'
+			json += '"Nodes": ['
 			for j in range(len(constraints[i].nodes)):
 				json += '"' + constraints[i].nodes[j].uuid + '"'
 				if j != (len(constraints[i].nodes) -1):
 					json += ',\n' 
-
 			json += ']}]}'
 
 
 		elif(type(constraints[i]) == Ban_fence):
 			json += '"VMs" : [\n'
-			json += '{ "VMs" : ['
+			json += '{ "name" : "VMs_' + str(numb) + '" ,\n'
+			json += '"VMs": ['
 			for j in range(len(constraints[i].vms)):
 				json += '"' + constraints[i].vms[j].uuid + '"'
 				if j != (len(constraints[i].vms) -1):
@@ -406,7 +425,8 @@ def constraintsGen():
 			json += ']}],'
 
 			json += '"Nodes" : [\n'
-			json += '{ "Nodes" : ['
+			json += '{ "name" : "Nodes_' + str(numb) + '" ,\n'
+			json += '"Nodes": ['
 			for j in range(len(constraints[i].nodes)):
 				json += '"' + constraints[i].nodes[j].uuid + '"'
 				if j != (len(constraints[i].nodes) -1):
@@ -415,7 +435,8 @@ def constraintsGen():
 
 		elif(type(constraints[i]) == Ressource_capacity):
 			json += '"Nodes" : [\n'
-			json += '{ "Nodes" : ['
+			json += '{ "name" : "Nodes_' + str(numb) + '" ,\n'
+			json += '"Nodes": ['
 			for j in range(len(constraints[i].nodes)):
 				json += '"' + constraints[i].nodes[j].uuid + '"'
 				if j != (len(constraints[i].nodes) -1):
@@ -428,7 +449,8 @@ def constraintsGen():
 
 		elif(type(constraints[i]) == Running_capacity):
 			json += '"Nodes" : [\n'
-			json += '{ "Nodes" : ['
+			json += '{ "name" : "Nodes_' + str(numb) + '" ,\n'
+			json += '"Nodes": ['
 			for j in range(len(constraints[i].nodes)):
 				json += '"' + constraints[i].nodes[j].uuid + '"'
 				if j != (len(constraints[i].nodes) -1):
@@ -440,7 +462,8 @@ def constraintsGen():
 
 		elif(type(constraints[i]) == Preserve):
 			json += '"VMs" : [\n'
-			json += '{ "VMs" : ['
+			json += '{ "name" : "VMs_' + str(numb) + '" ,\n'
+			json += '"VMs": ['
 			for j in range(len(constraints[i].vms)):
 				json += '"' + constraints[i].vms[j].uuid + '"'
 				if j != (len(constraints[i].vms) -1):
@@ -453,75 +476,79 @@ def constraintsGen():
 
 		elif(type(constraints[i]) == Split):
 			json += '"VMs" : [\n'
-			json += '{ '
 			for j in range(len(constraints[i].vms)):
-				json += '"VMs_' + str(random.randint(0, 20)) + '" : ['
+				numb += 1
+				json += '{ "name": "VMs_' + str(numb) + '" ,\n'
+				json += '"VMs": ['
 				for k in range(len(constraints[i].vms[j])):
 					json += '"' + constraints[i].vms[j][k].uuid + '"'
 					if k != (len(constraints[i].vms[j]) -1):
 						json += ',\n'
-				json += ']'
+				json += ']}'
 				if j != (len(constraints[i].vms) -1):
 					json += ',\n'
-			json += '}]}'
+			json += ']}'
+			
 
 
 		elif(type(constraints[i]) == Among):
 			json += '"VMs" : [\n'
-			json += '{ "VMs" : ['
+			json += '{ "name" : "VMs_' + str(numb) + '" ,\n'
+			json += '"VMs": ['
 			for j in range(len(constraints[i].vm)):
 				json += '"' + constraints[i].vm[j].uuid + '"'
 				if j != (len(constraints[i].vm) -1):
 					json += ',\n'
 			json += ']}],'
-
+			numb += 1
 			json += '"nodes" : [\n'
-			json += '{ '
 			for j in range(len(constraints[i].parts)):
-				json += '"nodes_' + str(random.randint(0, 20)) + '" : ['
+				numb += 1
+				json += '{ "name": "nodes_' + str(numb) + '", \n'
+				json += '"Nodes": ['
 				for k in range(len(constraints[i].parts[j])):
 					json += '"' + constraints[i].parts[j][k].uuid + '"'
 					if k != (len(constraints[i].parts[j]) -1):
 						json += ',\n'
-				json += ']'
+				json += ']}'
 				if j != (len(constraints[i].parts) -1):
 					json += ',\n'
-			json += '}]}'
+			json += ']}'
 
 
 		elif(type(constraints[i]) == SplitAmong):
 			json += '"VMs" : [\n'
-			json += '{ '
 			for j in range(len(constraints[i].vparts)):
-				json += '"VMs_' + str(random.randint(0, 20)) + '" : ['
+				numb += 1
+				json += '{ "name": "VMs_' + str(numb) + '" ,\n'
+				json += '"VMs": ['
 				for k in range(len(constraints[i].vparts[j])):
 					json += '"' + constraints[i].vparts[j][k].uuid + '"'
 					if k != (len(constraints[i].vparts[j]) -1):
 						json += ',\n'
-				json += ']'
+				json += ']}'
 				if j != (len(constraints[i].vparts) -1):
 					json += ',\n'
-			json += '}],'
-
+			json += '],'
+			numb += 1
 			json += '"nodes" : [\n'
-			json += '{ '
 			for j in range(len(constraints[i].pparts)):
-				json += '"nodes_' + str(random.randint(0, 20)) + '" : ['
+				numb += 1
+				json += '{ "name": "nodes_' + str(numb) + '", \n'
+				json += '"Nodes": ['
 				for k in range(len(constraints[i].pparts[j])):
 					json += '"' + constraints[i].pparts[j][k].uuid + '"'
 					if k != (len(constraints[i].pparts[j]) -1):
 						json += ',\n'
-				json += ']'
+				json += ']}'
 				if j != (len(constraints[i].pparts) -1):
 					json += ',\n'
-			json += '}]}'
-
-
-
+			json += ']}'
+			
 		if (i != len(constraints) -1):
 			json += ', \n' 
 
-	json += '] \n } '
+	json += ']} \n '
 	return json
 
 g5k = Node("g5k", str(uuid.uuid4()))

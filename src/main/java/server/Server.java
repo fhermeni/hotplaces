@@ -19,7 +19,6 @@ import btrplace.model.view.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +27,6 @@ public class Server {
     
    Model model = new DefaultModel();
    Mapping map = model.getMapping();
-   ArrayList<SatConstraint> btrpConstraints = new ArrayList<SatConstraint>();
    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -55,7 +53,7 @@ public class Server {
             String keys2[] = {"const"};
             dataStruct = new JSONObject(data, keys);
             dataConst = new JSONObject(data, keys2);
-
+            
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
@@ -64,19 +62,57 @@ public class Server {
         mapBuild(dataStruct.optJSONObject("struct"));
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
-        
-        //Build constraints and add satisfaction to structure JSON
+                
+        //Build constraints and writes satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
-        
-        for(SatConstraint con : btrpConstraints) {
-            System.out.println(con.isSatisfied(model));
-        }
         
         return Response.ok(data.toString()).build();
 
     }
     
+    public JSONObject mapBuild(JSONObject jo) throws JSONException {
+        JSONArray children = jo.optJSONArray("children");
+        if(isServer(jo)) {
+            
+            Node node = model.newNode();
+            map.addOnlineNode(node);
+            String name = jo.optString("name");
+            int cpuCAP = jo.optInt("CPU");
+            int memCAP = jo.optInt("RAM");
+            int diskCAP = jo.optInt("DiskSpace");
+            
+            ShareableResource rcCPU = new ShareableResource("cpu_" + name, cpuCAP, 0);
+            ShareableResource rcMEM = new ShareableResource("mem_" + name, memCAP, 0);
+            ShareableResource rcDS = new ShareableResource("disk_" + name, diskCAP, 0);
+            
+            
+            VM vm;
+            for(int i =0; i< children.length(); i++) {
+                vm = model.newVM();
+                map.addRunningVM(vm, node);
+                children.optJSONObject(i).put("btrpID", vm.id());
+                rcCPU.setConsumption(vm, children.optJSONObject(i).optInt("CPU"));
+                rcMEM.setConsumption(vm, children.optJSONObject(i).optInt("RAM"));
+                rcDS.setConsumption(vm, children.optJSONObject(i).optInt("DiskSpace"));
+            }
+            jo.put("btrpID", node.id());
+            //System.out.println(rcCPU);
+            model.attach(rcCPU);
+            model.attach(rcMEM);
+            model.attach(rcDS);
+        } else {
+            if(! isVM(jo)) {
+                for(int i =0; i< children.length(); i++) {
+                    mapBuild(children.optJSONObject(i));
+                }
+            }
+        }
+
+        return jo;
+    }
+    
     public void buildConstraints(Set<VM> vms, Set<Node> nodes, JSONObject joConst, JSONObject struct) throws JSONException {
+        
         JSONArray consts = joConst.optJSONArray("list");
         
         for(int i =0; i< consts.length(); i++) {
@@ -87,8 +123,6 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Ban ban = new Ban(vmList, nodeList);
-                    //btrpConstraints.add(ban);
-                    
                     boolean satisfied = ban.isSatisfied(model);
                     for(VM v : vmList)
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
@@ -308,55 +342,45 @@ public class Server {
                 case "Among": {
                     
                     Collection<VM> vmList = getVMList(constr, vms, struct);
-                    Collection<Collection<Node>> nodeParts;// = getNodeParts(constr, nodes, struct);
-                    nodeParts = new HashSet<>();
-                    
-                    Set<Node> no = new HashSet<Node>();
-                    Iterator it = nodes.iterator();
-                    int j=0;
-                    while(it.hasNext()) {
-                            Node n = (Node)it.next();
-                            if(j >= 10) {
-                                j = 0;
-                                nodeParts.add(no);
-                                no = new HashSet<Node>();
-                            }
-                            no.add(n);
-                            j++;
-                    }
-                    
-                    //System.out.println(nodeParts);
+                    Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
                     Among among = new Among(vmList, nodeParts);
-                    /*
                     boolean satisfied = among.isSatisfied(model);
-                    
+
                     for(VM v : vmList)
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-                        */
-                    //btrpConstraints.add(new Among(vmList, nodeList));
+                    
+                    for(Collection<Node> colN : nodeParts)
+                        for(Node n : colN)
+                            addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    
                     break;
                 } 
                 case "Split": {
                     
                     Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
-                    /*
                     Split split = new Split(vmParts);
                     boolean satisfied = split.isSatisfied(model);
                     for(Collection<VM> colV : vmParts)
                         for(VM v : colV)
                             addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
-*/
+
                     break;
                 }
-                case "SpltAmong" : {
+                case "SplitAmong" : {
                     
                     Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
                     Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
-                    /*
-                    System.out.println("'");
-                    System.out.println(nodeParts);
-                    System.out.println("'");
-                    */
+                    SplitAmong sa = new SplitAmong(vmParts, nodeParts);
+                    boolean satisfied = sa.isSatisfied(model);
+                    for(Collection<VM> colV : vmParts)
+                        for(VM v : colV)
+                            addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    for(Collection<Node> colN : nodeParts)
+                        for(Node n : colN)
+                            addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                    
+                    
                     break;
                 }
             }
@@ -383,12 +407,9 @@ public class Server {
     
     public Collection<Collection<Node>> getNodeParts(JSONObject constr, Set<Node> nodes, JSONObject struct) throws JSONException {
         Collection<Collection<Node>> nodeList = new ArrayList<>();
-        JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(0);
-
-        Iterator it = jnodes.keys();
-        while (it.hasNext()) {
-            String name = it.next().toString();
-            JSONArray servers = jnodes.optJSONArray(name);
+        for(int i =0; i< constr.optJSONArray("nodes").length(); i++) {
+            JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(i);
+            JSONArray servers = jnodes.optJSONArray("Nodes");
             ArrayList<Node> groupNode = new ArrayList<Node>();
             for (int j = 0; j < servers.length(); j++) {
                 groupNode.add(getNode(nodes, getBtrpServerID(struct, servers.optString(j))));
@@ -401,18 +422,18 @@ public class Server {
     
     public Collection<Collection<VM>> getVMParts(JSONObject constr, Set<VM> allVMs, JSONObject struct) throws JSONException {
         Collection<Collection<VM>> vmList = new ArrayList<>();
-        JSONObject jvms = constr.optJSONArray("VMs").optJSONObject(0);
+        for(int i =0; i< constr.optJSONArray("VMs").length(); i++) {
+            JSONObject jvms = constr.optJSONArray("VMs").optJSONObject(i);
 
-        Iterator it = jvms.keys();
-        while (it.hasNext()) {
-            String name = it.next().toString();
-            JSONArray vms = jvms.optJSONArray(name);
+            JSONArray vms = jvms.optJSONArray("VMs");
             ArrayList<VM> groupVM = new ArrayList<VM>();
             for (int j = 0; j < vms.length(); j++) {
                 groupVM.add(getVM(allVMs, getBtrpVMID(struct, vms.optString(j))));
             }
             vmList.add(groupVM);
+            
         }
+            
 
         return vmList;
     }
@@ -467,6 +488,7 @@ public class Server {
             JSONObject c = new JSONObject();
             c.put("name", "" + constraintName);
             c.put("satisfied", satisfied);
+            c.put("type", constraintID);
             constList.put(c);
 
             // This is the first Constraint to be added
@@ -476,6 +498,7 @@ public class Server {
             JSONObject c = new JSONObject();
             c.put("name", "" + constraintName);
             c.put("satisfied", satisfied);
+            c.put("type", constraintID);
             constList.put(c);
             children.put("Constraints", constList);
 
@@ -513,47 +536,6 @@ public class Server {
                 return true;
         }
         return false;
-    }
-    
-    public JSONObject mapBuild(JSONObject jo) throws JSONException {
-        JSONArray children = jo.optJSONArray("children");
-        if(isServer(jo)) {
-            
-            Node node = model.newNode();
-            map.addOnlineNode(node);
-            String name = jo.optString("name");
-            int cpuCAP = jo.optInt("CPU");
-            int memCAP = jo.optInt("RAM");
-            int diskCAP = jo.optInt("DiskSpace");
-            
-            ShareableResource rcCPU = new ShareableResource("cpu_" + name, cpuCAP, 0);
-            ShareableResource rcMEM = new ShareableResource("mem_" + name, memCAP, 0);
-            ShareableResource rcDS = new ShareableResource("disk_" + name, diskCAP, 0);
-            
-            
-            VM vm;
-            for(int i =0; i< children.length(); i++) {
-                vm = model.newVM();
-                map.addRunningVM(vm, node);
-                children.optJSONObject(i).put("btrpID", vm.id());
-                rcCPU.setConsumption(vm, children.optJSONObject(i).optInt("CPU"));
-                rcMEM.setConsumption(vm, children.optJSONObject(i).optInt("RAM"));
-                rcDS.setConsumption(vm, children.optJSONObject(i).optInt("DiskSpace"));
-            }
-            jo.put("btrpID", node.id());
-            //System.out.println(rcCPU);
-            model.attach(rcCPU);
-            model.attach(rcMEM);
-            model.attach(rcDS);
-        } else {
-            if(! isVM(jo)) {
-                for(int i =0; i< children.length(); i++) {
-                    mapBuild(children.optJSONObject(i));
-                }
-            }
-        }
-
-        return jo;
     }
     
     public int getBtrpServerID(JSONObject jo, String uuid) throws JSONException {
