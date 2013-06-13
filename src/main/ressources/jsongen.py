@@ -355,22 +355,12 @@ def jsonGen(root) :
 	json +=', "UUID" : ' + str(root.uuid)
 
 	if(root.name != "g5k"):
-		if root.children == []:
+		if root.nodeType != "":
 
-			json +=', "CPU" : ' + str(root.CPU) 
+			json += ' ,"resources" : {'
+			json +='"CPU" : ' + str(root.CPU) 
 			json +=', "RAM" : ' + str(root.RAM) 
-			json += ', "DiskSpace" :' + str(root.DiskSpace)
-			
-		elif root.children[0].children == []:
-			json +=', "CPU" : ' + str(root.CPU)
-			json +=', "RAM" : ' + str(root.RAM) 
-			json += ', "DiskSpace" :' + str(root.DiskSpace)
-			json +=', "rCPU" : ' + str(root.ratioCPU)
-			json +=', "rRAM" : ' + str(root.ratioRAM)
-			json +=', "rDisk" : ' + str(root.ratioDiskSpace)
-			
-
-
+			json += ', "DiskSpace" :' + str(root.DiskSpace) + '}'
 
 	if root.children != []:
 		json += ', \n "children" : ['
@@ -501,10 +491,10 @@ def constraintsGen():
 					json += ',\n'
 			json += ']}],'
 			numb += 1
-			json += '"nodes" : [\n'
+			json += '"Nodes" : [\n'
 			for j in range(len(constraints[i].parts)):
 				numb += 1
-				json += '{ "name": "nodes_' + str(numb) + '", \n'
+				json += '{ "name": "Nodes_' + str(numb) + '", \n'
 				json += '"Nodes": ['
 				for k in range(len(constraints[i].parts[j])):
 					json += '"' + constraints[i].parts[j][k].uuid + '"'
@@ -531,10 +521,10 @@ def constraintsGen():
 					json += ',\n'
 			json += '],'
 			numb += 1
-			json += '"nodes" : [\n'
+			json += '"Nodes" : [\n'
 			for j in range(len(constraints[i].pparts)):
 				numb += 1
-				json += '{ "name": "nodes_' + str(numb) + '", \n'
+				json += '{ "name": "Nodes_' + str(numb) + '", \n'
 				json += '"Nodes": ['
 				for k in range(len(constraints[i].pparts[j])):
 					json += '"' + constraints[i].pparts[j][k].uuid + '"'

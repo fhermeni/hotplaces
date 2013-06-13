@@ -7,6 +7,8 @@ req.onreadystatechange = function() {
         root = res.struct;
         inaltered_Root = root;
         constraints = res.const;
+        resources = res.resources;
+        console.log(resources);
     }
 };
 req.send(null);

@@ -17,8 +17,10 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +29,7 @@ public class Server {
     
    Model model = new DefaultModel();
    Mapping map = model.getMapping();
+   ArrayList<String> resourceList = new ArrayList<>();
    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -36,7 +39,7 @@ public class Server {
         JSONObject dataConst = null;
         String chaine = "";
         String path = "./src/main/ressources/g5kMock.json";
-
+        System.out.println("--------------------------------------------------------------------------BEGIN");
         FileInputStream stream = new FileInputStream(new File(path));
         try {
             FileChannel fc = stream.getChannel();
@@ -60,9 +63,21 @@ public class Server {
 
         //Mapping of VMs and Nodes
         mapBuild(dataStruct.optJSONObject("struct"));
+        String jsonResource = " \"resources\": [ ";
+        for(String s : resourceList){
+            jsonResource += "\"" + s + "\"";
+            if(! s.equals(resourceList.get(resourceList.size() -1)))
+                jsonResource += ",";
+        }
+        jsonResource += "] ";
+        data.put("resources", resourceList);
+        
+
+        
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
-                
+        System.out.println(vms.size() + " VMs");
+        System.out.println(nodes.size() + " Nodes");
         //Build constraints and writes satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
         
@@ -76,30 +91,54 @@ public class Server {
             
             Node node = model.newNode();
             map.addOnlineNode(node);
+            
             String name = jo.optString("name");
-            int cpuCAP = jo.optInt("CPU");
-            int memCAP = jo.optInt("RAM");
-            int diskCAP = jo.optInt("DiskSpace");
             
-            ShareableResource rcCPU = new ShareableResource("cpu_" + name, cpuCAP, 0);
-            ShareableResource rcMEM = new ShareableResource("mem_" + name, memCAP, 0);
-            ShareableResource rcDS = new ShareableResource("disk_" + name, diskCAP, 0);
+            JSONObject resources = jo.optJSONObject("resources");
+            ArrayList<Integer> capacity = new ArrayList<>();
+            Iterator it = resources.keys();
+            int nbResources = 0;
+            ArrayList<String> rcName = new ArrayList();
+            while(it.hasNext()) {
+                
+                String rname = (String)it.next();
+                if(resourceList.indexOf(rname) == -1)
+                    resourceList.add(rname);
+                capacity.add(resources.optInt(rname));
+                rcName.add(rname.toLowerCase());
+                nbResources++;
+                
+            }
             
-            
+            Object[] rcNames = rcName.toArray();
+            ShareableResource[] rc = new ShareableResource[nbResources];
+            for(int j=0; j<nbResources; j++) {
+                rc[j] = new ShareableResource((String)rcNames[j] + "_" + name, (int)capacity.get(j), 0);
+            }
+
             VM vm;
             for(int i =0; i< children.length(); i++) {
+                
+
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
                 children.optJSONObject(i).put("btrpID", vm.id());
-                rcCPU.setConsumption(vm, children.optJSONObject(i).optInt("CPU"));
-                rcMEM.setConsumption(vm, children.optJSONObject(i).optInt("RAM"));
-                rcDS.setConsumption(vm, children.optJSONObject(i).optInt("DiskSpace"));
+                resources = children.optJSONObject(i).optJSONObject("resources");
+                Iterator itChild = resources.keys();
+                int nbRc = 0;
+                while(itChild.hasNext() && (nbRc < nbResources)){
+                    String childRName = (String)itChild.next();
+                    rc[nbRc].setConsumption(vm, resources.optInt(childRName));
+                    nbRc++;
+                }
+            
             }
             jo.put("btrpID", node.id());
-            //System.out.println(rcCPU);
-            model.attach(rcCPU);
-            model.attach(rcMEM);
-            model.attach(rcDS);
+            
+            for(int j=0; j<nbResources; j++) {
+                model.attach(rc[j]);
+            }
+ 
         } else {
             if(! isVM(jo)) {
                 for(int i =0; i< children.length(); i++) {
@@ -407,8 +446,8 @@ public class Server {
     
     public Collection<Collection<Node>> getNodeParts(JSONObject constr, Set<Node> nodes, JSONObject struct) throws JSONException {
         Collection<Collection<Node>> nodeList = new ArrayList<>();
-        for(int i =0; i< constr.optJSONArray("nodes").length(); i++) {
-            JSONObject jnodes = constr.optJSONArray("nodes").optJSONObject(i);
+        for(int i =0; i< constr.optJSONArray("Nodes").length(); i++) {
+            JSONObject jnodes = constr.optJSONArray("Nodes").optJSONObject(i);
             JSONArray servers = jnodes.optJSONArray("Nodes");
             ArrayList<Node> groupNode = new ArrayList<Node>();
             for (int j = 0; j < servers.length(); j++) {
