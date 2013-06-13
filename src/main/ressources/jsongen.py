@@ -174,7 +174,8 @@ def makeConstraints():
 		node.append(findRandomNode(g5k, "node"))
 		while(random.randint(0,5)!=0):
 			node.append(findRandomNode(g5k, "node"))
-		rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "node").name
+		#rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "node").name
+		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		if(id == "Overbook"):
 			amount = random.uniform(0, 100)
 		else:
@@ -202,7 +203,8 @@ def makeConstraints():
 		vm.append(findRandomNode(g5k, "vm"))
 		while(random.randint(0,5)!=0):
 			vm.append(findRandomNode(g5k, "vm"))
-		rc = random.choice([ "cpu", "mem", "disk"])
+		#rc = random.choice([ "cpu", "mem", "disk"])
+		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		amount = random.randint(0, 100)
 		constraints.append(Preserve(name, id, vm, rc, amount))
 

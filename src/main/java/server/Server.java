@@ -105,7 +105,7 @@ public class Server {
                 if(resourceList.indexOf(rname) == -1)
                     resourceList.add(rname);
                 capacity.add(resources.optInt(rname));
-                rcName.add(rname.toLowerCase());
+                rcName.add(rname);
                 nbResources++;
                 
             }
@@ -113,7 +113,7 @@ public class Server {
             Object[] rcNames = rcName.toArray();
             ShareableResource[] rc = new ShareableResource[nbResources];
             for(int j=0; j<nbResources; j++) {
-                rc[j] = new ShareableResource((String)rcNames[j] + "_" + name, (int)capacity.get(j), 0);
+                rc[j] = new ShareableResource((String)rcNames[j], (int)capacity.get(j), 0);
             }
 
             VM vm;
