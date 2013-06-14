@@ -157,6 +157,7 @@
   background: rgba(0, 0, 0, 0.1);
   min-height: 200px;
   min-width: 100px;
+  max-width: 1000px;
 }
 
 /*CONTAINER SKIN DEFAULT*/
@@ -211,7 +212,7 @@ footer, header, hgroup, menu, nav, section {
   min-height: 200px;
   min-width: 100px;
   max-height: 500px;
-  max-width: : 700px;
+  max-width: : 800px;
   border-radius: 10px;
 }
 

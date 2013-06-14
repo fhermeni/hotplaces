@@ -15,6 +15,7 @@
 		container.setAttribute("data-remenberme", "true");
 		container.setAttribute("data-containment", "document");
 		container.setAttribute("data-dock", "dock");
+		container.setAttribute("data-centeronwindow", "true");
 		container.setAttribute("data-buttons", "dock,fullscreen,close");
 		
 		document.getElementById("body").appendChild(container);
@@ -31,6 +32,7 @@
 	
 	
 	            });
+	    // $(container).containerize("setSize", 600, 600);	
 	      
 	      var childN= $("#"+id)[0].childNodes;
 	      
@@ -88,14 +90,21 @@
 			container.setAttribute("data-containment", "document");
 			container.setAttribute("data-dock", "dock");
 			container.setAttribute("data-buttons", "fullscreen,close");
+			container.setAttribute("data-centeronwindow", "true");
 			container.style.top=x;
 			container.style.left=y;
 			document.getElementById("body").appendChild(container);
-			$(container).containerize()
+			$(container).containerize();
+			if(parseInt(($(container).css("width")))> 1000){
+				$(container).containerize("setSize", 1000);			}
+
 		}
 		
-		else{$("#"+id).containerize("open", 100);
-			
+		else{
+			if($("#"+id).get(0).isClosed){
+			$("#"+id).containerize("open", 100);
+			}
+					
 		}
 	}
 /*

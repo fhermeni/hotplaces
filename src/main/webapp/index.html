@@ -39,10 +39,10 @@
 <button onclick="startAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> start</button>--->
 
 <ul id="dockmenu">
-			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200);'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
+			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200), $("#search_form").containerize("setSize", $("#search_form").css("width"), 300);;'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
 			<li class="dock-objet"onclick='if($("#ressources").get(0).isClosed) $("#ressources").containerize("open",200);'><a href="#"><img src="images/ressource.png" alt="Ressources" /></a></li>
 			<li class="dock-objet" onclick='creatContainerInfo(currentRoot.UUID, currentRoot.name, ToStringInfo(getInfo(currentRoot)), "20%", "50%")'><a href="#"><img src="images/music.png" alt="Info" /></a></li>
-			<li class="dock-objet" onclick='containerConstraints("constraintsContainer","20%", "50%")'><a href="#"><img src="images/constraints.png" alt="Constraints" /></a></li>
+			<li class="dock-objet" onclick='containerConstraints("constraintsContainer","20%", "20%")'><a href="#"><img src="images/constraints.png" alt="Constraints" /></a></li>
 
 
 
@@ -56,20 +56,18 @@
 
     
     	
-    	<div id = "ressources" class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="fullscreen,close">
+    	<div id = "ressources" class="container"  data-skin="white" data-drag=true data-centeronwindow='true' data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="fullscreen,close">
     	<h2>Ressource management</h2>
     	
         <p style="text-align:center;">Choose a sort criteria:</p><br/>
-        <select id = "ressources_select" style=" position: absolute">
+        <select id = "ressources_select" style=" position: absolute;">
 	        <option value="Count" selected>Count</option>
 	    </select>
-    	
-	    <input style=" margin-left:100px; position: absolute;" type='button' id='displayFreeSpace' value='Display free space' disabled />
-	    
+    		    
     	</div>
     	
        
-        <form id="search_form" name="search_form" onsubmit='return false;' class="container" style=" top:230px; left: 500px;height: auto;" data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="close">
+        <form id="search_form" name="search_form" onsubmit='return false;' class="container"  data-skin="white" data-drag=true data-resize=true data-dock="dock" data-collapsable=true data-containment="document"  data-rememberme=true data-buttons="close">
         <h2>Search</h2>
     	<span id="search">
     	<p>Enter one or more node names to display the lowest common ancestor</p>
@@ -101,7 +99,21 @@
 <script type="text/javascript" src="js/functionContainer.js"></script>
 <script src="/js/treemapVar.js"></script>
 <script >        	
-	$(".container").containerize({});
+	$(".container").containerize({
+		onOpen: function(o) {
+			if(parseInt(o.$.css("width"))<300){
+			o.$.containerize("setSize", 300);
+			}
+			
+		}
+	});
+	
+	
+		 	
+		
+			
+	
+		
 	document.getElementById("information").style.backgroundColor = ihmColor;
          
          

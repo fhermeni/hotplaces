@@ -61,7 +61,9 @@
 	
 	if (d.Constraints){
 		for(var i = 0; i< d.Constraints.length; i ++){
+			
 			if(d.Constraints[i].type == "Ban" || d.Constraints[i].type == "Among" || d.Constraints[i].type == "Fence" || d.Constraints[i].type == "Gather" || d.Constraints[i].type == "Lonely" || d.Constraints[i].type == "Split" || d.Constraints[i].type == "Spead"){
+				console.log(d.parent.name+ " " + d.name);
 				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ d.children? d.color=d.color : d.strokeColor = colorProb2);
 				}
 			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
@@ -307,8 +309,8 @@ document.search_form.search_field.onkeypress = function() {
         
 ;
 
-	var tmp = g2.selectAll("rect");
-		console.log(tmp);
+		
+		
 
 	//console.log(g2.selectAll("rect").data(function(d){return d.strokeColor? "ok" : "no"}).enter());
  
@@ -506,6 +508,19 @@ document.search_form.search_field.onkeypress = function() {
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
         .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" })
+        .style("stroke",function(d){return d.strokeColor});
+
+
+
+  }
+  
+    function rect2(rect2) {
+    console.log(rect2);
+    rect2.attr("x", function(d) { return x(d.x); })
+        .attr("y", function(d) { return y(d.y); })
+        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
+        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
+        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? "#000" : "#FFF" })
         .attr("stroke",function(d){return d.strokeColor});    
 
 

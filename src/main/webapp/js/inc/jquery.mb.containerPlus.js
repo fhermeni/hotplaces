@@ -36,6 +36,7 @@
 			onBeforeIconize:function(o){},
 			onIconize:function(o){},
 			onClose: function(o){},
+			onOpen: function(o){},
 			onBeforeClose: function(o){},
 			onResize: function(o,w,h){},
 			onDrag: function(o,x,y){},
@@ -253,7 +254,8 @@
 						(el.$.css("position") == "relative" || el.$.css("position") == "static") ? el.$.css("position","absolute")
 								: el.$.css("position") :  el.$.css("position");
 
-				if(!el.isResizable){
+				if(!el.is
+				){
 					el.$.resizable({
 						helper: "mbproxy",
 						start:function(e,ui){
@@ -263,6 +265,7 @@
 							var elPos= el.$.data("containment")? el.$.position():el.$.offset();
 							el.$.resizable('option', 'maxHeight',elH-(elPos.top+20));
 							el.$.resizable('option', 'maxWidth',elW-(elPos.left+20));
+							console.log(el.$);
 							ui.helper.mb_bringToFront();
 						},
 						resize:function(){
@@ -344,7 +347,11 @@
 					el.opt.onRestore(el);
 
 				el.isClosed=false;
+				
 
+					if(typeof el.opt.onOpen === "function")
+						el.opt.onOpen(el);
+			
 
 				if(btf)
 					el.$.mb_bringToFront(el.opt.zIndexContext);
@@ -430,7 +437,7 @@
 			adjust:function(){
 				$.cMethods.adjust = {name: "adjust", author:"pupunzi", type:"built-in"};
 				var el = this;
-				var h= parseFloat(el.$.outerHeight()) - parseFloat(el.$.find(".mbc_header").outerHeight()) - parseFloat(el.$.find(".mbc_footer").outerHeight());
+				var h= parseFloat(el.$.outerHeight()) - parseFloat(el.$.find(".mbc_header").outerHeight()) ;
 				el.$.find(".mbc_content").css({height:h});
 				el.$.find(".mbc_content").css({marginTop:parseFloat(el.$.find(".mbc_header").outerHeight())});
 				return el.$;
@@ -720,6 +727,15 @@
 					el.$.containerize("close");
 				
 				return el.$;
+			},
+			
+			setSize : function(x, y){
+				var el = this;
+				y? y=y: y = el.$.css("height")
+				
+				el.$.css({width:x, height:y});
+					el.$.containerize("adjust");
+				
 			},
 
 			centeronwindow:function(anim){

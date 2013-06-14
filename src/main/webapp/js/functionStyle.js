@@ -74,26 +74,51 @@ function constraintsToString(){
 	var result= "<p>Constraints: </p><br/>";
 	
 	cList.forEach(function(el){
-		result+= "<p> " + el.id +": "
-		console.log(el);
+		result+= "<p> " + el.id +"( "
+		//console.log(el);
 		if(el.VMs && el.VMs.length ===1 ){
 			//console.log("1 " + el.VMs);
-			result+= el.VMs[0].VMs.length + " VMs "
+			result+= "[" +el.VMs[0].VMs.length + " VMs] "
 		} 
 		if(el.VMs && el.VMs.length >1 ){
-			console.log("+ " +el.VMs);
-			result+= el.VMs.length + "groupe de VMs "
+			//console.log("+ " +el.VMs);
+			for(var i =0; i <el.VMs.length; i ++){
+				if(i ===0){
+					result+= "[["+el.VMs[i].VMs.length + " VMs]"
+					
+				}
+				else{result+= ", ["+el.VMs[i].VMs.length + " VMs]"
+					
+				}
+				if(i===el.VMs.length-1){
+					result += "]"
+				}
+			}
 		} 
+		if(el.Nodes && el.VMs){
+			result += ", "
+		}
 		if(el.Nodes && el.Nodes.length ===1){
-			result+= el.Nodes[0].Nodes.length + " Nodes "
+			result+= "["+ el.Nodes[0].Nodes.length + " Nodes] "
 		} 
 		
 		if(el.Nodes && el.Nodes.length >1 ){
-			result+= el.Nodes.length + "groupe de VMs "
+			for(var i =0; i <el.Nodes.length; i ++){
+				if(i ===0){
+					result+= "[["+el.Nodes[i].Nodes.length + " Nodes]"
+					
+				}
+				else{result+= ", ["+el.Nodes[i].Nodes.length + " Nodes]"
+					
+				}
+				if(i===el.Nodes.length-1){
+					result += "]"
+				}
+			}
 		} 
 		
 		if(el.rcid){
-			result += ", ressources: " + el.rcid
+			result += ", rcId: " + el.rcid
 			}
 		if(el.ratio){
 			result += ", ratio: " + el.ratio 
@@ -101,7 +126,7 @@ function constraintsToString(){
 		if(el.amount){
 			result += ", amount: " + el.amount 
 		}
-		result+="</p><br>"
+		result+=")</p><br>"
 		
 	})
 	return result;
@@ -136,7 +161,7 @@ function ToStringInfo(list){
 	
 	}
 	);
-	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/> <p>Depth of node: " + list[3] + "</p><br/> ";
+	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
 	
 	if(list[4]){
 	result += "<p> ressources : <br/> <ul> "
