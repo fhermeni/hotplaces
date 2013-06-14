@@ -65,7 +65,7 @@
 				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ d.children? d.color=d.color : d.strokeColor = colorProb2);
 				}
 			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
-				d.Constraints[i].type==="Overbook"? /*(console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i]))*/null : null;
+				d.Constraints[i].type==="Overbook"? (console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i])) : null;
 				
 				d.Constraints[i].satisfied? d.color= d.color: (/*console.log(d.name + " ressource " + d.Constraints[i].type ),*/d.color = colorProb);
 			}
