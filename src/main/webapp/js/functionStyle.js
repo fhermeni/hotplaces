@@ -140,7 +140,7 @@ function ToStringInfo(list){
 	
 	if(list[4]){
 	result += "<p> ressources : <br/> <ul> "
-		//console.log(list[4]);
+		//esconsole.log(list[4]);
 		for(var r in list[4]){
 			result+= "<li>" + r+ ": " + list[4][r] + "</li>"
 			

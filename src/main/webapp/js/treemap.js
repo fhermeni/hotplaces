@@ -307,6 +307,9 @@ document.search_form.search_field.onkeypress = function() {
         
 ;
 
+	var tmp = g2.selectAll("rect");
+		console.log(tmp);
+
 	//console.log(g2.selectAll("rect").data(function(d){return d.strokeColor? "ok" : "no"}).enter());
  
     // prints a text on a node
@@ -503,7 +506,7 @@ document.search_form.search_field.onkeypress = function() {
         .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
         .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
         .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" })
-        .style("stroke",function(d){return d.strokeColor});    
+        .attr("stroke",function(d){return d.strokeColor});    
 
 
 
