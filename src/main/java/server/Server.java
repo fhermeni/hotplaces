@@ -68,7 +68,6 @@ public class Server {
         System.out.println(nodes.size() + " Nodes");
         //Build constraints and writes satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
-
         return Response.ok(data.toString()).build();
 
     }
@@ -78,6 +77,7 @@ public class Server {
         if (isServer(jo)) {
 
             Node node = model.newNode();
+            
             map.addOnlineNode(node);
 
             String name = jo.optString("name");
@@ -102,7 +102,7 @@ public class Server {
             Object[] rcNames = rcName.toArray();
             ShareableResource[] rc = new ShareableResource[nbResources];
             for (int j = 0; j < nbResources; j++) {
-                rc[j] = new ShareableResource((String) rcNames[j], (int) capacity.get(j), 0);
+                rc[j] = new ShareableResource((String) rcNames[j] + node.id(), (int) capacity.get(j), 0);
             }
 
             VM vm;
@@ -370,6 +370,10 @@ public class Server {
                     Set<Node> set = new HashSet<>(nodeList);
                     Overbook overbook = new Overbook(set, rc, amount);
                     boolean satisfied = overbook.isSatisfied(model);
+                    if(satisfied){
+                        ArrayList<Node> a = (ArrayList)nodeList;
+                        //System.out.println(model.getNodes());
+                    }
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }

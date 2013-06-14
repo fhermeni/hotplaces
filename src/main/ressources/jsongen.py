@@ -166,6 +166,7 @@ def makeConstraints():
 
 		constraints.append(Ban_fence(name, id, vms, nodes))
 
+	nbRC = random.randint(1, 10);
 	for i in range(nbRC):
 		id = random.choice([ "CumulatedResourceCapacity", "SingleResourceCapacity", "Overbook"])
 		name = id + str(i)
@@ -176,7 +177,7 @@ def makeConstraints():
 			node.append(findRandomNode(g5k, "node"))
 		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		if(id == "Overbook"):
-			amount = random.uniform(0, 100)
+			amount = random.uniform(1, 10)
 		else:
 			amount = random.randint(0, 100)
 		constraints.append(Ressource_capacity(name, id, node, rc, amount))
@@ -352,11 +353,11 @@ def jsonGen(root) :
 	
 	json = '{ "name" : "' + root.name + '" '
 
-	json +=', "UUID" : ' + str(root.uuid)
+	json +=', "UUID" : "' + str(root.uuid) + '"'
 
 	if(root.name != "g5k"):
 		if root.nodeType != "":
-			json += ', "type": ' + root.nodeType
+			json += ', "type": "' + root.nodeType + '"'
 			json += ' ,"resources" : {'
 			json +='"CPU" : ' + str(root.CPU) 
 			json +=', "RAM" : ' + str(root.RAM) 
