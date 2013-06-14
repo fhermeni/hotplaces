@@ -377,12 +377,10 @@ public class Server {
                     Set<Node> set = new HashSet<>(nodeList);
                     Overbook overbook = new Overbook(set, rc, amount);
                     boolean satisfied = overbook.isSatisfied(model);
-                    //System.out.println(overbook);
-                        
-                       // System.out.println(nodeList);
-                    
+
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
+                        addRatioToJSON(struct, n, rc, amount);
                     }
 
                     break;
@@ -553,6 +551,45 @@ public class Server {
         }
 
     }
+    
+    public void addRatioToJSON(JSONObject jo, Node node, String resource, double amount) throws JSONException {
+        int nodeID = node.id();
+        JSONArray children = jo.optJSONArray("children");
+        if (isServer(jo)) {
+            //found the node
+            if (jo.optInt("btrpID") == nodeID) {
+                writeRatioToJson(jo, resource, amount);
+            }
+        } else {
+            if (!isVM(jo)) {
+                for (int i = 0; i < children.length(); i++) {
+                    //Recursively check sons
+                    addRatioToJSON(children.optJSONObject(i), node,resource, amount);
+                }
+            }
+        }
+
+    }
+    
+    public void writeRatioToJson(JSONObject children, String resource, double amount) throws JSONException {
+        //Have already some constraints set
+        if (children.has("ratio")) {
+            JSONArray constList = children.optJSONArray("ratio");
+            JSONObject c = new JSONObject();
+            c.put(resource, amount);
+            constList.put(c);
+
+            // This is the first Constraint to be added
+        } else {
+
+            JSONArray constList = new JSONArray();
+            JSONObject c = new JSONObject();
+            c.put(resource, amount);
+            constList.put(c);
+            children.put("ratio", constList);
+
+        }
+    }
 
     public void writeToJson(JSONObject children, String constraintID, String constraintName, boolean satisfied) throws JSONException {
         //Have already some constraints set
@@ -576,7 +613,6 @@ public class Server {
             children.put("Constraints", constList);
 
         }
-
     }
 
     public VM getVM(Set<VM> vms, int id) {

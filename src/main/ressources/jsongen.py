@@ -334,7 +334,7 @@ def makeCluster(id, nb):
 			free.CPU = tmpCPU * node.ratioCPU
 			free.nodeType="free"
 			
-			node.children.append(free)
+			#node.children.append(free)
 
 
 
