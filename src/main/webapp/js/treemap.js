@@ -36,7 +36,7 @@
 
   function accumulate(d) {
     nodes.push(d);
-    if(d.children) {
+    if(! isVM(d)) {
         return d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0);
     } else {
         return 1;
@@ -62,10 +62,10 @@
 	if (d.Constraints){
 		for(var i = 0; i< d.Constraints.length; i ++){
 			if(d.Constraints[i].type == "Ban" || d.Constraints[i].type == "Among" || d.Constraints[i].type == "Fence" || d.Constraints[i].type == "Gather" || d.Constraints[i].type == "Lonely" || d.Constraints[i].type == "Split" || d.Constraints[i].type == "Spead"){
-				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ d.children? d.color=d.color : d.strokeColor = colorProb2);
+				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ !isVM(d)? d.color=d.color : d.strokeColor = colorProb2);
 				}
 			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
-				d.Constraints[i].type==="Overbook"? (console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i])) : null;
+				//d.Constraints[i].type==="Overbook"? (console.log(d.name + " ressource " + d.Constraints[i].type),console.log(d.Constraints[i])) : null;
 				
 				d.Constraints[i].satisfied? d.color= d.color: (/*console.log(d.name + " ressource " + d.Constraints[i].type ),*/d.color = colorProb);
 			}
@@ -88,7 +88,7 @@
         d.id = "" + d.parent.id + "." + d.name;
         d.depth = d.id.split(".").length -1;
     }
-    if (d.children) {
+    if (!isVM(d)) {
     	var padding= pad-pas*(d.depth+1);
     	padding <0? padding= 0: padding=padding;
       treemap.nodes({children: d.children});
@@ -122,9 +122,11 @@
 function getNodes(regexp, d) {
     var nodes = Array();
     if (regexp.test(d.name) || regexp.test(d.id) || regexp.test(d.UUID) ) {
-        nodes = nodes.concat(d);
+        nodes = isVM(d)? nodes.concat(d.parent) : nodes.concat(d);
+        if(isVM(d))
+            return nodes;
     }
-    if (!d.children)
+    if (isVM(d))
         return null;
     for (var i = 0; i < d.children.length; i++) {
         var res = getNodes(regexp, d.children[i]);
@@ -132,6 +134,10 @@ function getNodes(regexp, d) {
             nodes = nodes.concat(res);
     }
     return nodes;
+}
+
+function isVM(d) {
+    return d.type == "vm" || d.type == "free";
 }
   
   //Return Lowest Common Ancestor (LCA)
@@ -147,7 +153,7 @@ function getNodes(regexp, d) {
 
       //get the search result
       var nodes = getNodes(regexp, inaltered_Root);
-      
+
       //if no result
       if(nodes.length === 0) return null;
       
@@ -217,7 +223,7 @@ document.search_form.search_field.onkeypress = function() {
       function singleClick(d) {
         if (!window.clicktimer)
             window.clicktimer = setTimeout(function() {
-               d.children? transition(d): null;
+               !isVM(d)? transition(d): null;
                 window.clicktimer = undefined;
             }
             ,200);
@@ -225,7 +231,7 @@ document.search_form.search_field.onkeypress = function() {
       
       function doubleClick(d) {
         clearTimeout(clicktimer);
-        d.children? transition(d) : transition(d.parent);
+        !isVM(d)? transition(d) : transition(d.parent);
         window.clicktimer = undefined;
     }
       
@@ -308,7 +314,7 @@ document.search_form.search_field.onkeypress = function() {
 ;
 
 	var tmp = g2.selectAll("rect");
-		console.log(tmp);
+		//console.log(tmp);
 
 	//console.log(g2.selectAll("rect").data(function(d){return d.strokeColor? "ok" : "no"}).enter());
  
@@ -515,7 +521,7 @@ document.search_form.search_field.onkeypress = function() {
 function somChildrenValue(d) {
     var som = 0;
 
-    d.children ? d.children.forEach(function(c) {
+    !isVM(d)? d.children.forEach(function(c) {
         som = som + somChildrenValue(c)
     }) : som += getGoodRessources(d);
     return som;
