@@ -64,14 +64,15 @@ public class Server {
 
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
-        System.out.println(vms.size() + " VMs");
-        System.out.println(nodes.size() + " Nodes");
+        //System.out.println(vms.size() + " VMs");
+        //System.out.println(nodes.size() + " Nodes");
         //Build constraints and writes satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
         ArrayList<ModelView> a = new ArrayList(model.getViews());
         System.out.println(a.get(0).getIdentifier());
-        System.out.println(model.getView("ShareableResource.CPU287"));
-        System.out.println(model.getView("ShareableResource.CPU737"));
+
+        System.out.println(model.getView("ShareableResource.CPU287")+"\n");
+        System.out.println(model.getView("ShareableResource.CPU737")+"\n");
         return Response.ok(data.toString()).build();
 
     }
@@ -106,12 +107,18 @@ public class Server {
             Object[] rcNames = rcName.toArray();
             ShareableResource[] rc = new ShareableResource[nbResources];
             for (int j = 0; j < nbResources; j++) {
-                rc[j] = new ShareableResource((String) rcNames[j] + node.id(), (int) capacity.get(j), 0);
+                rc[j] = new ShareableResource((String) rcNames[j]/* + node.id()*/, (int) capacity.get(j), 0);
                 if(node.id() == 287 || node.id() == 737){
+                    if(j==0){
+                        System.out.println(node.id());}
                     System.out.println(rc[j].getCapacity(node));
+                    if(j== nbResources-1){
+                        System.out.println("\n");
+                    }
                 }
                     
             }
+            
 
             VM vm;
             for (int i = 0; i < children.length(); i++) {
@@ -372,15 +379,16 @@ public class Server {
                 }
                 case "Overbook": {
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
-                    String rc = constr.optString("rcid");
+                    ArrayList<Node> a = (ArrayList)nodeList;
+                    String rc = constr.optString("rcid");//+a.get(0).id();
                     double amount = constr.optDouble("amount");
 
                     Set<Node> set = new HashSet<>(nodeList);
                     Overbook overbook = new Overbook(set, rc, amount);
                     boolean satisfied = overbook.isSatisfied(model);
-                   
+                    System.out.println(overbook);
                         
-                        System.out.println(nodeList);
+                       // System.out.println(nodeList);
                     
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
