@@ -166,6 +166,7 @@ def makeConstraints():
 
 		constraints.append(Ban_fence(name, id, vms, nodes))
 
+	nbRC = random.randint(1, 10);
 	for i in range(nbRC):
 		id = random.choice([ "CumulatedResourceCapacity", "SingleResourceCapacity", "Overbook"])
 		name = id + str(i)
@@ -174,7 +175,6 @@ def makeConstraints():
 		node.append(findRandomNode(g5k, "node"))
 		while(random.randint(0,5)!=0):
 			node.append(findRandomNode(g5k, "node"))
-		#rc = random.choice([ "cpu_", "mem_", "disk_"]) + findRandomNode(g5k, "node").name
 		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		if(id == "Overbook"):
 			amount = random.uniform(1, 10)
@@ -203,7 +203,6 @@ def makeConstraints():
 		vm.append(findRandomNode(g5k, "vm"))
 		while(random.randint(0,5)!=0):
 			vm.append(findRandomNode(g5k, "vm"))
-		#rc = random.choice([ "cpu", "mem", "disk"])
 		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		amount = random.randint(0, 100)
 		constraints.append(Preserve(name, id, vm, rc, amount))
@@ -335,7 +334,7 @@ def makeCluster(id, nb):
 			free.CPU = tmpCPU * node.ratioCPU
 			free.nodeType="free"
 			
-			node.children.append(free)
+			#node.children.append(free)
 
 
 
@@ -354,15 +353,16 @@ def jsonGen(root) :
 	
 	json = '{ "name" : "' + root.name + '" '
 
-	json +=', "UUID" : ' + str(root.uuid)
+	json +=', "UUID" : "' + str(root.uuid) + '"'
 
 	if(root.name != "g5k"):
 		if root.nodeType != "":
-
+			json += ', "type": "' + root.nodeType + '"'
 			json += ' ,"resources" : {'
 			json +='"CPU" : ' + str(root.CPU) 
 			json +=', "RAM" : ' + str(root.RAM) 
 			json += ', "DiskSpace" :' + str(root.DiskSpace) + '}'
+
 
 	if root.children != []:
 		json += ', \n "children" : ['
@@ -526,7 +526,7 @@ def constraintsGen():
 			json += '"Nodes" : [\n'
 			for j in range(len(constraints[i].pparts)):
 				numb += 1
-				json += '{ "name": "Nodes_' + str(numb) + '", \n'
+				json += '{ "name": "nodes_' + str(numb) + '", \n'
 				json += '"Nodes": ['
 				for k in range(len(constraints[i].pparts[j])):
 					json += '"' + constraints[i].pparts[j][k].uuid + '"'

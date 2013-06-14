@@ -135,9 +135,8 @@ function constraintsToString(){
 function getInfo(d){
 	var info = Array();
 	info.push(d.parent? d.parent.id : "none")
-	info.push(d.children? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
-	info.push(d.children? Array(d.children) : null);
-
+	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
+	info.push(!isVM(d)? Array(d.children) : null);
 
 	info.push(d.depth);
 	if(d.depth>2){
