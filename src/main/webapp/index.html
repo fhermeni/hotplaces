@@ -35,8 +35,8 @@
 <body id="body" onKeyPress="keybordFunction(event)">
 
 
-<button onclick="stopAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> stop</button>
-<button onclick="startAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> start</button>
+<!---<button onclick="stopAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> stop</button>
+<button onclick="startAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> start</button>--->
 
 <ul id="dockmenu">
 			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200);'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
@@ -61,9 +61,6 @@
     	
         <p style="text-align:center;">Choose a sort criteria:</p><br/>
         <select id = "ressources_select" style=" position: absolute">
-	        <option value="CPU">CPU</option>
-	        <option value="RAM">RAM</option>
-	        <option value="Disk">Disk Space</option>
 	        <option value="Count" selected>Count</option>
 	    </select>
     	
@@ -113,6 +110,14 @@
 <script src="./js/functionStyle.js"></script>
 <script src="/js/treemap.js"></script>
 <script>
+	var select = document.getElementById("ressources_select");
+	for(var i = 0; i < ressourcesEl.length; i++){
+		option = document.createElement("option");
+		option.setAttribute("value", ressourcesEl[i]);
+		option.innerHTML= ressourcesEl[i];
+		select.appendChild(option);	
+		}
+	
 	
 	</script>
 

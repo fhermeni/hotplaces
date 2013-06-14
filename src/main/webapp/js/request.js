@@ -11,7 +11,7 @@ req.onreadystatechange = function() {
 
         console.log(constraints);
         console.log(root);
-        resources = res.resources;
+        ressourcesEl = res.resources;
 
     }
 };
