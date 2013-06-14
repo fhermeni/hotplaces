@@ -29,6 +29,7 @@ public class Server {
     Model model = new DefaultModel();
     Mapping map = model.getMapping();
     ArrayList<String> resourceList = new ArrayList<>();
+    ArrayList<ShareableResource> sr = new ArrayList<>();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,22 +58,21 @@ public class Server {
 
         //Mapping of VMs and Nodes
         mapBuild(dataStruct.optJSONObject("struct"));
-
+        
         data.put("resources", resourceList);
 
-
+        // attach shareable resources
+        for(ShareableResource share : sr) {
+            model.attach(share);
+        }
 
         Set<VM> vms = map.getAllVMs();
         Set<Node> nodes = map.getAllNodes();
         //System.out.println(vms.size() + " VMs");
         //System.out.println(nodes.size() + " Nodes");
+        
         //Build constraints and writes satisfaction to structure JSON
         buildConstraints(vms, nodes, dataConst.optJSONObject("const"), dataStruct.optJSONObject("struct"));
-        ArrayList<ModelView> a = new ArrayList(model.getViews());
-        System.out.println(a.get(0).getIdentifier());
-
-        System.out.println(model.getView("ShareableResource.CPU287")+"\n");
-        System.out.println(model.getView("ShareableResource.CPU737")+"\n");
         return Response.ok(data.toString()).build();
 
     }
@@ -82,66 +82,57 @@ public class Server {
         if (isServer(jo)) {
 
             Node node = model.newNode();
-            
             map.addOnlineNode(node);
-
-            String name = jo.optString("name");
-
             JSONObject resources = jo.optJSONObject("resources");
-            ArrayList<Integer> capacity = new ArrayList<>();
             Iterator it = resources.keys();
-            int nbResources = 0;
             ArrayList<String> rcName = new ArrayList();
             while (it.hasNext()) {
 
                 String rname = (String) it.next();
                 if (resourceList.indexOf(rname) == -1) {
                     resourceList.add(rname);
+                    sr.add(new ShareableResource(rname));
                 }
-                capacity.add(resources.optInt(rname));
                 rcName.add(rname);
-                nbResources++;
-
             }
-
-            Object[] rcNames = rcName.toArray();
-            ShareableResource[] rc = new ShareableResource[nbResources];
-            for (int j = 0; j < nbResources; j++) {
-                rc[j] = new ShareableResource((String) rcNames[j]/* + node.id()*/, (int) capacity.get(j), 0);
-                if(node.id() == 287 || node.id() == 737){
-                    if(j==0){
-                        System.out.println(node.id());}
-                    System.out.println(rc[j].getCapacity(node));
-                    if(j== nbResources-1){
-                        System.out.println("\n");
+            
+            for(String rName : rcName){
+                for(ShareableResource srIt : sr) {
+                    if(srIt.getResourceIdentifier().equals(rName)) {
+                        srIt.setCapacity(node, resources.optInt(rName));
                     }
                 }
-                    
             }
             
 
             VM vm;
             for (int i = 0; i < children.length(); i++) {
 
-
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
                 children.optJSONObject(i).put("btrpID", vm.id());
                 resources = children.optJSONObject(i).optJSONObject("resources");
                 Iterator itChild = resources.keys();
-                int nbRc = 0;
-                while (itChild.hasNext() && (nbRc < nbResources)) {
+                rcName = new ArrayList<>();
+                while (itChild.hasNext()) {
                     String childRName = (String) itChild.next();
-                    rc[nbRc].setConsumption(vm, resources.optInt(childRName));
-                    nbRc++;
+                    if (resourceList.indexOf(childRName) == -1) {
+                        resourceList.add(childRName);
+                        sr.add(new ShareableResource(childRName));
+                    }
+                    rcName.add(childRName);
+                }
+                
+                for(String rName : rcName){
+                    for(ShareableResource srIt : sr) {
+                        if(srIt.getResourceIdentifier().equals(rName)) {
+                            srIt.setConsumption(vm, resources.optInt(rName));
+                        }
+                    }
                 }
 
             }
             jo.put("btrpID", node.id());
-
-            for (int j = 0; j < nbResources; j++) {
-                model.attach(rc[j]);
-            }
 
         } else {
             if (!isVM(jo)) {
@@ -386,7 +377,7 @@ public class Server {
                     Set<Node> set = new HashSet<>(nodeList);
                     Overbook overbook = new Overbook(set, rc, amount);
                     boolean satisfied = overbook.isSatisfied(model);
-                    System.out.println(overbook);
+                    //System.out.println(overbook);
                         
                        // System.out.println(nodeList);
                     
