@@ -17,7 +17,9 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +32,8 @@ public class Server {
     Mapping map = model.getMapping();
     ArrayList<String> resourceList = new ArrayList<>();
     ArrayList<ShareableResource> sr = new ArrayList<>();
+    HashMap<String, HashMap<String, Double>> overbookNodes;
+    HashMap<String, Integer> cRunningCap;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -55,9 +59,12 @@ public class Server {
         } catch (JSONException JSe) {
             System.out.println("pbs JSON file");
         }
-
+        
+        overbookNodes = getOverbookNodes(dataConst.optJSONObject("const"));
+        cRunningCap = getCRCNodes(dataConst.optJSONObject("const"));
+        
         //Mapping of VMs and Nodes
-        mapBuild(dataStruct.optJSONObject("struct"));
+        mapBuild(dataStruct.optJSONObject("struct"), overbookNodes);
         
         data.put("resources", resourceList);
 
@@ -77,10 +84,50 @@ public class Server {
 
     }
 
-    public JSONObject mapBuild(JSONObject jo) throws JSONException {
+    public HashMap<String, HashMap<String, Double>> getOverbookNodes(JSONObject joConst) {
+        
+        JSONArray consts = joConst.optJSONArray("list");
+        HashMap<String, HashMap<String, Double>> res = new HashMap<>();
+        
+        for(int i = 0; i< consts.length(); i++){
+            JSONObject constr = consts.optJSONObject(i);
+            if(constr.optString("id").equals("Overbook")){
+                JSONArray jnodes = constr.optJSONArray("Nodes").optJSONObject(0).optJSONArray("Nodes");
+                for (int j = 0; j < jnodes.length(); j++) {
+                    HashMap<String, Double> rcIdAmount = new HashMap<>();
+                    rcIdAmount.put( constr.optString("rcid"), constr.optDouble("amount"));
+                    res.put(jnodes.optString(j), rcIdAmount);
+                }
+            }
+            
+        }
+        
+        return res;
+    }
+    
+    public HashMap<String, Integer> getCRCNodes(JSONObject joConst) {
+        
+        JSONArray consts = joConst.optJSONArray("list");
+        HashMap<String, Integer> res = new HashMap<>();
+        
+        for(int i = 0; i< consts.length(); i++){
+            JSONObject constr = consts.optJSONObject(i);
+            if(constr.optString("id").equals("CumulatedRunningCapacity")){
+                JSONArray jnodes = constr.optJSONArray("Nodes").optJSONObject(0).optJSONArray("Nodes");
+                for (int j = 0; j < jnodes.length(); j++) {
+                    res.put(jnodes.optString(j), constr.optInt("amount"));
+                }
+            }
+            
+        }
+        
+        return res;
+    }
+    
+    public JSONObject mapBuild(JSONObject jo, HashMap<String, HashMap<String, Double>> overbookNodes) throws JSONException {
         JSONArray children = jo.optJSONArray("children");
         if (isServer(jo)) {
-
+            ArrayList<Integer> totalCap = new ArrayList<>();
             Node node = model.newNode();
             map.addOnlineNode(node);
             JSONObject resources = jo.optJSONObject("resources");
@@ -99,19 +146,34 @@ public class Server {
             for(String rName : rcName){
                 for(ShareableResource srIt : sr) {
                     if(srIt.getResourceIdentifier().equals(rName)) {
-                        srIt.setCapacity(node, resources.optInt(rName));
+                        srIt.setCapacity(node, resources.optInt(rName));    
                     }
+                    
                 }
+                if(overbookNodes.containsKey(jo.optString("UUID"))) {
+                        if(overbookNodes.get(jo.optString("UUID")).containsKey(rName)) {
+                            totalCap.add((int)(resources.optInt(rName) * overbookNodes.get(jo.optString("UUID")).get(rName)) );
+                            
+                        }
+                        else {
+                            totalCap.add((int)resources.optInt(rName));
+                        }
+                }
+                totalCap.add(resources.optInt(rName));
             }
             
-
+            int[] totalCons = new int[rcName.size()];
+            for(int d : totalCons)
+                d = 0;
+            
             VM vm;
             for (int i = 0; i < children.length(); i++) {
-
+                
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
                 children.optJSONObject(i).put("btrpID", vm.id());
                 resources = children.optJSONObject(i).optJSONObject("resources");
+                
                 Iterator itChild = resources.keys();
                 rcName = new ArrayList<>();
                 while (itChild.hasNext()) {
@@ -122,6 +184,9 @@ public class Server {
                     }
                     rcName.add(childRName);
                 }
+                for(int j =0; j< rcName.size(); j++) {
+                    totalCons[j] += resources.optInt(rcName.get(j));
+                }
                 
                 for(String rName : rcName){
                     for(ShareableResource srIt : sr) {
@@ -130,14 +195,50 @@ public class Server {
                         }
                     }
                 }
-
             }
             jo.put("btrpID", node.id());
+            
+            if(cRunningCap.containsKey(jo.optString("UUID"))) {
+                int tmp = cRunningCap.get(jo.optString("UUID")) - children.length();
+                if(tmp <= 0)
+                    tmp = 0;
+                
+                jo.put("CumulatedRunningCapacity", tmp);
+            }
+            
+            
+            boolean free = false;
+            for(int j = 0; j< totalCons.length; j++) {
+                if(totalCons[j] < totalCap.get(j)){
+                    free = true;
+                    break;
+                }
+            }
+            
+            if(free){
+                JSONObject freeVM = new JSONObject();
+                JSONObject freeResources = new JSONObject();
+                freeVM.put("name", "free");
+                freeVM.put("UUID", "free");
+                freeVM.put("type", "free");
 
+                for(int j=0; j< totalCons.length; j++){
+                    int tmp = totalCap.get(j) - totalCons[j];
+                    if(tmp < 0)
+                        tmp = 0;
+                    freeResources.put(rcName.get(j), tmp);
+                }
+                freeVM.put("resources", freeResources);
+
+                children.put(freeVM);
+            }
+            
+            
+            
         } else {
             if (!isVM(jo)) {
                 for (int i = 0; i < children.length(); i++) {
-                    mapBuild(children.optJSONObject(i));
+                    mapBuild(children.optJSONObject(i), overbookNodes);
                 }
             }
         }
@@ -371,7 +472,7 @@ public class Server {
                 case "Overbook": {
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     ArrayList<Node> a = (ArrayList)nodeList;
-                    String rc = constr.optString("rcid");//+a.get(0).id();
+                    String rc = constr.optString("rcid");
                     double amount = constr.optDouble("amount");
 
                     Set<Node> set = new HashSet<>(nodeList);
