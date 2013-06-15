@@ -32,7 +32,8 @@ public class Server {
     Mapping map = model.getMapping();
     ArrayList<String> resourceList = new ArrayList<>();
     ArrayList<ShareableResource> sr = new ArrayList<>();
-    HashMap<String, HashMap<String, Double>> overbookNodes;// = new HashMap<>();
+    HashMap<String, HashMap<String, Double>> overbookNodes;
+    HashMap<String, Integer> cRunningCap;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,6 +61,7 @@ public class Server {
         }
         
         overbookNodes = getOverbookNodes(dataConst.optJSONObject("const"));
+        cRunningCap = getCRCNodes(dataConst.optJSONObject("const"));
         
         //Mapping of VMs and Nodes
         mapBuild(dataStruct.optJSONObject("struct"), overbookNodes);
@@ -95,6 +97,25 @@ public class Server {
                     HashMap<String, Double> rcIdAmount = new HashMap<>();
                     rcIdAmount.put( constr.optString("rcid"), constr.optDouble("amount"));
                     res.put(jnodes.optString(j), rcIdAmount);
+                }
+            }
+            
+        }
+        
+        return res;
+    }
+    
+    public HashMap<String, Integer> getCRCNodes(JSONObject joConst) {
+        
+        JSONArray consts = joConst.optJSONArray("list");
+        HashMap<String, Integer> res = new HashMap<>();
+        
+        for(int i = 0; i< consts.length(); i++){
+            JSONObject constr = consts.optJSONObject(i);
+            if(constr.optString("id").equals("CumulatedRunningCapacity")){
+                JSONArray jnodes = constr.optJSONArray("Nodes").optJSONObject(0).optJSONArray("Nodes");
+                for (int j = 0; j < jnodes.length(); j++) {
+                    res.put(jnodes.optString(j), constr.optInt("amount"));
                 }
             }
             
@@ -139,12 +160,7 @@ public class Server {
                         }
                 }
                 totalCap.add(resources.optInt(rName));
-                if(jo.optString("name").equals("bordereau-3"))
-                System.out.println(resources.optLong(rName));
             }
-            
-            if(jo.optString("name").equals("bordereau-3"))
-                System.out.println(totalCap);
             
             int[] totalCons = new int[rcName.size()];
             for(int d : totalCons)
@@ -153,12 +169,10 @@ public class Server {
             VM vm;
             for (int i = 0; i < children.length(); i++) {
                 
-                
                 vm = model.newVM();
                 map.addRunningVM(vm, node);
                 children.optJSONObject(i).put("btrpID", vm.id());
                 resources = children.optJSONObject(i).optJSONObject("resources");
-                
                 
                 Iterator itChild = resources.keys();
                 rcName = new ArrayList<>();
@@ -181,22 +195,25 @@ public class Server {
                         }
                     }
                 }
-
             }
             jo.put("btrpID", node.id());
+            
+            if(cRunningCap.containsKey(jo.optString("UUID"))) {
+                int tmp = cRunningCap.get(jo.optString("UUID")) - children.length();
+                if(tmp <= 0)
+                    tmp = 0;
+                
+                jo.put("CumulatedRunningCapacity", tmp);
+            }
+            
+            
             boolean free = false;
             for(int j = 0; j< totalCons.length; j++) {
-                //totalCons[j] = totalCap.get(j) - totalCons[j];
                 if(totalCons[j] < totalCap.get(j)){
                     free = true;
                     break;
                 }
             }
-            if(jo.optString("name").equals("bordereau-3")){
-                //System.out.println(totalCap);
-                System.out.println(Arrays.toString(totalCons));
-            }
-            
             
             if(free){
                 JSONObject freeVM = new JSONObject();
@@ -215,6 +232,7 @@ public class Server {
 
                 children.put(freeVM);
             }
+            
             
             
         } else {
