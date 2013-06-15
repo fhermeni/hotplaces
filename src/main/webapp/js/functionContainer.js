@@ -94,6 +94,7 @@
 			container.style.top=x;
 			container.style.left=y;
 			document.getElementById("body").appendChild(container);
+				
 			$(container).containerize();
 			if(parseInt(($(container).css("width")))> 1000){
 				$(container).containerize("setSize", 1000);			}
@@ -106,6 +107,12 @@
 			}
 					
 		}
+		var span = document.getElementsByClassName("constraintsList");
+				//console.log(span);
+				for(var i = 0; i< span.length; i++){
+				span[i].onclick= function(){search(this.getAttribute("data"));
+					
+				}}
 	}
 /*
 *sample of popup functionality

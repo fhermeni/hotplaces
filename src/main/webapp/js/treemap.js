@@ -64,7 +64,6 @@
 			
 			if(d.Constraints[i].type == "Ban" || d.Constraints[i].type == "Among" || d.Constraints[i].type == "Fence" || d.Constraints[i].type == "Gather" || d.Constraints[i].type == "Lonely" || d.Constraints[i].type == "Split" || d.Constraints[i].type == "Spead"){
 
-				console.log(d.parent.name+ " " + d.name);
 				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ !isVM(d)? d.color=d.color : d.strokeColor = colorProb2);
 				}
 			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
@@ -296,7 +295,8 @@ document.search_form.search_field.onkeypress = function() {
 ;
 
         
-     
+   
+
 
     g2.selectAll("g")
         .data(function(d) { return d.children || [d]; })
@@ -318,13 +318,16 @@ document.search_form.search_field.onkeypress = function() {
 
 
 
+
+
+
 	//console.log(g2.selectAll("rect").data(function(d){return d.strokeColor? "ok" : "no"}).enter());
  
     // prints a text on a node
     g.append("text")
         .attr("dy", "1.75em")
         .attr("class", "textChildren")
-        .text(function(d) { return d.depth<4? d.name : null; })
+        .text(function(d) { return d.type!="vm"? ((d.dx<20||d.dy<10)? null:d.name) :  null; })
         .call(text);
     
     // prints text on children nodes
@@ -332,8 +335,7 @@ document.search_form.search_field.onkeypress = function() {
         .data(function(d) { return d.children || [d]; })
         .enter().append("text")
         .attr("class", "textChild")
-        .text(function(d) { return d.depth<4? d.name : null;})
-
+        .text(function(d) { return currentRoot=== inaltered_Root? d.name : null;})
         .attr("dy", ".75em")
         .attr("lengthAdjust", "spacingAndGlyphs")
         .call(textChild);
@@ -350,7 +352,8 @@ document.search_form.search_field.onkeypress = function() {
 		a[i].setAttribute("repeatCount", 0);
 	}
     function transition(d) {
-        
+        currentRoot = d;
+
         unHighLight(undefined);
         if (transitioning || !d)
             return;
@@ -402,7 +405,6 @@ document.search_form.search_field.onkeypress = function() {
             transitioning = false;
         });
         
-        currentRoot = d;
         displayInfo(d);
 
     }
@@ -432,7 +434,7 @@ document.search_form.search_field.onkeypress = function() {
         var select = document.getElementById("ressources_select");
         select.onchange= function(){
 	        var value = select.options[select.selectedIndex].value;
-	        value === 'Count'? document.getElementById("displayFreeSpace").setAttribute('disabled') :  document.getElementById("displayFreeSpace").removeAttribute('disabled');
+	        
 	        treemap.value(function(d){
 	        		        return d.name==='free'? somChildrenValue(d)*freeIsDisplaying :somChildrenValue(d);
 	        })
@@ -487,7 +489,7 @@ document.search_form.search_field.onkeypress = function() {
    */
   function text(text) {
     text.attr("x", function(d) { return x(d.x+d.dx/2) ; })
-        .attr("y", function(d) { return y(d.y) + 6; })
+        .attr("y", function(d) { return y(d.y) ; })
         .style("font-size",function(d) { return d.parent.children.length<20? "x-large": "medium";})
         
 ;
@@ -509,29 +511,20 @@ document.search_form.search_field.onkeypress = function() {
    * descripton : adds attributes to the "rect" tags
    */
   function rect(rect) {
-    rect.attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF" })
-        .style("stroke",function(d){return d.strokeColor});
-
+  	
+    rect.attr("x", function(d) { return d.strokeColor? x(d.x)+1 :  x(d.x) })
+        .attr("y", function(d) { return d.strokeColor? y(d.y)+1 :  y(d.y) })
+        .attr("width", function(d) { return d.strokeColor? (x(d.x + d.dx) - x(d.x)-2<0? 0: x(d.x + d.dx) - x(d.x)-2): (x(d.x + d.dx) - x(d.x)<0? 0: x(d.x + d.dx) - x(d.x))})
+        .attr("height", function(d) { return d.strokeColor? (y(d.y + d.dy) - y(d.y)-2<0? 0 : y(d.y + d.dy) - y(d.y)-2) : (y(d.y + d.dy) - y(d.y)<0? 0: y(d.y + d.dy) - y(d.y) )})
+        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF"})
+        //.style("stroke",function(d){return d.strokeColor});
+        .style("stroke-width",function(d){return (d.strokeColor )? 1:1 })
+        .style("stroke",function(d){return d.strokeColor? d.strokeColor : "#FFF"});
 
 
   }
   
-    function rect2(rect2) {
-    console.log(rect2);
-    rect2.attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); })
-        .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? "#000" : "#FFF" })
-        .attr("stroke",function(d){return d.strokeColor});    
 
-
-
-  }
   
 function somChildrenValue(d) {
     var som = 0;

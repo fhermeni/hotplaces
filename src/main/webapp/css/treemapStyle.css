@@ -24,6 +24,7 @@ text {
 
 ul{
 	text-indent:20px;
+	list-style-position:inside;
 }
 
 .information {
@@ -79,6 +80,12 @@ ul{
 }
 
 .childLink:hover{
+	cursor:pointer;
+    font-weight: lighter;
+    color: blue;
+}
+
+.constraintsList:hover{
 	cursor:pointer;
     font-weight: lighter;
     color: blue;

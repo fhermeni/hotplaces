@@ -78,16 +78,16 @@ function constraintsToString(){
 		//console.log(el);
 		if(el.VMs && el.VMs.length ===1 ){
 			//console.log("1 " + el.VMs);
-			result+= "[" +el.VMs[0].VMs.length + " VMs] "
+			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs + ">" +el.VMs[0].VMs.length + " VMs</span>] "
 		} 
 		if(el.VMs && el.VMs.length >1 ){
 			//console.log("+ " +el.VMs);
 			for(var i =0; i <el.VMs.length; i ++){
 				if(i ===0){
-					result+= "[["+el.VMs[i].VMs.length + " VMs]"
+					result+= "[[<span class ='constraintsList'data =" + el.VMs[i].VMs + ">"+el.VMs[i].VMs.length + " VMs</span>]"
 					
 				}
-				else{result+= ", ["+el.VMs[i].VMs.length + " VMs]"
+				else{result+= ", [<span class ='constraintsList'data =" + el.VMs[i].VMs + ">"+el.VMs[i].VMs.length + " VMs</span>]"
 					
 				}
 				if(i===el.VMs.length-1){
@@ -166,7 +166,31 @@ function ToStringInfo(list){
 	result += "<p> ressources : <br/> <ul> "
 		//esconsole.log(list[4]);
 		for(var r in list[4]){
-			result+= "<li>" + r+ ": " + list[4][r] + "</li>"
+			var num= list[4][r];
+			var res;
+			var t, g ;
+			if(r != "CPU"){
+			if(num/1000000>1 ){
+				t= Math.floor(num/1000000);
+				//num= num % 1000000; 
+				res = num/1000000+" TB";
+			}
+			
+			else{if(num /1000>1){
+				g= Math.floor(num/1000);
+				num= num % 1000;
+				res = g+"."+num+" GB";
+			}
+				else{
+					res = num +" MB";
+				}
+			}
+			}
+			else{ res = num;}
+			
+			
+			
+			result+= "<li>" + r+ ": " + res + "</li>"
 			
 		} 
 		result+= "</ul></p>"
