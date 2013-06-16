@@ -11,7 +11,7 @@
   accumulate(root);
   layout(root);
   display(root);
- 
+  
   displayInfo(root);
  
   /*
@@ -116,7 +116,26 @@
   }
   
   
-  
+  function search_constraint(keywords) {
+    
+    keywords = keywords.replace(/^/, "^").replace(/$/, "$")
+              .replace(/(\,|\s|;)+/g, "$|^")
+              .replace(/\*/g, "(\\S)*")
+              .replace(/\?/g, "\\S")
+    ;
+    var regexp = new RegExp(keywords, "i");
+    
+    var res = Array();
+    
+    for(var i in constraints.list) {
+        if(regexp.test(constraints.list[i].name) || regexp.test(constraints.list[i].id) ){
+            
+            res.concat(constraints.list[i]);
+        }
+    }
+    
+    return res;
+  }
   
   
   
