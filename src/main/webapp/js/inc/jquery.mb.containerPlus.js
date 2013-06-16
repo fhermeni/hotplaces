@@ -265,7 +265,6 @@
 							var elPos= el.$.data("containment")? el.$.position():el.$.offset();
 							el.$.resizable('option', 'maxHeight',elH-(elPos.top+20));
 							el.$.resizable('option', 'maxWidth',elW-(elPos.left+20));
-							console.log(el.$);
 							ui.helper.mb_bringToFront();
 						},
 						resize:function(){

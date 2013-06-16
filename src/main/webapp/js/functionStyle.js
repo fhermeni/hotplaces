@@ -8,7 +8,6 @@ function removeDisplay() {
 function keybordFunction(ev){
 	if (ev.keyCode === 32){
 		 if($("#"+hoverNode.UUID).length ===0){
-		 	console.log("crea");
 		 	
 		 	creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%');
 		 	
@@ -53,15 +52,25 @@ function keybordFunction(ev){
 
 }*/
 
-	function stopAnimation(UUID){
+/*function:
+ ** parameter: UUID of node
+ ** description: stop blinking animation of node with UUID passed in parameter
+ */
+
+function stopAnimation(UUID){
 	var el = document.getElementsByClassName(UUID);
 	for (var i = 0; i < el.length; i++){
 		el[0].setAttribute("repeatCount", 0);
 	}
 	
 	}
-	
-	function startAnimation(UUID){
+
+/*function:
+ ** parameter: UUID of node
+ ** description: start blinking animation of node with UUID passed in parameter
+ */
+
+function startAnimation(UUID){
 	var el = document.getElementsByClassName(UUID);
 	for (var i = 0; i < el.length; i++){
 		el[0].setAttribute("repeatCount", "indefinite");
@@ -69,19 +78,22 @@ function keybordFunction(ev){
 	
 	}
 
+/*function:
+ ** parameter: 
+ ** description: toString method to constraints list.
+ ** creat html list of constraints
+ */
+
 function constraintsToString(){
 	var cList = constraints.list;
 	var result= "<p>Constraints: </p><br/>";
 	
 	cList.forEach(function(el){
 		result+= "<p> " + el.id +"( "
-		//console.log(el);
 		if(el.VMs && el.VMs.length ===1 ){
-			//console.log("1 " + el.VMs);
 			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs + ">" +el.VMs[0].VMs.length + " VMs</span>] "
 		} 
 		if(el.VMs && el.VMs.length >1 ){
-			//console.log("+ " +el.VMs);
 			for(var i =0; i <el.VMs.length; i ++){
 				if(i ===0){
 					result+= "[[<span class ='constraintsList'data =" + el.VMs[i].VMs + ">"+el.VMs[i].VMs.length + " VMs</span>]"
@@ -132,6 +144,68 @@ function constraintsToString(){
 	return result;
 }
 
+
+function constraintToString(c){
+	var result= "";
+	
+		result+= "<p> " + c.id +"( "
+		if(c.VMs && c.VMs.length ===1 ){
+			result+= "[<span class ='constraintsList'data =" + c.VMs[0].VMs + ">" +c.VMs[0].VMs.length + " VMs</span>] "
+		} 
+		if(c.VMs && c.VMs.length >1 ){
+			for(var i =0; i <c.VMs.length; i ++){
+				if(i ===0){
+					result+= "[[<span class ='constraintsList'data =" + c.VMs[i].VMs + ">"+c.VMs[i].VMs.length + " VMs</span>]"
+					
+				}
+				else{result+= ", [<span class ='constraintsList'data =" + c.VMs[i].VMs + ">"+c.VMs[i].VMs.length + " VMs</span>]"
+					
+				}
+				if(i===c.VMs.length-1){
+					result += "]"
+				}
+			}
+		} 
+		if(c.Nodes && c.VMs){
+			result += ", "
+		}
+		if(c.Nodes && c.Nodes.length ===1){
+			result+= "["+ el.Nodes[0].Nodes.length + " Nodes] "
+		} 
+		if(c.Nodes && c.Nodes.length >1 ){
+			for(var i =0; i <c.Nodes.length; i ++){
+				if(i ===0){
+					result+= "[["+c.Nodes[i].Nodes.length + " Nodes]"
+					
+				}
+				else{result+= ", ["+c.Nodes[i].Nodes.length + " Nodes]"
+					
+				}
+				if(i===c.Nodes.length-1){
+					result += "]"
+				}
+			}
+		} 
+		if(c.rcid){
+			result += ", rcId: " + c.rcid
+			}
+		if(c.ratio){
+			result += ", ratio: " + c.ratio 
+		}
+		if(c.amount){
+			result += ", amount: " + c.amount 
+		}
+		result+=")</p><br>"
+		
+	return result;
+}
+
+/*function:
+ ** parameter: node
+ ** description: get all information of node d
+ **return: information list (Array object)
+ */
+
 function getInfo(d){
 	var info = Array();
 	info.push(d.parent? d.parent.id : "none")
@@ -150,6 +224,11 @@ function getInfo(d){
 	
 	return info;
 	}
+
+/*function:
+ ** parameter: (Array object) with node's information (take with getinfo())
+ ** description: creat an html string with node's information
+ */
 	
 function ToStringInfo(list){
 	var result="";
@@ -209,12 +288,10 @@ function ToStringInfo(list){
 	}
 	
 	if(list[6]){
-		console.log(list[6]);
 		result += "<p> Constraints : <br/> <ul> "
 		var res="";
 		for(var c in list[6]){
-				console.log(list[6][c]);
-				res += list[6][c].satisfied? ("<li>"+ list[6][c].type +"</li>") :("<li style= color:" + colorProb2 +";>"+ list[6][c].type +"</li>");
+				res += list[6][c].satisfied? ("<li class='constraintsNode' data="+ list[6][c].name  +">"+ list[6][c].type +"</li>") :("<li class='constraintsNode' data="+ list[6][c].name  +" style= color:" + colorProb2 +";>"+ list[6][c].type +"</li>");
 				}
 		result+= res +"</ul></p><br/>" ;
 	}
@@ -222,6 +299,12 @@ function ToStringInfo(list){
 	return result;
 	
 }
+
+/*function:
+ ** parameter: list of node and html list element
+ ** description: display node passed in parameter into html list element
+ */
+
 
  function displayChildren(childlist, ul){
 	 if(childlist){
@@ -240,7 +323,12 @@ function ToStringInfo(list){
  	 }
  	 
  }
-
+ 
+ 
+/*function:
+ ** parameter: number
+ ** description: convert number with MB unit in number with a appropriat unit
+ */
 
 function getUnit(number) {
     var unit = 0;
