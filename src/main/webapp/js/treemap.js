@@ -11,7 +11,7 @@
   accumulate(root);
   layout(root);
   display(root);
- 
+  
   displayInfo(root);
  
   /*
@@ -125,14 +125,16 @@
     ;
     var regexp = new RegExp(keywords, "i");
     
+    var res = Array();
+    
     for(var i in constraints.list) {
-        if(regexp.test(constraints.list[i].name)){
-            console.log(constraints.list[i]);
-            return constraints.list[i];
+        if(regexp.test(constraints.list[i].name) || regexp.test(constraints.list[i].id) ){
+            
+            res.concat(constraints.list[i]);
         }
     }
     
-    return null;
+    return res;
   }
   
   
