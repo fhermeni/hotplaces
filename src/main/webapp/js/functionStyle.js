@@ -134,7 +134,6 @@ function constraintsToString(){
 
 function getInfo(d){
 	var info = Array();
-	console.log(d);
 	info.push(d.parent? d.parent.id : "none")
 	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
 	info.push(!isVM(d)? Array(d.children) : null);
@@ -147,12 +146,12 @@ function getInfo(d){
 	if(d.type === "node"){
 		info.push(d.ratio);
 	}
+	info.push(d.Constraints);
 	
 	return info;
 	}
 	
 function ToStringInfo(list){
-	console.log(list[2])
 	var result="";
 	var tmp = list[0].split(".");
 	tmp.forEach(function(el){
@@ -168,7 +167,7 @@ function ToStringInfo(list){
 	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
 	
 	if(list[4]){
-	result += "<p> ressources : <br/> <ul> "
+	result += "<p> resources : <br/> <ul> "
 
 		for(var r in list[4]){
 			var num= list[4][r];
@@ -206,7 +205,18 @@ function ToStringInfo(list){
 				result+= "<li>" + r+ ": " + res  +"</li>"
 			
 		} 
-		result+= "</ul></p>"
+		result+= "</ul></p><br/>"
+	}
+	
+	if(list[6]){
+		console.log(list[6]);
+		result += "<p> Constraints : <br/> <ul> "
+		var res="";
+		for(var c in list[6]){
+				console.log(list[6][c]);
+				res += list[6][c].satisfied? ("<li>"+ list[6][c].type +"</li>") :("<li style= color:" + colorProb2 +";>"+ list[6][c].type +"</li>");
+				}
+		result+= res +"</ul></p><br/>" ;
 	}
 	
 	return result;
