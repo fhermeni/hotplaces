@@ -675,19 +675,14 @@ public class Server {
     public void writeRatioToJson(JSONObject children, String resource, double amount) throws JSONException {
         //Have already some constraints set
         if (children.has("ratio")) {
-            JSONArray constList = children.optJSONArray("ratio");
-            JSONObject c = new JSONObject();
-            c.put(resource, amount);
-            constList.put(c);
+            children.optJSONObject("ratio").put(resource, amount);
 
             // This is the first Constraint to be added
         } else {
 
-            JSONArray constList = new JSONArray();
             JSONObject c = new JSONObject();
             c.put(resource, amount);
-            constList.put(c);
-            children.put("ratio", constList);
+            children.put("ratio", c);
 
         }
     }
