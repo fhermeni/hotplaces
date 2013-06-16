@@ -84,8 +84,8 @@ function startAnimation(UUID){
  ** creat html list of constraints
  */
 
-function constraintsToString(){
-	var cList = constraints.list;
+function constraintsToString(list){
+	var cList = list;
 	var result= "<p>Constraints: </p><br/>";
 	
 	cList.forEach(function(el){
@@ -170,7 +170,7 @@ function constraintToString(c){
 			result += ", "
 		}
 		if(c.Nodes && c.Nodes.length ===1){
-			result+= "["+ el.Nodes[0].Nodes.length + " Nodes] "
+			result+= "["+ c.Nodes[0].Nodes.length + " Nodes] "
 		} 
 		if(c.Nodes && c.Nodes.length >1 ){
 			for(var i =0; i <c.Nodes.length; i ++){

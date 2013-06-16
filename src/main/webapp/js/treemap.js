@@ -25,7 +25,6 @@
     root.dy = height;
     root.depth = 0;
     root.id = "g5k";
-    console.log(search_constraint("Split"));
   }
 
  
@@ -126,7 +125,6 @@ function search_constraint(keywords) {
 	
 	for(var i in constraints.list) {
 	    if(regexp.test(constraints.list[i].name) || regexp.test(constraints.list[i].id) ){
-	        console.log(constraints.list[i])
 	        res.push(constraints.list[i]);
 	    }
 	}
@@ -218,12 +216,12 @@ function search(searchField) {
 }
 
 document.search_form.search_button.onclick = function() {
-    search(document.search_form.search_field.value);
+    document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): console.log(constraintsToString(search_constraint(document.search_form.search_field.value)));
 };
 
 document.search_form.search_field.onkeypress = function() {
     if(window.event.keyCode === 13) {
-        search(document.search_form.search_field.value);
+    	document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): console.log(constraintsToString(search_constraint(document.search_form.search_field.value)));
     }
 };
 

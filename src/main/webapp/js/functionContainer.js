@@ -64,7 +64,13 @@ function creatContainerInfo(id, title, content, x, y){
 	    for(var i=0; i < constraintsList.length; i++){
 			constraintsList[i].onclick= function(){
 			var searchRes= search_constraint(this.getAttribute("data"));
-			console.log(searchRes);}
+			var res="";
+			for(var j = 0; j < searchRes.length; j ++){
+			res+= constraintToString(searchRes[j]);
+			}
+			console.log( res);
+			this.innerHTML = res;
+		}
 				
 
 	    }
@@ -82,7 +88,7 @@ function containerConstraints(id,x, y){
 	if($("#"+id).length ===0){
 		var container = document.createElement("div")
 		var titleTag = document.createElement("H2");
-		container.innerHTML=constraintsToString();
+		container.innerHTML=constraintsToString(constraints.list);
 		titleTag.innerHTML="Constraints";
 		container.appendChild(titleTag);
 		container.setAttribute("id", id);
