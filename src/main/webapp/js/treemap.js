@@ -25,6 +25,7 @@
     root.dy = height;
     root.depth = 0;
     root.id = "g5k";
+    console.log(search_constraint("Split"));
   }
  
  /*
@@ -129,8 +130,8 @@
     
     for(var i in constraints.list) {
         if(regexp.test(constraints.list[i].name) || regexp.test(constraints.list[i].id) ){
-            
-            res.concat(constraints.list[i]);
+            console.log(constraints.list[i])
+            res.push(constraints.list[i]);
         }
     }
     
