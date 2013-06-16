@@ -1,31 +1,33 @@
 
 /*
-* function
-* parameters : URI, callback function
-* description : sends a GET http request, receives
-* a json structure and executes a callback function.
-*/
-currentRoot= root;
-hoverNode = root;
-initialize(root);
-accumulate(root);
-layout(root);
-display(root);
+ * function
+ * parameters : URI, callback function
+ * description : sends a GET http request, receives
+ * a json structure and executes a callback function.
+ */
+  currentRoot= root;
+  hoverNode = root;
+  initialize(root);
+  accumulate(root);
+  layout(root);
+  display(root);
+  
+  displayInfo(root);
+ 
+  /*
+   * function
+   * parameters : node to inititialize
+   * description : inititialize coordinates of given parameter
+   */
+  function initialize(root) {
+    root.x = root.y = 0;
+    root.dx = width;
+    root.dy = height;
+    root.depth = 0;
+    root.id = "g5k";
+    console.log(search_constraint("Split"));
+  }
 
-displayInfo(root);
-
-/*
-* function
-* parameters : node to inititialize
-* description : inititialize coordinates of given parameter
-*/
-function initialize(root) {
-	root.x = root.y = 0;
-	root.dx = width;
-	root.dy = height;
-	root.depth = 0;
-	root.id = "g5k";
-}
  
  /*
   * function
@@ -110,7 +112,6 @@ function layout(d) {
   }
 
 
-
   
 function search_constraint(keywords) {
 
@@ -125,13 +126,14 @@ function search_constraint(keywords) {
 	
 	for(var i in constraints.list) {
 	    if(regexp.test(constraints.list[i].name) || regexp.test(constraints.list[i].id) ){
-	        
-	        res.concat(constraints.list[i]);
+	        console.log(constraints.list[i])
+	        res.push(constraints.list[i]);
 	    }
 	}
 	
 	return res;
 }
+
   
   
   
