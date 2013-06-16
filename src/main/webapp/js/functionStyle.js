@@ -134,20 +134,25 @@ function constraintsToString(){
 
 function getInfo(d){
 	var info = Array();
+	console.log(d);
 	info.push(d.parent? d.parent.id : "none")
 	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
 	info.push(!isVM(d)? Array(d.children) : null);
 
-	info.push(d.depth);
-	if(d.depth>2){
+	info.push(d.type);
+	if(d.type==="vm" || d.type === "node" || d.type ==="free"){
 	
 		info.push(d.resources);
+	}
+	if(d.type === "node"){
+		info.push(d.ratio);
 	}
 	
 	return info;
 	}
 	
 function ToStringInfo(list){
+	console.log(list[2])
 	var result="";
 	var tmp = list[0].split(".");
 	tmp.forEach(function(el){
@@ -164,33 +169,41 @@ function ToStringInfo(list){
 	
 	if(list[4]){
 	result += "<p> ressources : <br/> <ul> "
-		//esconsole.log(list[4]);
+
 		for(var r in list[4]){
 			var num= list[4][r];
 			var res;
-			var t, g ;
+			
+
+
 			if(r != "CPU"){
-			if(num/1000000>1 ){
-				t= Math.floor(num/1000000);
-				//num= num % 1000000; 
-				res = num/1000000+" TB";
-			}
 			
-			else{if(num /1000>1){
-				g= Math.floor(num/1000);
-				num= num % 1000;
-				res = g+"."+num+" GB";
-			}
-				else{
-					res = num +" MB";
+				if(num/1000000>1 ){
+					res = num/1000000+" TB "  ;
+					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
+					
 				}
+				
+				else{
+					if(num /1000>1){
+					
+					res = num % 1000 + " GB " ;
+					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
+				}
+					else{
+						res = num +" MB ";
+					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
+					}
+				}
+			
 			}
+			else{ res = num;
+					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
 			}
-			else{ res = num;}
-			
-			
-			
-			result+= "<li>" + r+ ": " + res + "</li>"
+				
+				
+				
+				result+= "<li>" + r+ ": " + res  +"</li>"
 			
 		} 
 		result+= "</ul></p>"
@@ -199,6 +212,7 @@ function ToStringInfo(list){
 	return result;
 	
 }
+
  function displayChildren(childlist, ul){
 	 if(childlist){
  	childlist.forEach(function(el) {
