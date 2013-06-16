@@ -25,6 +25,7 @@
     root.dy = height;
     root.depth = 0;
     root.id = "g5k";
+    search_constraint("Split1");
   }
  
  /*
@@ -116,7 +117,24 @@
   }
   
   
-  
+  function search_constraint(keywords) {
+    
+    keywords = keywords.replace(/^/, "^").replace(/$/, "$")
+              .replace(/(\,|\s|;)+/g, "$|^")
+              .replace(/\*/g, "(\\S)*")
+              .replace(/\?/g, "\\S")
+    ;
+    var regexp = new RegExp(keywords, "i");
+    
+    for(var i in constraints.list) {
+        if(regexp.test(constraints.list[i].name)){
+            console.log(constraints.list[i]);
+            return constraints.list[i];
+        }
+    }
+    
+    return null;
+  }
   
   
   
