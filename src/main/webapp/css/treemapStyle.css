@@ -1,6 +1,18 @@
 body{
 	height: auto;
+
 	background-color: #ccc;
+
+        
+}
+
+#splash-page.ng-cloak  {
+  display: none;
+  cursor: wait;
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 rect {

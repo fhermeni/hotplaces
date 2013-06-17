@@ -7,6 +7,7 @@
         <link href='css/mb.containerPlus.css' rel='stylesheet' type='text/css'>
 
         <title>Grid5000 Treemap</title>
+         <script src="http://code.angularjs.org/1.0.6/angular.min.js"></script>
         <script>
             var launch_search = false;
         </script>
@@ -35,8 +36,9 @@
 	</script>
 
     </head>
-<body id="body" onKeyPress="keybordFunction(event)">
-
+    
+<body id="body" onKeyPress="keybordFunction(event)" class="ng-cloak" >
+<img src="loading.gif" id="load" class="visible">
 
 <!--<button onclick="stopAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> stop</button>
 <button onclick="startAnimation('5baa78c4-fada-4f67-a49a-56a927977b20')"> start</button>-->
