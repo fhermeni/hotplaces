@@ -1,5 +1,15 @@
 body{
 	height: auto;
+        
+}
+
+#splash-page.ng-cloak  {
+  display: none;
+  cursor: wait;
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 rect {
