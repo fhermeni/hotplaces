@@ -166,16 +166,16 @@ function constraintsToString(list){
 			result += ", "
 		}
 		if(el.Nodes && el.Nodes.length ===1){
-			result+= "["+ el.Nodes[0].Nodes.length + " Nodes] "
+			result+= "[<span class ='constraintsList'data =" + el.Nodes[0].Nodes + ">"+ el.Nodes[0].Nodes.length + " Nodes</span>] "
 		} 
 		
 		if(el.Nodes && el.Nodes.length >1 ){
 			for(var i =0; i <el.Nodes.length; i ++){
 				if(i ===0){
-					result+= "[["+el.Nodes[i].Nodes.length + " Nodes]"
+					result+= "[[<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
-				else{result+= ", ["+el.Nodes[i].Nodes.length + " Nodes]"
+				else{result+= ", [<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
 				if(i===el.Nodes.length-1){
@@ -225,15 +225,16 @@ function constraintToString(c){
 			result += ", "
 		}
 		if(c.Nodes && c.Nodes.length ===1){
-			result+= "["+ c.Nodes[0].Nodes.length + " Nodes] "
+			result+= "[<span class ='constraintsList'data =" + el.Nodes[0].Nodes + ">"+ el.Nodes[0].Nodes.length + " Nodes</span>] "
 		} 
-		if(c.Nodes && c.Nodes.length >1 ){
-			for(var i =0; i <c.Nodes.length; i ++){
+		
+		if(el.Nodes && el.Nodes.length >1 ){
+			for(var i =0; i <el.Nodes.length; i ++){
 				if(i ===0){
-					result+= "[["+c.Nodes[i].Nodes.length + " Nodes]"
+					result+= "[[<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
-				else{result+= ", ["+c.Nodes[i].Nodes.length + " Nodes]"
+				else{result+= ", [<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
 				if(i===c.Nodes.length-1){
