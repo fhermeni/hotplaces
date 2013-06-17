@@ -252,13 +252,14 @@ public class Server {
 
         for (int i = 0; i < consts.length(); i++) {
             JSONObject constr = consts.optJSONObject(i);
+            boolean satisfied = false;;
             switch (constr.optString("id")) {
 
                 case "Ban": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Ban ban = new Ban(vmList, nodeList);
-                    boolean satisfied = ban.isSatisfied(model);
+                    satisfied = ban.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -273,7 +274,7 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Fence fence = new Fence(vmList, nodeList);
-                    boolean satisfied = fence.isSatisfied(model);
+                    satisfied = fence.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -287,7 +288,7 @@ public class Server {
                 case "Gather": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Gather gather = new Gather(vmList);
-                    boolean satisfied = gather.isSatisfied(model);
+                    satisfied = gather.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -297,7 +298,7 @@ public class Server {
                 case "Killed": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Killed killed = new Killed(vmList);
-                    boolean satisfied = killed.isSatisfied(model);
+                    satisfied = killed.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -309,7 +310,7 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Set<VM> set = new HashSet<>(vmList);
                     Lonely lonely = new Lonely(set);
-                    boolean satisfied = lonely.isSatisfied(model);
+                    satisfied = lonely.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -319,7 +320,7 @@ public class Server {
                 case "Ready": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Ready ready = new Ready(vmList);
-                    boolean satisfied = ready.isSatisfied(model);
+                    satisfied = ready.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -329,7 +330,7 @@ public class Server {
                 case "Root": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Root root = new Root(vmList);
-                    boolean satisfied = root.isSatisfied(model);
+                    satisfied = root.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -339,7 +340,7 @@ public class Server {
                 case "Running": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Running running = new Running(vmList);
-                    boolean satisfied = running.isSatisfied(model);
+                    satisfied = running.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -350,7 +351,7 @@ public class Server {
 
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     SequentialVMTransitions svt = new SequentialVMTransitions((List) vmList);
-                    boolean satisfied = svt.isSatisfied(model);
+                    satisfied = svt.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -360,7 +361,7 @@ public class Server {
                 case "Sleeping": {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Sleeping sleeping = new Sleeping(vmList);
-                    boolean satisfied = sleeping.isSatisfied(model);
+                    satisfied = sleeping.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -372,7 +373,7 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Set<VM> set = new HashSet<>(vmList);
                     Spread spread = new Spread(set);
-                    boolean satisfied = spread.isSatisfied(model);
+                    satisfied = spread.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -386,7 +387,7 @@ public class Server {
 
                     Set<Node> set = new HashSet<>(nodeList);
                     CumulatedResourceCapacity crc = new CumulatedResourceCapacity(set, rc, amount);
-                    boolean satisfied = crc.isSatisfied(model);
+                    satisfied = crc.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -400,7 +401,7 @@ public class Server {
 
                     Set<Node> set = new HashSet<>(nodeList);
                     SingleResourceCapacity src = new SingleResourceCapacity(set, rc, amount);
-                    boolean satisfied = src.isSatisfied(model);
+                    satisfied = src.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -413,7 +414,7 @@ public class Server {
 
                     Set<Node> set = new HashSet<>(nodeList);
                     CumulatedRunningCapacity crc = new CumulatedRunningCapacity(set, amount);
-                    boolean satisfied = crc.isSatisfied(model);
+                    satisfied = crc.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -426,7 +427,7 @@ public class Server {
 
                     Set<Node> set = new HashSet<>(nodeList);
                     SingleRunningCapacity src = new SingleRunningCapacity(set, amount);
-                    boolean satisfied = src.isSatisfied(model);
+                    satisfied = src.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -438,7 +439,7 @@ public class Server {
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Offline offline = new Offline(nodeList);
 
-                    boolean satisfied = offline.isSatisfied(model);
+                    satisfied = offline.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -450,7 +451,7 @@ public class Server {
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Online online = new Online(nodeList);
 
-                    boolean satisfied = online.isSatisfied(model);
+                    satisfied = online.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -462,7 +463,7 @@ public class Server {
                     Collection<Node> nodeList = getNodeList(constr, nodes, struct);
                     Quarantine quarantine = new Quarantine(nodeList);
 
-                    boolean satisfied = quarantine.isSatisfied(model);
+                    satisfied = quarantine.isSatisfied(model);
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -477,7 +478,7 @@ public class Server {
 
                     Set<Node> set = new HashSet<>(nodeList);
                     Overbook overbook = new Overbook(set, rc, amount);
-                    boolean satisfied = overbook.isSatisfied(model);
+                    satisfied = overbook.isSatisfied(model);
 
                     for (Node n : nodeList) {
                         addConstraintToJSON(struct, n, constr.optString("id"), constr.optString("name"), satisfied);
@@ -492,7 +493,7 @@ public class Server {
                     String rc = constr.optString("rcid");
                     int amount = constr.optInt("amount");
                     Preserve preserve = new Preserve(vmList, rc, amount);
-                    boolean satisfied = preserve.isSatisfied(model);
+                    satisfied = preserve.isSatisfied(model);
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
                     }
@@ -504,7 +505,7 @@ public class Server {
                     Collection<VM> vmList = getVMList(constr, vms, struct);
                     Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
                     Among among = new Among(vmList, nodeParts);
-                    boolean satisfied = among.isSatisfied(model);
+                    satisfied = among.isSatisfied(model);
 
                     for (VM v : vmList) {
                         addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
@@ -522,7 +523,7 @@ public class Server {
 
                     Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
                     Split split = new Split(vmParts);
-                    boolean satisfied = split.isSatisfied(model);
+                    satisfied = split.isSatisfied(model);
                     for (Collection<VM> colV : vmParts) {
                         for (VM v : colV) {
                             addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
@@ -536,7 +537,7 @@ public class Server {
                     Collection<Collection<VM>> vmParts = getVMParts(constr, vms, struct);
                     Collection<Collection<Node>> nodeParts = getNodeParts(constr, nodes, struct);
                     SplitAmong sa = new SplitAmong(vmParts, nodeParts);
-                    boolean satisfied = sa.isSatisfied(model);
+                    satisfied = sa.isSatisfied(model);
                     for (Collection<VM> colV : vmParts) {
                         for (VM v : colV) {
                             addConstraintToJSON(struct, v, constr.optString("id"), constr.optString("name"), satisfied);
@@ -553,7 +554,7 @@ public class Server {
                     break;
                 }
             }
-
+            constr.put("satisfied", satisfied);
         }
 
     }

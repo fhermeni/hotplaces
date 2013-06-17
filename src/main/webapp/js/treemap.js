@@ -25,7 +25,6 @@
     root.dy = height;
     root.depth = 0;
     root.id = "g5k";
-    console.log(search_constraint("Split"));
   }
  
  /*
