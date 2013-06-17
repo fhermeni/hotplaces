@@ -142,22 +142,32 @@ function startAnimation(UUID){
 function constraintsToString(list){
 	var cList = list;
 	console.log(cList.sort(function(a, b){
-	     var A = a.id.toLowerCase();
-	     var B = b.id.toLowerCase();
-	     if (A < B){
-	        return -1;
-	     }else if (A > B){
-	       return  1;
-	     }else{
-	       return 0;
-	     }
+		if(a.satisfied < b.satisfied){
+			return 1;
+		}
+		else if (a.satisfied > b.satisfied){
+			return -1;
+		}
+		else{
+			var A = a.id.toLowerCase();
+			var B = b.id.toLowerCase();
+			if (A < B){
+	        	return -1;
+	        }else if (A > B){
+		        return  1;
+		        }else{
+		        	return 0;
+		        	}
+		}
+	     
 }));
 	
 	
 	var result= "";
 	
 	cList.forEach(function(el){
-		result+= "<p  style= color:" + el.satisfied? colorProb2 : null +";> " + el.id +"( "
+		var color =  el.satisfied? colorProb2 : 'black';
+		result+= "<p  style= color:" + color +";> " + el.id +"( "
 		if(el.VMs && el.VMs.length ===1 ){
 			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs +" >" +el.VMs[0].VMs.length + " VMs</span>] "
 		} 
