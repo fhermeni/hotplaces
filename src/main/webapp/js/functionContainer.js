@@ -6,8 +6,6 @@ function creatContainerInfo(id, title, content, x, y){
 		titleTag.innerHTML=title;
 		container.appendChild(titleTag);
 		container.setAttribute("id", id);
-		container.style.top=x;
-		container.style.left=y;
 		container.setAttribute("data-skin", "white");
 		container.setAttribute("data-drag", "true");
 		container.setAttribute("data-resize", "true");
@@ -20,7 +18,7 @@ function creatContainerInfo(id, title, content, x, y){
 		
 		document.getElementById("body").appendChild(container);
 
-		$(container).containerize({ //$(el).css({opacity:.7})
+		$(container).containerize({ 
 	            onClose: function(o) { 
 	            if(!o.$.isIconized){
 		            document.getElementById("body").removeChild(document.getElementById(o.getAttribute("id"))) }           
@@ -68,7 +66,6 @@ function creatContainerInfo(id, title, content, x, y){
 			for(var j = 0; j < searchRes.length; j ++){
 			res+= constraintToString(searchRes[j]);
 			}
-			console.log( res);
 			this.innerHTML = res;
 		}
 				
@@ -123,6 +120,48 @@ function containerConstraints(id,x, y){
 				
 			}}
 }
+
+function containerSearch(id, content){
+	if($("#"+id).length ===0){
+		var container = document.createElement("div")
+		var titleTag = document.createElement("H2");
+		container.innerHTML=content;
+		titleTag.innerHTML="Search result : Constraints";
+		container.appendChild(titleTag);
+		container.setAttribute("id", id);
+		container.setAttribute("data-skin", "white");
+		container.setAttribute("data-drag", "true");
+		container.setAttribute("data-resize", "true");
+		container.setAttribute("data-collapsable", "true");
+		container.setAttribute("data-remenberme", "true");
+		container.setAttribute("data-containment", "document");
+		container.setAttribute("data-dock", "dock");
+		container.setAttribute("data-centeronwindow", "true");
+		container.setAttribute("data-buttons", "dock,fullscreen,close");
+		
+		document.getElementById("body").appendChild(container);
+		
+		$(container).containerize({ //$(el).css({opacity:.7})
+        onClose: function(o) { 
+        if(!o.$.isIconized){
+            document.getElementById("body").removeChild(document.getElementById(o.getAttribute("id"))) }           
+        
+        }
+
+
+        });
+        
+        
+		if(parseInt(($(container).css("width")))> window.innerWidth/2){
+			$(container).containerize("setSize", window.innerWidth/2);			}
+		if(parseInt(($(container).css("height")))> window.innerHeight/2){
+			$(container).containerize("setSize", ($(container).css("width")), window.innerHeight/2);			}
+
+	}
+        
+
+}
+
 /*
 *sample of popup functionality
 *

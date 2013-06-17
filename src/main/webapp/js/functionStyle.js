@@ -86,7 +86,7 @@ function startAnimation(UUID){
 
 function constraintsToString(list){
 	var cList = list;
-	var result= "<p>Constraints: </p><br/>";
+	var result= "";
 	
 	cList.forEach(function(el){
 		result+= "<p> " + el.id +"( "

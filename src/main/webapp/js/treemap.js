@@ -216,12 +216,12 @@ function search(searchField) {
 }
 
 document.search_form.search_button.onclick = function() {
-    document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): console.log(constraintsToString(search_constraint(document.search_form.search_field.value)));
+    document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): containerSearch("search_const", constraintsToString(search_constraint(document.search_form.search_field.value)));
 };
 
 document.search_form.search_field.onkeypress = function() {
     if(window.event.keyCode === 13) {
-    	document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): console.log(constraintsToString(search_constraint(document.search_form.search_field.value)));
+    	document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): containerSearch("search_const", constraintsToString(search_constraint(document.search_form.search_field.value)));
     }
 };
 
