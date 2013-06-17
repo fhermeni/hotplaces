@@ -5,6 +5,27 @@ function removeDisplay() {
     });
 }
 
+
+function search_Node(UUID, d){
+	
+	if(d.UUID===UUID){
+		return d
+	}
+	
+		if(d.children){
+			for (var i in d.children){
+				var tmp= search_Node(UUID, d.children[i])
+				if (tmp != null){
+					return tmp;
+				}
+				
+			}
+			
+		}
+		
+	}
+
+
 function keybordFunction(ev){
 	if (ev.keyCode === 32){
 		 if($("#"+hoverNode.UUID).length ===0){
@@ -58,9 +79,10 @@ function keybordFunction(ev){
  */
 
 function stopAnimation(UUID){
-	var el = document.getElementsByClassName(UUID);
+	var el = document.getElementsByName(UUID);
+	console.log(el)
 	for (var i = 0; i < el.length; i++){
-		el[0].setAttribute("repeatCount", 0);
+		
 	}
 	
 	}
@@ -71,11 +93,44 @@ function stopAnimation(UUID){
  */
 
 function startAnimation(UUID){
-	var el = document.getElementsByClassName(UUID);
-	for (var i = 0; i < el.length; i++){
-		el[0].setAttribute("repeatCount", "indefinite");
-	}
+
 	
+	var el = document.getElementsByName(UUID);
+	if (el.length ===0){
+		d= search_Node(UUID, inaltered_Root)
+	}
+	while(el.length ===0 && d.parent ){
+			d= d.parent
+		
+		 el = document.getElementsByName(d.UUID);
+		 }
+		
+	
+	
+	
+	console.log(el);
+	for (var i = 0; i < el.length; i++){
+	
+		if(el[i].tagName==="rect"){
+			var animation = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+		    animation.setAttributeNS(null, 'attributeName', 'fill');
+		    animation.setAttributeNS(null, 'begin', 'indefinite');
+		    animation.setAttributeNS(null, 'from', el[i].getAttribute("data-color"));
+		    var color =el[i].getAttribute("data-color");
+			color = hexToRgb(color);
+			color.r -= 50;
+			color.g -= 50;
+			color.b -= 50;
+			color= "rgb(" + color.r + "," + color.g + "," + color.b + ")"    
+			animation.setAttributeNS(null, 'to', color);
+		    animation.setAttributeNS(null, 'dur', 1);
+		    animation.setAttributeNS(null, 'calcMode', "discrete");
+		    animation.setAttributeNS(null, 'fill', 'freeze');
+			animation.setAttribute("repeatCount", "indefinite");
+			el[i].appendChild(animation);
+			animation.beginElement();
+	}
+	}
 	}
 
 /*function:
@@ -208,7 +263,7 @@ function constraintToString(c){
 
 function getInfo(d){
 	var info = Array();
-	info.push(d.parent? d.parent.id : "none")
+	info.push(d.parent? d.parent.id : "")
 	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
 	info.push(!isVM(d)? Array(d.children) : null);
 
@@ -235,15 +290,15 @@ function ToStringInfo(list){
 	var tmp = list[0].split(".");
 	tmp.forEach(function(el){
 		if(el==="g5k"){
-			result+= "<span class = 'nodeLink'>"+ el + "</span>"
+			result+= "<span class = 'nodeLink'>"+el+ "</span>"
 		}
 		else{
-		result+= ".<span class = 'nodeLink'>"+ el + "</span>"
+		result+= ".<span class = 'nodeLink'>" +el+ "</span>"
 		}
 	
 	}
 	);
-	result = "<p id='parentLink'>Parent : " + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
+	result = "<p id='parentLink'>" + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
 	
 	if(list[4]){
 	result += "<p> resources : <br/> <ul> "
@@ -467,14 +522,8 @@ function unHighLight(div) {
                 var current = listChildNode[i];
                 for (var j = 1; j < current.childNodes.length; j++) {
                     //in safari and chrome
-                    var color = current.childNodes[j].style.fill;
-                    if (color[0] === "#") {
-                        color = hexToRgb(color);
-                        color.r += 50;
-                        color.g += 50;
-                        color.b += 50;
-                        current.childNodes[j].style.fill = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
-                    }
+                        current.childNodes[j].style.fill = current.childNodes[j].getAttribute("data-color");
+                    
                     //in opera and firefox
                     if (color[0] === "r") {
                         color = color.split(",");
@@ -510,8 +559,7 @@ function highLight(div) {
             for (var j = 1; j < current.childNodes.length; j++) {
 
 
-
-                var color = current.childNodes[j].style.fill;
+                var color = current.childNodes[j].getAttribute("data-color");
                 if (color[0] === "#") {
                     color = hexToRgb(color);
                     color.r -= 50;

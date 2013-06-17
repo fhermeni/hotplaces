@@ -9,9 +9,10 @@ var nodes= [] ;
 var freeIsDisplaying = true;
 
 //palette1
-var ihmColor= "#1693A7";
+var ihmColor= "#cccccc";
 var colorFree= "#C8CF02";
 var colorNoProb= "#EDF1B6";
+var colorNoProbHigh;
 var colorProb= "#CC0C39";
 var colorProb2= "#E6781E";
 

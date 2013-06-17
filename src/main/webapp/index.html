@@ -10,8 +10,10 @@
         <script>
             var launch_search = false;
         </script>
-            <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.js"></script>
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.js"></script>-->
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/inc/jquery.mb.containerPlus.js"></script>
     <script type="text/javascript" src="js/inc/mb.containerPlus.plugins.js"></script>
         <script type="text/javascript" src="js/simpleDock.min.js"></script>
@@ -36,8 +38,8 @@
 <body id="body" onKeyPress="keybordFunction(event)">
 
 
-<!---<button onclick="stopAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> stop</button>
-<button onclick="startAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> start</button>--->
+<button onclick="stopAnimation('ba122cd4-35e8-4927-8a59-f9dc96d7a094')"> stop</button>
+<button onclick="startAnimation('5baa78c4-fada-4f67-a49a-56a927977b20')"> start</button>
 
 <ul id="dockmenu">
 			<li class="dock-objet" onclick='if($("#search_form").get(0).isClosed) $("#search_form").containerize("open",200), $("#search_form").containerize("setSize", $("#search_form").css("width"), 300);;'><a href="#"><img src="images/search.png" alt="Search" /></a></li>
@@ -103,6 +105,8 @@
 
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
 
+
+
 <script type="text/javascript" src="js/functionContainer.js"></script>
 <script src="/js/treemapVar.js"></script>
 <script >        	
@@ -136,6 +140,15 @@
 		option.innerHTML= ressourcesEl[i];
 		select.appendChild(option);	
 		}
+		
+
+        color = hexToRgb(colorNoProb);
+        color.r -= 50;
+        color.g -= 50;
+        color.b -= 50;
+        colorNoProbHigh = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+                    
+
 	
 	
 	</script>

@@ -1,5 +1,6 @@
 body{
 	height: auto;
+	background-color: #ccc;
 }
 
 rect {
@@ -28,7 +29,8 @@ ul{
 }
 
 .information {
-	margin-top: -1px;
+	font-size: x-large;
+	margin-top: -3px;
   margin-right: auto;
   margin-left: 100px;
   width: 90%;

@@ -58,7 +58,7 @@ function accumulate(d) {
 */
 function layout(d) {
 
-	d.name==='free' ? d.color= colorFree : d.color = colorNoProb ;
+	d.type==='free' ? d.color= colorFree : d.color = colorNoProb ;
 	
 	if (d.Constraints){
 		for(var i = 0; i< d.Constraints.length; i ++){
@@ -150,6 +150,7 @@ function getNodes(regexp, d) {
         if (res !== null)
             nodes = nodes.concat(res);
     }
+    
     return nodes;
 }
 
@@ -167,9 +168,9 @@ function common_ancestor(keywords) {
   ;
   var regexp = new RegExp(keywords, "i");
 
+
   //get the search result
   var nodes = getNodes(regexp, inaltered_Root);
-
   //if no result
   if(nodes.length === 0) return null;
   
@@ -267,11 +268,12 @@ function display(d) {
 	    .data(d.children)
 	    .enter().append("g")
 	    .classed("children", true)
-	    .attr("name", function(d) { return d.name ;})
+
 	    .attr("id", function(d){return d.id;})
 	    .on("click", function(d){
 		singleClick(d);
 		})
+		
 	    .on("contextmenu", function(d) {d.parent.parent? mouseDown(d) : null; }) ;
 
 
@@ -281,7 +283,7 @@ function display(d) {
 	    //.attr("stroke-width", "1")
 	    .call(rect)
 	    .append("title")
-	    .text(function(d) { return d.depth<4? d.name: null; })
+	    .text(function(d) { return d.type!="vm"&& d.type!="free"? d.name: null; })
 	
 	
 	;
@@ -513,15 +515,18 @@ function textChild(text) {
    * descripton : adds attributes to the "rect" tags
    */
 function rect(rect) {
-	
 	rect.attr("x", function(d) { return d.strokeColor? x(d.x)+1 :  x(d.x) })
+	.attr("name", function(d){ return d.UUID})
     .attr("y", function(d) { return d.strokeColor? y(d.y)+1 :  y(d.y) })
     .attr("width", function(d) { return d.strokeColor? (x(d.x + d.dx) - x(d.x)-2<0? 0: x(d.x + d.dx) - x(d.x)-2): (x(d.x + d.dx) - x(d.x)<0? 0: x(d.x + d.dx) - x(d.x))})
     .attr("height", function(d) { return d.strokeColor? (y(d.y + d.dy) - y(d.y)-2<0? 0 : y(d.y + d.dy) - y(d.y)-2) : (y(d.y + d.dy) - y(d.y)<0? 0: y(d.y + d.dy) - y(d.y) )})
-    .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : "#FFF"})
+    .style("fill", function(d){   return this.getAttribute('class')==='grandChild'? d.color : ihmColor})
+    .attr("data-color", function(d){   return this.getAttribute('class')==='grandChild'? d.color : ihmColor} )
     //.style("stroke",function(d){return d.strokeColor});
     .style("stroke-width",function(d){return (d.strokeColor )? 1:1 })
-    .style("stroke",function(d){return d.strokeColor? d.strokeColor : "#FFF"});
+    .style("stroke",function(d){return d.strokeColor? d.strokeColor : ihmColor});
+
+    
 
 
 }

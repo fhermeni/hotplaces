@@ -116,7 +116,13 @@ function containerConstraints(id,x, y){
 	}
 	var span = document.getElementsByClassName("constraintsList");
 			for(var i = 0; i< span.length; i++){
-			span[i].onclick= function(){search(this.getAttribute("data"));
+			
+			span[i].onclick= function(){search(this.getAttribute("data"))
+			
+			listofsearch= this.getAttribute("data").split(",");
+			for (var l in listofsearch){
+						startAnimation(listofsearch[l]);
+						}
 				
 			}}
 }
