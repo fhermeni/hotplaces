@@ -1,4 +1,5 @@
-function creatContainerInfo(id, title, content, x, y){
+function creatContainerInfo(id, title, content, x, y, type){
+	console.log(type);
 	if($("#"+id).length ===0){
 		var container = document.createElement("div")
 		var titleTag = document.createElement("H2");
@@ -8,6 +9,7 @@ function creatContainerInfo(id, title, content, x, y){
 		container.setAttribute("id", id);
 		container.setAttribute("data-skin", "white");
 		container.setAttribute("data-drag", "true");
+		container.setAttribute("data-icon",type ==="vm"?  "images/vm.png":"images/Node.png");
 		container.setAttribute("data-resize", "true");
 		container.setAttribute("data-collapsable", "true");
 		container.setAttribute("data-remenberme", "true");

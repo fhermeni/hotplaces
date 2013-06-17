@@ -30,7 +30,7 @@ function keybordFunction(ev){
 	if (ev.keyCode === 32){
 		 if($("#"+hoverNode.UUID).length ===0){
 		 	
-		 	creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%');
+		 	creatContainerInfo(hoverNode.UUID, hoverNode.name, ToStringInfo(getInfo(hoverNode)), '20%', '50%', hoverNode.type);
 		 	
 		 	
 		 }
