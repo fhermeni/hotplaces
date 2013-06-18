@@ -596,6 +596,10 @@
 					var text = el.containerTitle.html();
 					if(el.$.data("icon")){
 						var imgIco = $("<img/>").attr("src", el.$.data("icon")).addClass("icon");
+						
+						imgIco[0].setAttribute("height",15);
+						imgIco[0].setAttribute("width", 15);
+						console.log(imgIco[0]);
 						text = imgIco;
 					}
 
@@ -608,6 +612,7 @@
 
 						el.iconElement = $("<span/>").addClass("containerDocked").html(text);
 						el.iconElement[0].setAttribute("name", el.id);
+						el.iconElement[0].innerHTML+= "<span style='margin-top:0;'>"+ el.id+"</span>";
 						$("#"+dockId).append(el.iconElement);
 					}
 

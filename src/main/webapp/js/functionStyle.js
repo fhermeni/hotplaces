@@ -133,6 +133,42 @@ function startAnimation(UUID){
 	}
 	}
 
+function startAnimationStroke(UUID){
+
+	
+	var el = document.getElementsByName(UUID);
+	if (el.length ===0){
+		d= search_Node(UUID, inaltered_Root)
+	}
+	while(el.length ===0 && d.parent ){
+			d= d.parent
+		
+		 el = document.getElementsByName(d.UUID);
+		 }
+		
+	
+	
+	
+	
+	for (var i = 0; i < el.length; i++){
+	
+		if(el[i].tagName==="rect"){
+			var animation = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+		    animation.setAttributeNS(null, 'attributeName', 'stroke');
+		    animation.setAttributeNS(null, 'begin', 'indefinite');
+		    animation.setAttributeNS(null, 'from', el[i].getAttribute("data-color"));
+   
+			animation.setAttributeNS(null, 'to', colorProb);
+		    animation.setAttributeNS(null, 'dur', 1);
+		    animation.setAttributeNS(null, 'calcMode', "discrete");
+		    animation.setAttributeNS(null, 'fill', 'freeze');
+			animation.setAttribute("repeatCount", "indefinite");
+			el[i].appendChild(animation);
+			animation.beginElement();
+	}
+	}
+	}
+
 /*function:
  ** parameter: 
  ** description: toString method to constraints list.
@@ -166,7 +202,7 @@ function constraintsToString(list){
 	var result= "";
 	
 	cList.forEach(function(el){
-		var color =  el.satisfied? colorProb2 : 'black';
+		var color =  el.satisfied? colorProb : 'black';
 		result+= "<p  style= color:" + color +";> " + el.id +"( "
 		if(el.VMs && el.VMs.length ===1 ){
 			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs +" >" +el.VMs[0].VMs.length + " VMs</span>] "
@@ -248,16 +284,16 @@ function constraintToString(c){
 			result += ", "
 		}
 		if(c.Nodes && c.Nodes.length ===1){
-			result+= "[<span class ='constraintsList'data =" + el.Nodes[0].Nodes + ">"+ el.Nodes[0].Nodes.length + " Nodes</span>] "
+			result+= "[<span class ='constraintsList'data =" + c.Nodes[0].Nodes + ">"+ c.Nodes[0].Nodes.length + " Nodes</span>] "
 		} 
 		
-		if(el.Nodes && el.Nodes.length >1 ){
-			for(var i =0; i <el.Nodes.length; i ++){
+		if(c.Nodes && c.Nodes.length >1 ){
+			for(var i =0; i <c.Nodes.length; i ++){
 				if(i ===0){
-					result+= "[[<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
+					result+= "[[<span class ='constraintsList'data =" + c.Nodes[i].Nodes + ">"+c.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
-				else{result+= ", [<span class ='constraintsList'data =" + el.Nodes[i].Nodes + ">"+el.Nodes[i].Nodes.length + " Nodes</span>]"
+				else{result+= ", [<span class ='constraintsList'data =" + c.Nodes[i].Nodes + ">"+c.Nodes[i].Nodes.length + " Nodes</span>]"
 					
 				}
 				if(i===c.Nodes.length-1){
@@ -289,7 +325,7 @@ function getInfo(d){
 	var info = Array();
 	info.push(d.parent? d.parent.id : "")
 	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
-	info.push(!isVM(d)? Array(d.children) : null);
+	info.push( d);
 
 	info.push(d.type);
 	if(d.type==="vm" || d.type === "node" || d.type ==="free"){
@@ -322,7 +358,7 @@ function ToStringInfo(list){
 	
 	}
 	);
-	result = "<p id='parentLink'>" + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of children: " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
+	result = "<p id='parentLink'>" + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of "+ (list[2].children? list[2].children[0].type: "children") +": " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
 	
 	if(list[4]){
 	result += "<p> resources : <br/> <ul> "
@@ -370,7 +406,7 @@ function ToStringInfo(list){
 		result += "<p> Constraints : <br/> <ul> "
 		var res="";
 		for(var c in list[6]){
-				res += list[6][c].satisfied? ("<li class='constraintsNode' data="+ list[6][c].name  +">"+ list[6][c].type +"</li>") :("<li class='constraintsNode' data="+ list[6][c].name  +" style= color:" + colorProb2 +";>"+ list[6][c].type +"</li>");
+				res += list[6][c].satisfied? ("<li class='constraintsNode' data="+ list[6][c].name  +">"+ list[6][c].type +"</li>") :("<li class='constraintsNode' data="+ list[6][c].name  +" style= color:" + colorProb +";>"+ list[6][c].type +"</li>");
 				}
 		result+= res +"</ul></p><br/>" ;
 	}

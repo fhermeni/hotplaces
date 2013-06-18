@@ -524,13 +524,12 @@ function rect(rect) {
     .attr("data-color", function(d){   return this.getAttribute('class')==='grandChild'? d.color : ihmColor} )
     //.style("stroke",function(d){return d.strokeColor});
     .style("stroke-width",function(d){return (d.strokeColor )? 1:1 })
-    .style("stroke",function(d){return d.strokeColor? d.strokeColor : ihmColor});
+    .style("stroke",function(d){return d.strokeColor? (  startAnimationStroke(d.UUID), d.strokeColor ) : ihmColor});
 
     
 
 
 }
-  
 
   
 function somChildrenValue(d) {
