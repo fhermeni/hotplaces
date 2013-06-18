@@ -57,7 +57,7 @@ function accumulate(d) {
 * coordinates. This lets us use a viewport to zoom.
 */
 function layout(d) {
-
+	
 	d.type==='free' ? d.color= colorFree : d.color = colorNoProb ;
 	
 	if (d.Constraints){
@@ -67,18 +67,83 @@ function layout(d) {
 
 				d.Constraints[i].satisfied? d.color= d.color: (/*d.type =="vm"?*/ !isVM(d)? d.color=d.color : d.strokeColor = colorProb2);
 				}
-			else {if(d.Constraints[i].type == "Preserve" || d.Constraints[i].type == "Overbook" ){
-				
-				d.Constraints[i].satisfied? d.color= d.color: (d.color = colorProb);
-			}
-			else{ if(d.Constraints[i].type != "Killed" &&d.Constraints[i].type != "Ready" && d.Constraints[i].type != "Root" &&d.Constraints[i].type != "Quarantine" && d.Constraints[i].type != "Sleeping"){
-						}} 
+			else {
+			
+				if(d.Constraints[i].type == "Preserve"){
+					d.Constraints[i].satisfied? d.color= d.color: (d.color = colorProb);
+				} 
+				if( d.Constraints[i].type == "Overbook" ){
+					if(search_constraint(d.Constraints[i].name)[0].rcid=== document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && !d.Constraints[i].satisfied){
+						d.color = colorProb;
+					}
+					else{ d.color = d.color}
+				}
+				else{ 
+					if(d.Constraints[i].type != "Killed" &&d.Constraints[i].type != "Ready" && d.Constraints[i].type != "Root" &&d.Constraints[i].type != "Quarantine" && d.Constraints[i].type != "Sleeping"){
+						}
+				} 
 						
 			}
 
-	}	
+		}	
 	}
 	
+    if(document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value != "Count" && d.type=="node"){
+	    if(d.ratio){
+	    	var rat = 1
+	    	for(var i in d.ratio){
+	    			if(i == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value){
+		    			rat = d.ratio[i]
+	    			}
+	    	}
+	    	for(var j in d.resources){
+			 	
+				 if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]*rat< d.value) ){
+						 d.color=colorProb;
+	 
+				 }
+				 else{
+				 if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value){
+				 
+				 	if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]*rat*0.9< d.value) ){
+						 d.color=colorWarning;
+	 
+					}
+					else{
+						if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]*rat*0.8< d.value) ){
+							d.color= colorJust;
+						}
+					}
+				 }
+			 }}
+	    	
+	    	
+	    	
+		 }
+		 else{
+			 for(var j in d.resources){
+			 	
+				 if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]< d.value) ){
+
+						 d.color=colorProb;
+					 
+					 
+				 }
+				 else{
+
+				 	if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]*0.9< d.value) ){
+						 d.color=colorWarning;
+	 
+					}
+					else{
+						if(j == document.getElementById("ressources_select").options[document.getElementById("ressources_select").selectedIndex].value && (d.resources[j]*0.7< d.value) ){
+							d.color= colorJust;
+						}
+					}
+				 } 
+			 }
+		 }
+	    }
     
 
     if(d.parent) {
@@ -224,6 +289,7 @@ document.search_form.search_field.onkeypress = function() {
     if(window.event.keyCode === 13) {
     	document.getElementById('select_search').value==="node"? search(document.search_form.search_field.value): containerSearch("search_const", constraintsToString(search_constraint(document.search_form.search_field.value)));
     }
+    
 };
 
  
@@ -533,18 +599,18 @@ function rect(rect) {
 
   
 function somChildrenValue(d) {
+	
     var som = 0;
-
     !isVM(d)? d.children.forEach(function(c) {
         som = som + somChildrenValue(c)
-    }) : som += getGoodRessources(d);
+    }) : ( som += getGoodRessources(d));
     return som;
 }
   
 function getGoodRessources(d) {
     var select = document.getElementById("ressources_select");
     var typeOfRessources = select.options[select.selectedIndex].value;
-    return d.resources[typeOfRessources]? d.resources[typeOfRessources]: (d.name ==="free"? 0: 1);
+    return d.resources[typeOfRessources]? (d.name ==="free"? 0:d.resources[typeOfRessources]): (d.name ==="free"? 0: 1);
 }
   
   document.oncontextmenu=RightMouseDown;

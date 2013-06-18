@@ -1,5 +1,5 @@
 function creatContainerInfo(id, title, content, x, y, type){
-	console.log(type);
+	
 	if($("#"+id).length ===0){
 		var container = document.createElement("div")
 		var titleTag = document.createElement("H2");
@@ -114,6 +114,7 @@ function containerConstraints(id,x, y){
 		if($("#"+id).get(0).isClosed){
 		$("#"+id).containerize("open", 100);
 		}
+		else{$("#"+id).containerize("close", 0)}
 				
 	}
 	var span = document.getElementsByClassName("constraintsList");
@@ -125,8 +126,28 @@ function containerConstraints(id,x, y){
 			for (var l in listofsearch){
 						startAnimation(listofsearch[l]);
 						}
+			$("#"+id).containerize("close", 0);
 				
 			}}
+			
+	span = document.getElementsByClassName("constraintsResources");
+			for(var i = 0; i< span.length; i++){
+			
+				span[i].onclick= function(){
+				for (var l= 0;  l< document.getElementById("ressources_select").options.length; l++){
+					if(document.getElementById("ressources_select").options[l].getAttribute("value")=== this.innerHTML){
+						document.getElementById("ressources_select").selectedIndex=l;
+						$(".ressources_select").trigger('onChange');
+						var event = document.createEvent('HTMLEvents'); // creation d'un évènement HTML
+						event.initEvent('onchange', true, false); // evenement change, qui se propage et ne peut être annulé
+	 
+						document.getElementById("ressources_select").onchange();
+					}
+			}
+			//$("#"+id).containerize("close", 0);
+				
+			}}
+
 }
 
 function containerSearch(id, content){

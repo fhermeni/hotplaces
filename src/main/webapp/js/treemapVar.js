@@ -15,7 +15,8 @@ var colorNoProb= "#EDF1B6";
 var colorNoProbHigh;
 var colorProb= "#CC0C39";
 var colorProb2= "#E6781E";
-
+var colorWarning= "#F4992E";
+var colorJust= "#FFDD26";
 
 //palette 2
 /*

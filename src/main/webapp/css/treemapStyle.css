@@ -39,7 +39,16 @@ ul{
 	text-indent:20px;
 	list-style-position:inside;
 }
+#ressources_select{
+	
+	margin-top: 45px;
+  	
+  	margin-left: 100px;
 
+ 
+
+	
+}
 .information {
 	font-size: x-large;
 	margin-top: 30px;
@@ -99,6 +108,12 @@ ul{
 }
 
 .constraintsList:hover{
+	cursor:pointer;
+    font-weight: lighter;
+    color: blue;
+}
+
+constraintsResources:hover{
 	cursor:pointer;
     font-weight: lighter;
     color: blue;

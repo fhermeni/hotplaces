@@ -27,6 +27,7 @@ function search_Node(UUID, d){
 
 
 function keybordFunction(ev){
+	console.log(ev.keyCode);
 	if (ev.keyCode === 32){
 		 if($("#"+hoverNode.UUID).length ===0){
 		 	
@@ -39,7 +40,23 @@ function keybordFunction(ev){
 			 
 		 }
 	}
-	
+	if(ev.keyCode === 102 ||ev.keyCode === 70){
+			
+			if($("#search_form").get(0).isClosed){
+				 $("#search_form").containerize("open",200), $("#search_form").containerize("setSize", $("#search_form").css("width"), 300)
+				 }
+			else{ $("#search_form").containerize("close",0)}
+		}
+	if(ev.keyCode === 104 ||ev.keyCode === 72){
+			
+			if($("#help").get(0).isClosed){
+				 $("#help").containerize("open",200);
+				 }
+			else{ $("#help").containerize("close",0)}
+	}
+	if(ev.keyCode === 99 ||ev.keyCode === 67){
+			containerConstraints("constraintsContainer","20%", "20%")
+				}
 
 }
 
@@ -108,7 +125,6 @@ function startAnimation(UUID){
 	
 	
 	
-	console.log(el);
 	for (var i = 0; i < el.length; i++){
 	
 		if(el[i].tagName==="rect"){
@@ -177,11 +193,11 @@ function startAnimationStroke(UUID){
 
 function constraintsToString(list){
 	var cList = list;
-	console.log(cList.sort(function(a, b){
-		if(a.satisfied < b.satisfied){
+	cList.sort(function(a, b){
+		if(a.satisfied > b.satisfied){
 			return 1;
 		}
-		else if (a.satisfied > b.satisfied){
+		else if (a.satisfied < b.satisfied){
 			return -1;
 		}
 		else{
@@ -196,16 +212,16 @@ function constraintsToString(list){
 		        	}
 		}
 	     
-}));
+});
 	
 	
 	var result= "";
 	
 	cList.forEach(function(el){
-		var color =  el.satisfied? colorProb : 'black';
-		result+= "<p  style= color:" + color +";> " + el.id +"( "
+		var color =  el.satisfied?'black' : colorProb;
+		result+= "<p  style= color:" + color +";> " + el.id +"("
 		if(el.VMs && el.VMs.length ===1 ){
-			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs +" >" +el.VMs[0].VMs.length + " VMs</span>] "
+			result+= "[<span class ='constraintsList'data =" + el.VMs[0].VMs +" >" +el.VMs[0].VMs.length + " VMs</span>]"
 		} 
 		if(el.VMs && el.VMs.length >1 ){
 			for(var i =0; i <el.VMs.length; i ++){
@@ -225,7 +241,7 @@ function constraintsToString(list){
 			result += ", "
 		}
 		if(el.Nodes && el.Nodes.length ===1){
-			result+= "[<span class ='constraintsList'data =" + el.Nodes[0].Nodes + ">"+ el.Nodes[0].Nodes.length + " Nodes</span>] "
+			result+= "[<span class ='constraintsList'data =" + el.Nodes[0].Nodes + ">"+ el.Nodes[0].Nodes.length + " Nodes</span>]"
 		} 
 		
 		if(el.Nodes && el.Nodes.length >1 ){
@@ -244,7 +260,7 @@ function constraintsToString(list){
 		} 
 		
 		if(el.rcid){
-			result += ", rcId: " + el.rcid
+			result += ", rcId: <span class ='constraintsResources'>" + el.rcid +"</span>"
 			}
 		if(el.ratio){
 			result += ", ratio: " + el.ratio 
@@ -252,7 +268,7 @@ function constraintsToString(list){
 		if(el.amount){
 			result += ", amount: " + el.amount 
 		}
-		result+=")</p><br>"
+		result+=")</p>"
 		
 	})
 	return result;
@@ -302,7 +318,7 @@ function constraintToString(c){
 			}
 		} 
 		if(c.rcid){
-			result += ", rcId: " + c.rcid
+			result += ", rcId: <span class ='constraintsResources'>" + el.rcid +"</span>"
 			}
 		if(c.ratio){
 			result += ", ratio: " + c.ratio 
@@ -322,6 +338,7 @@ function constraintToString(c){
  */
 
 function getInfo(d){
+	
 	var info = Array();
 	info.push(d.parent? d.parent.id : "")
 	info.push(!isVM(d)? (d.children[d.children.length-1].name==="free"? d.children.length-1:d.children.length ): 0);
@@ -332,9 +349,9 @@ function getInfo(d){
 	
 		info.push(d.resources);
 	}
-	if(d.type === "node"){
+	
 		info.push(d.ratio);
-	}
+	
 	info.push(d.Constraints);
 	
 	return info;
@@ -346,7 +363,8 @@ function getInfo(d){
  */
 	
 function ToStringInfo(list){
-	var result="";
+	console.log(list);
+	var result="Position: ";
 	var tmp = list[0].split(".");
 	tmp.forEach(function(el){
 		if(el==="g5k"){
@@ -358,41 +376,34 @@ function ToStringInfo(list){
 	
 	}
 	);
-	result = "<p id='parentLink'>" + result +"</p> <br/> <span class='nodeNumb' name='nodeNumb' >numbers of "+ (list[2].children? list[2].children[0].type: "children") +": " + list[1] +"</span> <br/> <br/> <ul></ul> <br/>";
+	result = "<p id='parentLink'>" + result +"</p> <br/> "
+	result +=  (list[1]!=0? ("<span class='nodeNumb' name='nodeNumb' >numbers of "+ (list[2].children? (list[2].children[0].type==="vm"? "VMs" : (list[2].children[0].type==="node"? "Nodes": (list[2].children[0].type+"s") )): "children") +": " + list[1] +" </span> <br/>" ): "") 
+	result+= " <ul></ul> <br/>";
 	
 	if(list[4]){
-	result += "<p> resources : <br/> <ul> "
+		if(list[3]=== "vm"){result += "<p> Virtual resources : <br/> <ul> "}
+		
+		
+		
+		else{ if(list[3]==="node"){result += "<p> Resources physical/virtual/ratio : <br/> <ul> " }}
+	
 
-		for(var r in list[4]){
+				for(var r in list[4]){
 			var num= list[4][r];
 			var res;
 			
 
 
-			if(r != "CPU"){
 			
-				if(num/1000000>1 ){
-					res = num/1000000+" TB "  ;
-					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
-					
-				}
+			
 				
-				else{
-					if(num /1000>1){
-					
-					res = num % 1000 + " GB " ;
-					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
-				}
-					else{
-						res = num +" MB ";
-					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
-					}
-				}
+					var ratio = list[5]&&list[5][r]? list[5][r].toFixed(2) : 1
+					list[3]==="node"? (res = ""+ getUnit(num)[0]+ getUnit(num)[1] +" / "  + getUnit(num* ratio)[0]+ getUnit(num* ratio)[1] + " / " + ratio):
+									(list[3]==="vm"? (res = ""+getUnit(num*1)[0] + getUnit(num*1)[1]) : null)
 			
-			}
-			else{ res = num;
-					res+= list[3]==="node"? (list[5]&&list[5][r]? (" Ratio: " + list[5][r].toFixed(2)): (" Ratio: " + 1)) : "";
-			}
+					
+			
+			 
 				
 				
 				
