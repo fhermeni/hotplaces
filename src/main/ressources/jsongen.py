@@ -6,31 +6,19 @@ import uuid
 nodelist = []
 class Node:
 
-	def __init__(self, name, uuid):
+	def __init__(self, name, uuid, nodeType="Site"):
 		self.name = name
 		self.uuid= uuid
 		self.children = []
-		#on doit respecter le ration tel que v:p >= 1 jamais plus de ressources virtuelle que de physique
-
-		#self.ratio = self.pDiskSpace / self.vDiskSpace
-		#self.pCPU = random.randint(20,100)#nb CPU
-		#self.vCPU = self.pCPU - random.randint(1,10)#nb CPU
-		#equi = self.pCPU - random.randint(1,self.pCPU)
-		#if(equi >= self.pCPU):
-		#	equi = self.pCPU - random.randint(1,self.pCPU)
-		#self.vCPU = equi
-		#self.pRAM = random.randint(1,20)#Go
-		#self.vRAM = random.randint(1,20)#Go
-		#self.pDiskSpace = random.randint(100,10000)#Go
-		#self.vDiskSpace = random.randint(100,10000)#Go
 		self.CPU = 0
 		self.RAM = 0
 		self.DiskSpace = 0
 		self.ratioCPU= 0
 		self.ratioRAM=0
 		self.ratioDiskSpace=0
-		self.nodeType= ""
+		self.nodeType= nodeType
 		self.constraints = []
+
 		
 class NodeConstraint:
 
@@ -115,181 +103,209 @@ def findRandomNode(node, nodeType):
 def findUniqueNode(node, nodeType):
 	global nodelist
 	n = findRandomNode(node, nodeType)
-	while(n in nodelist):
+
+	while(n in nodelist and len(node.children) != len(nodelist) ):
 		n = findRandomNode(node, nodeType)
-	
+
+	if len(node.children) == len(nodelist):
+		print("Overbooked")
+		#return None
 	nodelist.append(n)
 	return n
 
-
+def getRandChild():
+	prof = random.randint(0, 2)
+	child = g5k
+	for j in range(prof):
+		child = child.children[random.randint(0, len(child.children)-1)]
+	return child
 	
 def makeConstraints():
 	nbNC = random.randint(1, 20)
 	nbVMC = random.randint(1, 20)
 	nbBan_fence = random.randint(1, 10)
 	nbRC = random.randint(1, 10);
+	global nodelist
 
 	for i in range(nbVMC):
+		child = getRandChild()
+
 		name = "VMC" +str(i)
 		id= random.choice([ "Gather", "Killed", "Lonely", "Ready", "Root", "Running", "SequentialVMTransitions", "Sleeping", "Spread"])
 		vms=[]
-		vms.append(findRandomNode(g5k, "vm"))
+		vms.append(findUniqueNode(child, "vm"))
 		again=1
-		while(again!=0):
-			vms.append(findRandomNode(g5k, "vm"))
+		while(again!=0) and (len(nodelist) < len(child.children)):
+			vms.append(findUniqueNode(child, "vm"))
 			again =random.randint(0,5)
 		constraints.append(VMConstraint(name, id, vms))
+		nodelist = []
 
-		
+
+	
 		
 	for i in range(nbNC):
+		child = getRandChild()
 		name = "NC" +str(i)
 		id= random.choice([ "Offline", "Online", "Quarantine"])
 		nodes=[]
-		nodes.append(findRandomNode(g5k, "node"))
-		while(random.randint(0,5)!=0):
-			nodes.append(findRandomNode(g5k, "node"))
+		nodes.append(findUniqueNode(child, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			nodes.append(findUniqueNode(child, "node"))
 		constraints.append(NodeConstraint(name, id, nodes))
+		nodelist = []
 
+	
 	for i in range(nbBan_fence):
+		child = getRandChild()
 		id = random.choice([ "Ban", "Fence" ])
 		name = id + str(i)
 		vms = []
 		nodes = []
-		nodes.append(findRandomNode(g5k, "node"))
-		while(random.randint(0,5)!=0):
-			nodes.append(findRandomNode(g5k, "node"))
+		nodes.append(findUniqueNode(child, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			nodes.append(findUniqueNode(child, "node"))
+		nodelist = []
 
-		vms.append(findRandomNode(g5k, "vm"))
-		while(random.randint(0,5)!=0):
-			vms.append(findRandomNode(g5k, "vm"))
+		vms.append(findUniqueNode(child, "vm"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			vms.append(findUniqueNode(child, "vm"))
 
 		constraints.append(Ban_fence(name, id, vms, nodes))
+		nodelist = []
 
+	
 	nbRC = random.randint(1, 10);
 	for i in range(nbRC):
+		child = getRandChild()
 		id = random.choice([ "CumulatedResourceCapacity", "SingleResourceCapacity", "Overbook"])
 		name = id + str(i)
 		node = []
 		amount = 0
-		node.append(findRandomNode(g5k, "node"))
-		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+		node.append(findUniqueNode(child, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			node.append(findUniqueNode(child, "node"))
 		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		if(id == "Overbook"):
-			#amount = random.uniform(1, 10)
 			char = str(random.randint(1,9)) + "."
 			for j in range(3):
 				char += str(random.randint(1,9))
 			
 			amount = char
-
 		else:
 			amount = random.randint(0, 100)
 		constraints.append(Ressource_capacity(name, id, node, rc, amount))
+		nodelist = []
+
 	
 	nbRC = random.randint(1, 10);
 
 	for i in range(nbRC):
+		child = getRandChild()
 		id = random.choice([ "CumulatedRunningCapacity", "SingleRunningCapacity"])
 		name = id + str(i)
 		node = []
-		node.append(findRandomNode(g5k, "node"))
-		while(random.randint(0,5)!=0):
-			node.append(findRandomNode(g5k, "node"))
+		node.append(findUniqueNode(child, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			node.append(findUniqueNode(child, "node"))
 		amount = random.randint(0, 100)
 		constraints.append(Running_capacity(name, id, node, amount))
+		nodelist = []
 
+	
 	nbRC = random.randint(1, 10);
-
 	for i in range(nbRC):
+		child = getRandChild()
 		id = "Preserve"
 		name = id + str(i)
 		vm = []
-		vm.append(findRandomNode(g5k, "vm"))
-		while(random.randint(0,5)!=0):
-			vm.append(findRandomNode(g5k, "vm"))
+		vm.append(findUniqueNode(child, "vm"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
 		rc = random.choice([ "CPU", "RAM", "DiskSpace"])
 		amount = random.randint(0, 100)
 		constraints.append(Preserve(name, id, vm, rc, amount))
+		nodelist = []
 
+	
 	nbRC = random.randint(1, 10);
-
 	for i in range(nbRC):
+		child = getRandChild()
 		id = "Split"
 		name = id + str(i)
 		vms = []
 		vm = []
-		vm.append(findUniqueNode(g5k, "vm"))
-		while(random.randint(0, 6) != 0):
-			vm.append(findUniqueNode(g5k, "vm"))
+		vm.append(findUniqueNode(child, "vm"))
+		while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
 		vms.append(vm)
 		vm = []
-		while(random.randint(0,5)!=0):
-			vm.append(findUniqueNode(g5k, "vm"))
-			while(random.randint(0, 6) != 0):
-				vm.append(findUniqueNode(g5k, "vm"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
+			while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+				vm.append(findUniqueNode(child, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(Split(name, id, vms))
 		nodelist = []
 
+	
 	nbRC = random.randint(1, 10);
-
 	for i in range(nbRC):
+		child = getRandChild()
 		id = "Among"
 		name = id + str(i)
 		node = []
 		vm = []
 		nodes = []
-		vm.append(findUniqueNode(g5k, "vm"))
-		while(random.randint(0,5)!=0):
-			vm.append(findUniqueNode(g5k, "vm"))
-		node.append(findUniqueNode(g5k, "node"))
-		while(random.randint(0, 6) != 0):
-			node.append(findUniqueNode(g5k, "node"))
-		nodes.append(node)
+		vm.append(findUniqueNode(child, "vm"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
+		
 		node = []
 		nodelist = []
-		while(random.randint(0,5)!=0):
-			node.append(findUniqueNode(g5k, "node"))
-			while(random.randint(0, 6) != 0):
-				node.append(findUniqueNode(g5k, "node"))
+		#child = getRandChild()
+		node.append(findUniqueNode(child, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			node.append(findUniqueNode(child, "node"))
+			while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+				node.append(findUniqueNode(child, "node"))
 			nodes.append(node)
 			node = []
 		constraints.append(Among(name, id, vm, nodes))
 		nodelist = []
 
+	
 	nbRC = random.randint(1, 10);
-
 	for i in range(nbRC):
+		child = getRandChild()
 		id = "SplitAmong"
 		name = id + str(i)
 		vm = []
 		vms = []
 		node = []
 		nodes = []
-		node.append(findUniqueNode(g5k, "node"))
-		while(random.randint(0, 6) != 0):
-			node.append(findUniqueNode(g5k, "node"))
+		node.append(findUniqueNode(child, "node"))
+		while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+			node.append(findUniqueNode(child, "node"))
 		nodes.append(node)
 		node = []
-		while(random.randint(0,5)!=0):
-			node.append(findUniqueNode(g5k, "node"))
-			while(random.randint(0, 6) != 0):
-				node.append(findUniqueNode(g5k, "node"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			node.append(findUniqueNode(child, "node"))
+			while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+				node.append(findUniqueNode(child, "node"))
 			nodes.append(node)
 			node = []
 		nodelist = []
-		vm.append(findUniqueNode(g5k, "vm"))
-		while(random.randint(0, 6) != 0):
-			vm.append(findUniqueNode(g5k, "vm"))
+		vm.append(findUniqueNode(child, "vm"))
+		while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
 		vms.append(vm)
 		vm = []
-		while(random.randint(0,5)!=0):
-			vm.append(findUniqueNode(g5k, "vm"))
-			while(random.randint(0, 6) != 0):
-				vm.append(findUniqueNode(g5k, "vm"))
+		while(random.randint(0,5)!=0 and (len(nodelist) < len(child.children))):
+			vm.append(findUniqueNode(child, "vm"))
+			while(random.randint(0, 6) != 0 and (len(nodelist) < len(child.children))):
+				vm.append(findUniqueNode(child, "vm"))
 			vms.append(vm)
 			vm = []
 		constraints.append(SplitAmong(name, id, vms, nodes))
@@ -298,7 +314,7 @@ def makeConstraints():
 def makeCluster(id, nb):
 
 
-	cluster = Node(id,str(uuid.uuid4()) )
+	cluster = Node(id,str(uuid.uuid4()), "Cluster" )
 	#print(cluster.pCPU)
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1), str(uuid.uuid4()))
@@ -624,6 +640,9 @@ def finalJSON(root):
 	#return '{ \n "name" : "struct", "children" : [ \n' + jsonGen(root) + '\n, \n' + constraintsGen() + ']\n}'
 	return '{  "struct" : \n' + jsonGen(root) + '\n, "const" : \n' + constraintsGen() + '\n}'
 	#return constraintsGen()
+
+# no = findRandomNode(g5k, "node")
+# print(no.name)
 
 mock = open("g5kMock.json", "w")
 mock.write(finalJSON(g5k))
