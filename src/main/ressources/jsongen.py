@@ -319,50 +319,79 @@ def makeCluster(id, nb):
 	for i in range(nb):
 		node = Node(id + "-" + str(i+1), str(uuid.uuid4()))
 		node.nodeType="node"
-
-		node.ratioDiskSpace = random.randint(1,5)
-		node.ratioRAM= random.randint(1,5)
-		node.ratioCPU= random.randint(1,16)
 		node.CPU =tmpCPU =  random.randint(1,32)
 		node.RAM =tmpRAM= random.randint(1024,65536)
 		node.DiskSpace= tmpDisk = random.randint(1000000,100000000)
-		
-		while(tmpCPU>=1.0/node.ratioCPU and tmpRAM>=1.0/node.ratioRAM and tmpDisk >=100000.0/node.ratioDiskSpace and len(node.children) < 20):
+		nbVms = random.randint(1, 20)
+		cpucons = 0
+		ramcons = 0
+		diskcons = 0
+
+
+		for j in range(nbVms):
 			uuidVM=str(uuid.uuid4())
 			vm = Node(uuidVM,uuidVM)
 			vm.nodeType="vm"
 			#add random virtual ressources
-			vm.RAM = random.randint(1,int(tmpRAM*node.ratioRAM))
-			vm.DiskSpace = random.randint(100000, int(tmpDisk*node.ratioDiskSpace))
-			vm.CPU= random.randint(1, int(tmpCPU* node.ratioCPU))
+
+			vm.RAM = random.randint(512, 8192)
+			vm.CPU = random.randint(1, 8)
+			vm.DiskSpace = random.randint(2000, 100000)
+			'''
+			else:
+				r = int(tmpRAM * random.random())
+				if r > 1 :
+					vm.RAM = random.randint(1,r)
+				else:
+					vm.RAM = 0
+
+				r = int(tmpDisk * random.random())
+				if r > 1:
+					vm.DiskSpace = random.randint(1, r)
+				else :
+					vm.DiskSpace = 0
+				
+				r = r = int(tmpCPU * random.random())
+				if r > 2:
+					vm.CPU= random.randint(1, r)
+				else:
+					vm.CPU = 1
+			'''
+			
 
 			#remove ressource of new vm at node
-			tmpRAM = tmpRAM - vm.RAM*1.0/node.ratioRAM
-			tmpDisk = tmpDisk - vm.DiskSpace*1.0 /node.ratioDiskSpace
-			tmpCPU = tmpCPU - vm.CPU*1.0/ node.ratioCPU
+			tmpRAM = tmpRAM - vm.RAM
+			tmpDisk = tmpDisk - vm.DiskSpace
+			tmpCPU = tmpCPU - vm.CPU
 
+			cpucons += vm.CPU
+			ramcons += vm.RAM
+			diskcons += vm.DiskSpace
 			#add vm at node
 			node.children.append(vm)
-		#add space of free ressources
-		if(tmpDisk >0 or tmpRAM>0 or tmpCPU>0):
-			#add "vm" free
-			free = Node("free", str(uuid.uuid4()))
 
-			free.nodeType="vm"
+		if dice(1, 20):
+			node.CPU = cpucons - random.randint(0, cpucons)
+		else:
+			node.CPU = cpucons + random.randint(0, cpucons)
 
-			#add free ressources
-			free.DiskSpace = tmpDisk * node.ratioDiskSpace
-			free.RAM = tmpRAM * node.ratioRAM
-			free.CPU = tmpCPU * node.ratioCPU
-			free.nodeType="free"
-			
-			#node.children.append(free)
+		if dice(1, 20):
+			node.RAM = ramcons - random.randint(0, ramcons)
+		else:
+			node.RAM = ramcons + random.randint(0, ramcons)
 
+		if dice(1, 20):
+			node.DiskSpace = diskcons - random.randint(0, diskcons)
+		else:
+			node.DiskSpace = diskcons + random.randint(0, diskcons)
 
 
 		cluster.children.append(node)
 	return cluster
 
+def dice(num, denum):
+	i = random.randint(1, denum)
+	return i <= num
 
 def printNode(root):
 	if root.children != []:
