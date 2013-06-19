@@ -17,7 +17,6 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +42,7 @@ public class Server {
         JSONObject dataConst = null;
         String chaine;
         String path = "./src/main/ressources/g5kMock.json";
-        System.out.println("--------------------------------------------------------------------------BEGIN");
+        
         try (FileInputStream stream = new FileInputStream(new File(path)); FileChannel fc = stream.getChannel()) {
             MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
             chaine = Charset.defaultCharset().decode(bb).toString();
@@ -252,7 +251,7 @@ public class Server {
 
         for (int i = 0; i < consts.length(); i++) {
             JSONObject constr = consts.optJSONObject(i);
-            boolean satisfied = false;;
+            boolean satisfied = false;
             switch (constr.optString("id")) {
 
                 case "Ban": {
